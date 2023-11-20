@@ -24,6 +24,8 @@
 #  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <stddef.h>
+
 #include "regex.h"
 
 #include "gettext.h"
@@ -32,7 +34,8 @@
 
 #include "manconfig.h"
 
-#include "error.h"
+#include "fatal.h"
+#include "xalloc.h"
 #include "xregcomp.h"
 
 void xregcomp (regex_t *preg, const char *regex, int cflags)
@@ -44,6 +47,6 @@ void xregcomp (regex_t *preg, const char *regex, int cflags)
 		errstrsize = regerror (err, preg, NULL, 0);
 		errstr = xmalloc (errstrsize);
 		regerror (err, preg, errstr, errstrsize);
-		error (FATAL, 0, _("fatal: regex `%s': %s"), regex, errstr);
+		fatal (0, _("fatal: regex `%s': %s"), regex, errstr);
 	}
 }

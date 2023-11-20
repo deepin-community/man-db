@@ -32,12 +32,16 @@
 
 #include "error.h"
 #include "gl_list.h"
+#include "xalloc.h"
 
 #include "gettext.h"
 #define _(String) gettext (String)
 
 #include "manconfig.h"
 
+#include "appendstr.h"
+#include "debug.h"
+#include "filenames.h"
 #include "glcontainers.h"
 
 #include "mydbm.h"
@@ -122,12 +126,12 @@ int dbdelete (MYDBM_FILE dbf, const char *name, struct mandata *info)
 		}
 
 		/* create our new multi content */
-		GL_LIST_FOREACH_START (refs, ref)
+		multi_content = xstrdup ("");
+		GL_LIST_FOREACH (refs, ref)
 			multi_content = appendstr (multi_content,
 						   "\t", ref->name,
 						   "\t", ref->ext,
 						   (void *) 0);
-		GL_LIST_FOREACH_END (refs);
 
 		MYDBM_FREE_DPTR (cont);
 		MYDBM_SET (cont, multi_content);

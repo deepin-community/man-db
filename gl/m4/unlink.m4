@@ -1,5 +1,5 @@
-# unlink.m4 serial 14
-dnl Copyright (C) 2009-2020 Free Software Foundation, Inc.
+# unlink.m4 serial 16
+dnl Copyright (C) 2009-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -26,7 +26,7 @@ AC_DEFUN([gl_FUNC_UNLINK],
            # include <io.h>
            #endif
            #include <errno.h>
-         ]],
+         ]GL_MDA_DEFINES],
          [[int result = 0;
            if (!unlink ("conftest.file/"))
              result |= 1;
@@ -45,6 +45,8 @@ AC_DEFUN([gl_FUNC_UNLINK],
       [case "$host_os" in
                           # Guess yes on Linux systems.
          linux-* | linux) gl_cv_func_unlink_honors_slashes="guessing yes" ;;
+                          # Guess yes on systems that emulate the Linux system calls.
+         midipix*)        gl_cv_func_unlink_honors_slashes="guessing yes" ;;
                           # Guess yes on glibc systems.
          *-gnu*)          gl_cv_func_unlink_honors_slashes="guessing yes" ;;
                           # Guess no on native Windows.
@@ -98,6 +100,7 @@ AC_DEFUN([gl_FUNC_UNLINK],
                 # include <direct.h>
                 # include <io.h>
                 #endif
+                ]GL_MDA_DEFINES[
                 int main ()
                 {
                   int result = 0;

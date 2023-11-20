@@ -1,12 +1,12 @@
-# select.m4 serial 11
-dnl Copyright (C) 2009-2020 Free Software Foundation, Inc.
+# select.m4 serial 15
+dnl Copyright (C) 2009-2023 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
 
 AC_DEFUN([gl_FUNC_SELECT],
 [
-  AC_REQUIRE([gl_HEADER_SYS_SELECT])
+  AC_REQUIRE([gl_SYS_SELECT_H])
   AC_REQUIRE([AC_C_RESTRICT])
   AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles
   AC_REQUIRE([gl_SOCKETS])
@@ -60,7 +60,8 @@ changequote([,])dnl
 #endif
 #include <unistd.h>
 #include <errno.h>
-]],[[
+]GL_MDA_DEFINES],
+[[
   fd_set set;
   dup2(0, 16);
   FD_ZERO(&set);
@@ -76,6 +77,8 @@ changequote([,])dnl
            case "$host_os" in
                              # Guess yes on Linux systems.
             linux-* | linux) gl_cv_func_select_detects_ebadf="guessing yes" ;;
+                             # Guess yes on systems that emulate the Linux system calls.
+            midipix*)        gl_cv_func_select_detects_ebadf="guessing yes" ;;
                              # Guess yes on glibc systems.
             *-gnu* | gnu*)   gl_cv_func_select_detects_ebadf="guessing yes" ;;
                              # If we don't know, obey --enable-cross-guesses.
@@ -90,7 +93,7 @@ changequote([,])dnl
   fi
 
   dnl Determine the needed libraries.
-  LIB_SELECT="$LIBSOCKET"
+  SELECT_LIB="$LIBSOCKET"
   if test $REPLACE_SELECT = 1; then
     case "$host_os" in
       mingw*)
@@ -108,9 +111,12 @@ main ()
   return 0;
 }]])],
           [],
-          [LIB_SELECT="$LIB_SELECT -luser32"])
+          [SELECT_LIB="$SELECT_LIB -luser32"])
         ;;
     esac
   fi
+  AC_SUBST([SELECT_LIB])
+  dnl For backward compatibility.
+  LIB_SELECT="$LIB_SELECT"
   AC_SUBST([LIB_SELECT])
 ])

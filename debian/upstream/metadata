@@ -1,6 +1,6 @@
-Bug-Database: https://savannah.nongnu.org/bugs/?group=man-db
-Bug-Submit: https://savannah.nongnu.org/bugs/?func=additem&group=man-db
-Changelog: https://git.savannah.gnu.org/cgit/man-db.git/tree/NEWS
-Repository: https://git.savannah.gnu.org/cgit/man-db.git
-Repository-Browse: https://git.savannah.gnu.org/cgit/man-db.git
+Bug-Database: https://gitlab.com/man-db/man-db/-/issues
+Bug-Submit: https://gitlab.com/man-db/man-db/-/issues/new
+Changelog: https://gitlab.com/man-db/man-db/-/blob/main/NEWS.md
+Repository: https://gitlab.com/man-db/man-db.git
+Repository-Browse: https://gitlab.com/man-db/man-db
 Security-Contact: Colin Watson <cjwatson@debian.org>

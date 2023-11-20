@@ -1,6 +1,6 @@
 /*
  * zsoelim_main.c: eliminate .so includes within *roff source
- *  
+ *
  * Copyright (C) 1994, 1995 Graeme W. Wilford. (Wilf.)
  * Copyright (C) 1997 Fabrizio Polacco.
  * Copyright (C) 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2010
@@ -31,8 +31,11 @@
 #include <stdlib.h>
 
 #include "argp.h"
+#include "attribute.h"
+#include "error.h"
 #include "gl_list.h"
 #include "progname.h"
+#include "xalloc.h"
 #include "xvasprintf.h"
 
 #include "gettext.h"
@@ -42,11 +45,12 @@
 #include "manconfig.h"
 
 #include "cleanup.h"
-#include "error.h"
+#include "debug.h"
 #include "pipeline.h"
-#include "decompress.h"
 #include "sandbox.h"
+#include "util.h"
 
+#include "decompress.h"
 #include "manp.h"
 #include "zsoelim.h"
 
@@ -65,13 +69,13 @@ error_t argp_err_exit_status = FAIL;
 static const char args_doc[] = N_("FILE...");
 
 static struct argp_option options[] = {
-	{ "debug",	'd',	0,	0,	N_("emit debugging messages") },
-	{ "compatible",	'C',	0,	0,	N_("compatibility switch (ignored)"),	1 },
-	{ 0, 'h', 0, OPTION_HIDDEN, 0 }, /* compatibility for --help */
+	OPT ("debug", 'd', 0, N_("emit debugging messages")),
+	OPT ("compatible", 'C', 0, N_("compatibility switch (ignored)"), 1),
+	OPT_HELP_COMPAT,
 	{ 0 }
 };
 
-static error_t parse_opt (int key, char *arg _GL_UNUSED,
+static error_t parse_opt (int key, char *arg MAYBE_UNUSED,
 			  struct argp_state *state)
 {
 	switch (key) {

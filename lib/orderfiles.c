@@ -44,10 +44,12 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "attribute.h"
 #include "gl_hash_map.h"
 #include "gl_rbtree_list.h"
 #include "gl_xlist.h"
 #include "gl_xmap.h"
+#include "xalloc.h"
 
 #include "manconfig.h"
 
@@ -104,7 +106,7 @@ void order_files (const char *dir, gl_list_t *basenamesp)
 	physical_offsets = gl_map_create_empty (GL_HASH_MAP, string_equals,
 						string_hash, NULL, plain_free);
 	sorted_basenames = new_string_list (GL_RBTREE_LIST, false);
-	GL_LIST_FOREACH_START (basenames, name) {
+	GL_LIST_FOREACH (basenames, name) {
 		struct {
 			struct fiemap fiemap;
 			struct fiemap_extent extent;
@@ -134,7 +136,7 @@ void order_files (const char *dir, gl_list_t *basenamesp)
 		close (fd);
 		gl_sortedlist_add (sorted_basenames, compare_physical_offsets,
 				   xstrdup (name));
-	} GL_LIST_FOREACH_END (basenames);
+	}
 	gl_map_free (physical_offsets);
 	physical_offsets = NULL;
 	close (dir_fd);
@@ -160,18 +162,19 @@ void order_files (const char *dir, gl_list_t *basenamesp)
 	/* While we can't actually order the files, we can at least ask the
 	 * kernel to preload them.
 	 */
-	GL_LIST_FOREACH_START (basenames, name) {
+	GL_LIST_FOREACH (basenames, name) {
 		int fd = openat (dir_fd, name, O_RDONLY | O_NONBLOCK);
 		if (fd >= 0) {
 			posix_fadvise (fd, 0, 0, POSIX_FADV_WILLNEED);
 			close (fd);
 		}
-	} GL_LIST_FOREACH_END (basenames);
+	}
 
 	close (dir_fd);
 }
 #else
-void order_files (const char *dir _GL_UNUSED, gl_list_t *basenamesp _GL_UNUSED)
+void order_files (const char *dir MAYBE_UNUSED,
+		  gl_list_t *basenamesp MAYBE_UNUSED)
 {
 }
 #endif

@@ -26,22 +26,24 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <assert.h>
-
-#include "gettext.h"
-#include "localcharset.h"
 #include <locale.h>
 #include <ctype.h>
 
+#include "attribute.h"
+#include "gettext.h"
+#include "localcharset.h"
+#include "xalloc.h"
+#include "xstrndup.h"
+
 #include "manconfig.h"
 
-#include "pathsearch.h"
-#include "pipeline.h"
-
+#include "debug.h"
 #include "encodings.h"
+#include "pathsearch.h"
 
 
 /* Due to historical limitations in groff (which may be removed in the
@@ -323,59 +325,6 @@ static struct less_charset_entry less_charset_table[] = {
 
 static const char fallback_less_charset[] = "iso8859";
 
-/* Encoding conversions from groff-1.20/src/preproc/preconv/preconv.cpp.
- * I've only included those not already recognised by GNU libiconv.
- */
-struct conversion_entry {
-	const char *from;
-	const char *to;
-};
-
-static struct conversion_entry conversion_table[] = {
-	{ "chinese-big5",			"Big5" },
-	{ "chinese-euc",			"GB2312" },
-	{ "chinese-iso-8bit",			"GB2312" },
-	{ "cn-gb-2312",				"GB2312" },
-	{ "cp878",				"KOI8-R" },
-	{ "cyrillic-iso-8bit",			"ISO-8859-5" },
-	{ "cyrillic-koi8",			"KOI8-R" },
-	{ "euc-china",				"GB2312" },
-	{ "euc-japan",				"EUC-JP" },
-	{ "euc-japan-1990",			"EUC-JP" },
-	{ "euc-kr",				"EUC-KR" },
-	{ "greek-iso-8bit",			"ISO-8859-7" },
-	{ "iso-latin-1",			"ISO-8859-1" },
-	{ "iso-latin-2",			"ISO-8859-2" },
-	{ "iso-latin-5",			"ISO-8859-9" },
-	{ "iso-latin-7",			"ISO-8859-13" },
-	{ "iso-latin-9",			"ISO-8859-15" },
-	{ "japanese-iso-8bit",			"EUC-JP" },
-	{ "japanese-euc",			"EUC-JP" },
-	{ "jis8",				"EUC-JP" },
-	{ "korean-euc",				"EUC-KR" },
-	{ "korean-iso-8bit",			"EUC-KR" },
-	{ "latin-0",				"ISO-8859-15" },
-	{ "latin-1",				"ISO-8859-1" },
-	{ "latin-2",				"ISO-8859-2" },
-	{ "latin-5",				"ISO-8859-9" },
-	{ "latin-7",				"ISO-8859-13" },
-	{ "mule-utf-16",			"UTF-16" },
-	{ "mule-utf-16be",			"UTF-16BE" },
-	{ "mule-utf-16-be",			"UTF-16BE" },
-	{ "mule-utf-16be-with-signature",	"UTF-16" },
-	{ "mule-utf-16le",			"UTF-16LE" },
-	{ "mule-utf-16-le",			"UTF-16LE" },
-	{ "mule-utf-16le-with-signature",	"UTF-16" },
-	{ "mule-utf-8",				"UTF-8" },
-	{ "utf-16-be",				"UTF-16BE" },
-	{ "utf-16be-with-signature",		"UTF-16" },
-	{ "utf-16-be-with-signature",		"UTF-16" },
-	{ "utf-16-le",				"UTF-16LE" },
-	{ "utf-16le-with-signature",		"UTF-16" },
-	{ "utf-16-le-with-signature",		"UTF-16" },
-	{ NULL,					NULL }
-};
-
 const char *groff_preconv = NULL;
 
 /* Is the groff "preconv" helper available? If so, return its name.
@@ -409,7 +358,7 @@ const char *get_groff_preconv (void)
  *
  * The caller should free the returned string when it is finished with it.
  */
-char * _GL_ATTRIBUTE_MALLOC get_page_encoding (const char *lang)
+char * ATTRIBUTE_MALLOC get_page_encoding (const char *lang)
 {
 	const struct directory_entry *entry;
 	const char *dot;
@@ -522,7 +471,8 @@ const char *get_source_encoding (const char *lang)
 	return fallback_source_encoding;
 }
 
-const char *get_canonical_charset_name (const char *charset)
+const char * ATTRIBUTE_NONNULL ((1)) ATTRIBUTE_RETURNS_NONNULL
+	get_canonical_charset_name (const char *charset)
 {
 	const struct charset_alias_entry *entry;
 	char *charset_upper = xstrdup (charset);
@@ -542,7 +492,7 @@ const char *get_canonical_charset_name (const char *charset)
 }
 
 /* Return the current locale's character set. */
-const char *get_locale_charset (void)
+const char * ATTRIBUTE_RETURNS_NONNULL get_locale_charset (void)
 {
 	const char *charset;
 	char *saved_locale;
@@ -562,10 +512,9 @@ const char *get_locale_charset (void)
 	setlocale (LC_CTYPE, saved_locale);
 	free (saved_locale);
 
-	if (charset && *charset)
-		return get_canonical_charset_name (charset);
-	else
-		return NULL;
+	if (!charset || !*charset)
+		charset = "ANSI_X3.4-1968";
+	return get_canonical_charset_name (charset);
 }
 
 /* Find a locale with this character set. This is a non-portable operation,
@@ -641,7 +590,8 @@ out:
 
 /* Can we take this input encoding and produce this output encoding, perhaps
  * with the help of some iconv pipes? */
-static bool compatible_encodings (const char *input, const char *output)
+static bool ATTRIBUTE_PURE compatible_encodings (const char *input,
+						 const char *output)
 {
 	if (STREQ (input, output))
 		return true;
@@ -724,7 +674,7 @@ const char *get_default_device (const char *charset_from_locale,
 }
 
 /* Is this a known *roff device name? */
-bool _GL_ATTRIBUTE_PURE is_roff_device (const char *device)
+bool ATTRIBUTE_PURE is_roff_device (const char *device)
 {
 	const struct device_entry *entry;
 
@@ -784,7 +734,7 @@ const char *get_roff_encoding (const char *device, const char *source_encoding)
 /* Find the output encoding that this device will produce, or NULL if it
  * will simply pass through the input encoding.
  */
-const char * _GL_ATTRIBUTE_PURE get_output_encoding (const char *device)
+const char * ATTRIBUTE_PURE get_output_encoding (const char *device)
 {
 	const struct device_entry *entry;
 
@@ -796,8 +746,7 @@ const char * _GL_ATTRIBUTE_PURE get_output_encoding (const char *device)
 }
 
 /* Return the value of LESSCHARSET appropriate for this locale. */
-const char * _GL_ATTRIBUTE_PURE get_less_charset (
-	const char *charset_from_locale)
+const char * ATTRIBUTE_PURE get_less_charset (const char *charset_from_locale)
 {
 	const struct less_charset_entry *entry;
 
@@ -815,8 +764,7 @@ const char * _GL_ATTRIBUTE_PURE get_less_charset (
 /* Return the value of JLESSCHARSET appropriate for this locale. May return
  * NULL.
  */
-const char * _GL_ATTRIBUTE_PURE get_jless_charset (
-	const char *charset_from_locale)
+const char * ATTRIBUTE_PURE get_jless_charset (const char *charset_from_locale)
 {
 	const struct less_charset_entry *entry;
 
@@ -829,105 +777,4 @@ const char * _GL_ATTRIBUTE_PURE get_jless_charset (
 	}
 
 	return NULL;
-}
-
-/* Convert Emacs-style coding tags to ones that libiconv understands. */
-static char *convert_encoding (char *encoding)
-{
-	size_t encoding_len = strlen (encoding);
-	const struct conversion_entry *entry;
-
-#define STRIP(s, l) do { \
-	if (encoding_len > (l) && \
-	    !strcasecmp (encoding + encoding_len - (l), (s))) \
-		encoding[encoding_len - (l)] = '\0'; \
-} while (0)
-
-	STRIP ("-dos", 4);
-	STRIP ("-mac", 4);
-	STRIP ("-unix", 5);
-
-#undef STRIP
-
-	for (entry = conversion_table; entry->from; ++entry)
-		if (!strcasecmp (entry->from, encoding)) {
-			free (encoding);
-			return xstrdup (entry->to);
-		}
-
-	return encoding;
-}
-
-/* Inspect the first line of data in a pipeline for preprocessor encoding
- * declarations.
- *
- * If to_encoding and modified_line are both non-NULL, and if the encoding
- * declaration in the input does not match to_encoding, then return an
- * encoding declaration line modified to refer to the given to_encoding in
- * *modified_line.  The caller should free *modified_line.
- */
-char *check_preprocessor_encoding (pipeline *p, const char *to_encoding,
-				   char **modified_line)
-{
-	char *pp_encoding = NULL;
-	const char *line = pipeline_peekline (p);
-	const char *directive = NULL, *directive_end, *pp_search;
-	size_t pp_encoding_len = 0;
-
-	/* Some people use .\" incorrectly. We allow it for encoding
-	 * declarations but not for preprocessor declarations.
-	 */
-	if (line &&
-	    (STRNEQ (line, PP_COOKIE, 4) || STRNEQ (line, ".\\\" ", 4))) {
-		const char *newline = strchr (line, '\n');
-
-		directive = line + 4;
-		directive_end = newline ? newline : strchr (directive, '\0');
-		pp_search = memmem (directive, directive_end - directive,
-				    "-*-", 3);
-	}
-
-	if (directive && pp_search) {
-		pp_search += 3;
-		while (pp_search && pp_search < directive_end && *pp_search) {
-			while (*pp_search == ' ')
-				++pp_search;
-			if (STRNEQ (pp_search, "coding:", 7)) {
-				const char *pp_encoding_allow;
-				pp_search += 7;
-				while (*pp_search == ' ')
-					++pp_search;
-				pp_encoding_allow = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-						    "abcdefghijklmnopqrstuvwxyz"
-						    "0123456789-_/:.()";
-				pp_encoding_len = strspn (pp_search,
-							  pp_encoding_allow);
-				pp_encoding = xstrndup (pp_search,
-							pp_encoding_len);
-				pp_encoding = convert_encoding (pp_encoding);
-				debug ("preprocessor encoding: %s\n",
-				       pp_encoding);
-				break;
-			} else {
-				pp_search = memchr (pp_search, ';',
-						    directive_end - pp_search);
-				if (pp_search)
-					++pp_search;
-			}
-		}
-	}
-
-	if (to_encoding && modified_line &&
-	    pp_encoding && strcasecmp (pp_encoding, to_encoding)) {
-		assert (directive_end);
-		assert (pp_search);
-		*modified_line = xasprintf
-			("%.*s%s%.*s\n",
-			 (int) (pp_search - line), line,
-			 to_encoding,
-			 (int) (directive_end - (pp_search + pp_encoding_len)),
-			 pp_search + pp_encoding_len);
-	}
-
-	return pp_encoding;
 }

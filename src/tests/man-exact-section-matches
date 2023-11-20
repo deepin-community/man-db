@@ -3,7 +3,8 @@
 # Test for:
 #   https://bugzilla.redhat.com/show_bug.cgi?id=684977
 
-: ${srcdir=.}
+: "${srcdir=.}"
+# shellcheck source-path=SCRIPTDIR
 . "$srcdir/testlib.sh"
 
 case $MANDIR_LAYOUT in
@@ -14,7 +15,7 @@ case $MANDIR_LAYOUT in
 		;;
 esac
 
-: ${MAN=man}
+: "${MAN=man}"
 
 init
 fake_config /usr/share/man
@@ -23,7 +24,7 @@ export MANPATH
 
 # Force default section order.
 cat >>"$tmpdir/manpath.config" <<EOF
-SECTION 1 n l 8 3 0 2 5 4 9 6 7
+SECTION 1 n l 8 3 0 2 3type 5 4 9 6 7
 EOF
 
 write_page md5sum 3pm "$tmpdir/usr/share/man/man3/open.3pm.gz" \
@@ -35,7 +36,6 @@ $abstmpdir/usr/share/man/man3p/open.3p.gz
 $abstmpdir/usr/share/man/man3/open.3pm.gz
 EOF
 run $MAN -C "$tmpdir/manpath.config" -aw 3p open >"$tmpdir/1.out"
-expect_pass 'exact section matches win' \
-	'diff -u "$tmpdir/1.exp" "$tmpdir/1.out"'
+expect_files_equal 'exact section matches win' "$tmpdir/1.exp" "$tmpdir/1.out"
 
 finish

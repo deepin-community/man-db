@@ -25,7 +25,7 @@ dist_noinst_DATA = README
 AM_CFLAGS = $(WARN_CFLAGS)
 
 libmandb_la_CPPFLAGS = \
-	-I$(top_builddir)/include \
+	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/gl/lib \
 	-I$(top_builddir)/gl/lib \
 	-I$(top_srcdir)/lib
@@ -43,7 +43,7 @@ libmandb_la_SOURCES = \
 	db_xdbm.h \
 	mydbm.h
 
-libmandb_la_LIBADD = ../lib/libman.la $(DBLIBS)
+libmandb_la_LIBADD = ../lib/libman.la $(DBLIBS) @LTLIBINTL@
 
 libmandb_la_LDFLAGS = \
 	-avoid-version -release $(VERSION) -rpath $(pkglibdir) -no-undefined

@@ -1,6 +1,6 @@
 /*
  * manpath.c: display either the manpath or catpath
- *  
+ *
  * Copyright (C) 1994, 1995 Graeme W. Wilford. (Wilf.)
  * Copyright (C) 2001, 2002 Colin Watson.
  *
@@ -20,7 +20,7 @@
  * along with man-db; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * Thu Nov 17 08:29:39 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk) 
+ * Thu Nov 17 08:29:39 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
  */
 
 #ifdef HAVE_CONFIG_H
@@ -36,6 +36,7 @@
 #include <limits.h>
 
 #include "argp.h"
+#include "error.h"
 #include "progname.h"
 
 #include "gettext.h"
@@ -44,7 +45,8 @@
 
 #include "manconfig.h"
 
-#include "error.h"
+#include "debug.h"
+#include "util.h"
 
 #include "manp.h"
 
@@ -60,13 +62,15 @@ const char *argp_program_bug_address = PACKAGE_BUGREPORT;
 error_t argp_err_exit_status = FAIL;
 
 static struct argp_option options[] = {
-	{ "catpath",		'c',	0,		0,	N_("show relative catpaths") },
-	{ "global",		'g',	0,		0,	N_("show the entire global manpath") },
-	{ "debug",		'd',	0,		0,	N_("emit debugging messages") },
-	{ "quiet",		'q',	0,		0,	N_("produce fewer warnings") },
-	{ "config-file",	'C',	N_("FILE"),	0,	N_("use this user configuration file") },
-	{ "systems",		'm',	N_("SYSTEM"),	0,	N_("use manual pages from other systems") },
-	{ 0, 'h', 0, OPTION_HIDDEN, 0 }, /* compatibility for --help */
+	OPT ("catpath", 'c', 0, N_("show relative catpaths")),
+	OPT ("global", 'g', 0, N_("show the entire global manpath")),
+	OPT ("debug", 'd', 0, N_("emit debugging messages")),
+	OPT ("quiet", 'q', 0, N_("produce fewer warnings")),
+	OPT ("config-file", 'C', N_("FILE"),
+	     N_("use this user configuration file")),
+	OPT ("systems", 'm', N_("SYSTEM"),
+	     N_("use manual pages from other systems")),
+	OPT_HELP_COMPAT,
 	{ 0 }
 };
 

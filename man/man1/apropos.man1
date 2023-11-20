@@ -3,7 +3,7 @@
 .\" Copyright (C), 1994, 1995, Graeme W. Wilford. (Wilf.)
 .\"
 .\" You may distribute under the terms of the GNU General Public
-.\" License as specified in the file COPYING that comes with the
+.\" License as specified in the file docs/COPYING.GPLv2 that comes with the
 .\" man-db distribution.
 .\"
 .\" Sat Oct 29 13:09:31 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
@@ -118,7 +118,7 @@ pages in that exact part of the manual section.
 .TP
 \fB\-m\fR \fIsystem\fR\|[\|,.\|.\|.\|]\|, \
 \fB\-\-systems=\fIsystem\fR\|[\|,.\|.\|.\|]
-If this system has access to other operating system's manual page
+If this system has access to other operating systems' manual page
 descriptions, they can be searched using this option.
 To search NewOS's manual page descriptions, use the option
 .B \-m
@@ -169,7 +169,7 @@ determined locale.
 .TP
 .BI \-C\  file \fR,\ \fB\-\-config\-file= file
 Use this user configuration file rather than the default of
-.IR ~/.manpath .
+.IR \(ti/.manpath .
 .TP
 .if !'po4a'hide' .BR \-? ", " \-\-help
 Print a help message and exit.
@@ -207,6 +207,13 @@ If
 .RB $ MANPATH
 is set, its value is interpreted as the colon-delimited manual page
 hierarchy search path to use.
+
+See the
+.B SEARCH PATH
+section of
+.BR manpath (5)
+for the default behaviour and details of how this environment variable is
+handled.
 .TP
 .if !'po4a'hide' .B MANWIDTH
 If
@@ -256,4 +263,6 @@ text database.
 .if !'po4a'hide' Colin Watson (cjwatson@debian.org).
 .fi
 .SH BUGS
+.if !'po4a'hide' https://gitlab.com/man-db/man-db/-/issues
+.br
 .if !'po4a'hide' https://savannah.nongnu.org/bugs/?group=man-db

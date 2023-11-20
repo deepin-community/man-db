@@ -1,6 +1,6 @@
 /*
  * mandb.c: used to create and initialise global man database.
- *  
+ *
  * Copyright (C) 1994, 1995 Graeme W. Wilford. (Wilf.)
  * Copyright (C) 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2010, 2011,
  *               2012 Colin Watson.
@@ -21,7 +21,7 @@
  * along with man-db; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * Tue Apr 26 12:56:44 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk) 
+ * Tue Apr 26 12:56:44 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
  *
  * CJW: Security fixes. Make --test work. Purge old database entries.
  */
@@ -49,6 +49,7 @@
 
 #include "argp.h"
 #include "dirname.h"
+#include "error.h"
 #include "gl_hash_map.h"
 #include "gl_list.h"
 #include "gl_xmap.h"
@@ -56,6 +57,7 @@
 #include "stat-time.h"
 #include "timespec.h"
 #include "utimens.h"
+#include "xalloc.h"
 #include "xgetcwd.h"
 #include "xvasprintf.h"
 
@@ -65,18 +67,21 @@
 
 #include "manconfig.h"
 
-#include "error.h"
 #include "cleanup.h"
+#include "debug.h"
+#include "filenames.h"
 #include "glcontainers.h"
 #include "pipeline.h"
 #include "sandbox.h"
 #include "security.h"
+#include "util.h"
 
+#include "db_storage.h"
 #include "mydbm.h"
 
 #include "check_mandirs.h"
-#include "filenames.h"
 #include "manp.h"
+#include "straycats.h"
 
 int quiet = 1;
 extern bool opt_test;		/* don't update db */
@@ -101,7 +106,7 @@ static const char *arg_manp;
 
 struct tried_catdirs_entry {
 	char *manpath;
-	int seen;
+	bool seen;
 };
 
 const char *argp_program_version = "mandb " PACKAGE_VERSION;
@@ -111,16 +116,21 @@ error_t argp_err_exit_status = FAIL;
 static const char args_doc[] = N_("[MANPATH]");
 
 static struct argp_option options[] = {
-	{ "debug",		'd',	0,		0,	N_("emit debugging messages") },
-	{ "quiet",		'q',	0,		0,	N_("work quietly, except for 'bogus' warning") },
-	{ "no-straycats",	's',	0,		0,	N_("don't look for or add stray cats to the dbs") },
-	{ "no-purge",		'p',	0,		0,	N_("don't purge obsolete entries from the dbs") },
-	{ "user-db",		'u',	0,		0,	N_("produce user databases only") },
-	{ "create",		'c',	0,		0,	N_("create dbs from scratch, rather than updating") },
-	{ "test",		't',	0,		0,	N_("check manual pages for correctness") },
-	{ "filename",		'f',	N_("FILENAME"),	0,	N_("update just the entry for this filename") },
-	{ "config-file",	'C',	N_("FILE"),	0,	N_("use this user configuration file") },
-	{ 0, 'h', 0, OPTION_HIDDEN, 0 }, /* compatibility for --help */
+	OPT ("debug", 'd', 0, N_("emit debugging messages")),
+	OPT ("quiet", 'q', 0, N_("work quietly, except for 'bogus' warning")),
+	OPT ("no-straycats", 's', 0,
+	     N_("don't look for or add stray cats to the dbs")),
+	OPT ("no-purge", 'p', 0,
+	     N_("don't purge obsolete entries from the dbs")),
+	OPT ("user-db", 'u', 0, N_("produce user databases only")),
+	OPT ("create", 'c', 0,
+	     N_("create dbs from scratch, rather than updating")),
+	OPT ("test", 't', 0, N_("check manual pages for correctness")),
+	OPT ("filename", 'f', N_("FILENAME"),
+	     N_("update just the entry for this filename")),
+	OPT ("config-file", 'C', N_("FILE"),
+	     N_("use this user configuration file")),
+	OPT_HELP_COMPAT,
 	{ 0 }
 };
 
@@ -301,8 +311,56 @@ static int xcopy (const char *from, const char *to)
 	return ret;
 }
 
-/* rename and chmod the database */
-static void finish_up (struct dbpaths *dbpaths)
+static void dbpaths_init (struct dbpaths *dbpaths,
+			  const char *base, const char *tmpbase)
+{
+#ifdef NDBM
+#  ifdef BERKELEY_DB
+	dbpaths->dbfile = xasprintf ("%s.db", base);
+	dbpaths->tmpdbfile = xasprintf ("%s.db", tmpbase);
+#  else /* !BERKELEY_DB NDBM */
+	dbpaths->dirfile = xasprintf ("%s.dir", base);
+	dbpaths->pagfile = xasprintf ("%s.pag", base);
+	dbpaths->tmpdirfile = xasprintf ("%s.dir", tmpbase);
+	dbpaths->tmppagfile = xasprintf ("%s.pag", tmpbase);
+#  endif /* BERKELEY_DB NDBM */
+#else /* !NDBM */
+	dbpaths->xfile = xstrdup (base);
+	dbpaths->xtmpfile = xstrdup (tmpbase);
+#endif /* NDBM */
+}
+
+static int dbpaths_copy_to_tmp (struct dbpaths *dbpaths)
+{
+#ifdef NDBM
+#  ifdef BERKELEY_DB
+	return xcopy (dbpaths->dbfile, dbpaths->tmpdbfile);
+#  else /* !BERKELEY_DB NDBM */
+	int ret = xcopy (dbpaths->dirfile, dbpaths->tmpdirfile);
+	if (ret < 0)
+		return ret;
+	return xcopy (dbpaths->pagfile, dbpaths->tmppagfile);
+#  endif /* BERKELEY_DB NDBM */
+#else /* !NDBM */
+	return xcopy (dbpaths->xfile, dbpaths->xtmpfile);
+#endif /* NDBM */
+}
+
+static void dbpaths_remove_tmp (struct dbpaths *dbpaths)
+{
+#ifdef NDBM
+#  ifdef BERKELEY_DB
+	check_remove (dbpaths->tmpdbfile);
+#  else /* !BERKELEY_DB NDBM */
+	check_remove (dbpaths->tmpdirfile);
+	check_remove (dbpaths->tmppagfile);
+#  endif /* BERKELEY_DB NDBM */
+#else /* !NDBM */
+	check_remove (dbpaths->xtmpfile);
+#endif /* NDBM */
+}
+
+static void dbpaths_rename_from_tmp (struct dbpaths *dbpaths)
 {
 #ifdef NDBM
 #  ifdef BERKELEY_DB
@@ -328,8 +386,8 @@ static void finish_up (struct dbpaths *dbpaths)
 }
 
 #ifdef MAN_OWNER
-/* change the owner of global man databases */
-static void do_chown (struct dbpaths *dbpaths)
+/* Change the owner of global man databases. */
+static void dbpaths_chown_if_possible (struct dbpaths *dbpaths)
 {
 #  ifdef NDBM
 #    ifdef BERKELEY_DB
@@ -344,54 +402,9 @@ static void do_chown (struct dbpaths *dbpaths)
 }
 #endif /* MAN_OWNER */
 
-/* Update a single file in an existing database. */
-static int update_one_file (const char *database,
-			    const char *manpath, const char *filename)
+/* Remove incomplete databases.  This is async-signal-safe. */
+static void dbpaths_unlink_tmp (struct dbpaths *dbpaths)
 {
-	MYDBM_FILE dbf;
-
-	dbf = MYDBM_RWOPEN (database);
-	if (dbf) {
-		struct mandata info;
-		char *manpage;
-
-		memset (&info, 0, sizeof (struct mandata));
-		manpage = filename_info (filename, &info, "");
-		if (info.name) {
-			dbdelete (dbf, info.name, &info);
-			purge_pointers (dbf, info.name);
-			free (info.name);
-		}
-		free (manpage);
-
-		test_manfile (dbf, filename, manpath);
-	}
-	MYDBM_CLOSE (dbf);
-
-	return 1;
-}
-
-/* dont actually create any dbs, just do an update */
-static int update_db_wrapper (const char *database,
-			      const char *manpath, const char *catpath)
-{
-	int amount;
-
-	if (single_filename)
-		return update_one_file (database, manpath, single_filename);
-
-	amount = update_db (database, manpath, catpath);
-	if (amount != EOF)
-		return amount;
-
-	return create_db (database, manpath, catpath);
-}
-
-/* remove incomplete databases */
-static void cleanup_sigsafe (void *arg)
-{
-	struct dbpaths *dbpaths = arg;
-
 #ifdef NDBM
 #  ifdef BERKELEY_DB
 	if (dbpaths->tmpdbfile)
@@ -408,11 +421,8 @@ static void cleanup_sigsafe (void *arg)
 #endif /* NDBM */
 }
 
-/* free database names */
-static void cleanup (void *arg)
+static void dbpaths_free_elements (struct dbpaths *dbpaths)
 {
-	struct dbpaths *dbpaths = arg;
-
 #ifdef NDBM
 #  ifdef BERKELEY_DB
 	free (dbpaths->dbfile);
@@ -431,7 +441,104 @@ static void cleanup (void *arg)
 	free (dbpaths->xtmpfile);
 	dbpaths->xfile = dbpaths->xtmpfile = NULL;
 #endif /* NDBM */
+}
+
+/* Reorganize a database by reading in all the items (assuming that the
+ * database layer provides them in sorted order) and writing them back out.
+ * This has the effect of giving the underlying database the best chance to
+ * produce deterministic output files based only on the set of items and not
+ * on their insertion order, although we may not be able to guarantee that
+ * for all database types.
+ */
+static void reorganize (const char *catpath, bool global_manpath MAYBE_UNUSED)
+{
+	char *dbname, *tmpdbname;
+	struct dbpaths *dbpaths;
+	MYDBM_FILE dbf, tmpdbf;
+	datum key;
+
+	dbname = mkdbname (catpath);
+	tmpdbname = xasprintf ("%s/%d", catpath, getpid ());
+	dbpaths = XZALLOC (struct dbpaths);
+	dbpaths_init (dbpaths, dbname, tmpdbname);
+	dbf = MYDBM_NEW (dbname);
+	tmpdbf = MYDBM_NEW (tmpdbname);
+	if (!MYDBM_RDOPEN (dbf) || dbver_rd (dbf)) {
+		debug ("Failed to open %s read-only\n", dbname);
+		goto out;
+	}
+	if (!MYDBM_CTRWOPEN (tmpdbf)) {
+		debug ("Failed to create %s\n", tmpdbname);
+		goto out;
+	}
+
+	key = MYDBM_FIRSTKEY (dbf);
+	while (MYDBM_DPTR (key)) {
+		datum content, nextkey;
+		int insert_status;
+
+		content = MYDBM_FETCH (dbf, key);
+		insert_status = MYDBM_INSERT (tmpdbf, key, content);
+		MYDBM_FREE_DPTR (content);
+		if (insert_status != 0) {
+			MYDBM_FREE_DPTR (key);
+			goto out;
+		}
+		nextkey = MYDBM_NEXTKEY (dbf, key);
+		MYDBM_FREE_DPTR (key);
+		key = nextkey;
+	}
+
+	dbpaths_rename_from_tmp (dbpaths);
+#ifdef MAN_OWNER
+	if (global_manpath)
+		dbpaths_chown_if_possible (dbpaths);
+#endif /* MAN_OWNER */
+
+out:
+	MYDBM_FREE (tmpdbf);
+	MYDBM_FREE (dbf);
+	dbpaths_unlink_tmp (dbpaths);
+	dbpaths_free_elements (dbpaths);
 	free (dbpaths);
+	free (tmpdbname);
+	free (dbname);
+}
+
+/* Update a single file in an existing database. */
+static int update_one_file (MYDBM_FILE dbf,
+			    const char *manpath, const char *filename)
+{
+	if (dbf->file || MYDBM_RWOPEN (dbf)) {
+		struct mandata *info;
+
+		info = filename_info (filename, quiet < 2);
+		if (info) {
+			dbdelete (dbf, info->name, info);
+			purge_pointers (dbf, info->name);
+		}
+		free_mandata_struct (info);
+
+		test_manfile (dbf, filename, manpath);
+	}
+
+	return 1;
+}
+
+/* dont actually create any dbs, just do an update */
+static int update_db_wrapper (MYDBM_FILE dbf,
+			      const char *manpath, const char *catpath)
+{
+	int amount;
+
+	if (single_filename)
+		return update_one_file (dbf, manpath, single_filename);
+
+	amount = update_db (dbf, manpath, catpath);
+	if (amount >= 0)
+		return amount;
+
+	return create_db (dbf, manpath, catpath);
 }
 
 #define CACHEDIR_TAG \
@@ -448,20 +555,20 @@ static int mandb (struct dbpaths *dbpaths,
 	char *database;
 	int amount;
 	char *dbname;
-	int should_create;
+	MYDBM_FILE dbf;
+	bool should_create;
 
 	dbname = mkdbname (catpath);
 	database = xasprintf ("%s/%d", catpath, getpid ());
-
-	if (!quiet) 
-		printf (_("Processing manual pages under %s...\n"), manpath);
+	dbf = MYDBM_NEW (database);
 
 	if (!STREQ (catpath, manpath)) {
 		char *cachedir_tag;
 		int fd;
-		int cachedir_tag_exists = 0;
+		bool cachedir_tag_exists = false;
 
 		cachedir_tag = xasprintf ("%s/CACHEDIR.TAG", catpath);
+		assert (cachedir_tag);
 		fd = open (cachedir_tag, O_RDONLY);
 		if (fd < 0) {
 			FILE *cachedir_tag_file;
@@ -470,12 +577,12 @@ static int mandb (struct dbpaths *dbpaths,
 				check_remove (cachedir_tag);
 			cachedir_tag_file = fopen (cachedir_tag, "w");
 			if (cachedir_tag_file) {
-				cachedir_tag_exists = 1;
+				cachedir_tag_exists = true;
 				fputs (CACHEDIR_TAG, cachedir_tag_file);
 				fclose (cachedir_tag_file);
 			}
 		} else {
-			cachedir_tag_exists = 1;
+			cachedir_tag_exists = true;
 			close (fd);
 		}
 		if (cachedir_tag_exists) {
@@ -486,71 +593,48 @@ static int mandb (struct dbpaths *dbpaths,
 		free (cachedir_tag);
 	}
 
-	should_create = (create || force_rescan || opt_test);
+	should_create = (create || opt_test);
 
-#ifdef NDBM
-#  ifdef BERKELEY_DB
-	dbpaths->dbfile = xasprintf ("%s.db", dbname);
-	free (dbname);
-	dbpaths->tmpdbfile = xasprintf ("%s.db", database);
-	if (!should_create) {
-		if (xcopy (dbpaths->dbfile, dbpaths->tmpdbfile) < 0)
-			should_create = 1;
-	}
-	if (should_create) {
-		check_remove (dbpaths->tmpdbfile);
-		amount = create_db (database, manpath, catpath);
-		if (amount < 0)
-			goto out;
-	} else {
-		amount = update_db_wrapper (database, manpath, catpath);
-		if (amount < 0)
-			goto out;
-	}
-#  else /* !BERKELEY_DB NDBM */
-	dbpaths->dirfile = xasprintf ("%s.dir", dbname);
-	dbpaths->pagfile = xasprintf ("%s.pag", dbname);
-	free (dbname);
-	dbpaths->tmpdirfile = xasprintf ("%s.dir", database);
-	dbpaths->tmppagfile = xasprintf ("%s.pag", database);
-	if (!should_create) {
-		if (xcopy (dbpaths->dirfile, dbpaths->tmpdirfile) < 0 ||
-		    xcopy (dbpaths->pagfile, dbpaths->tmppagfile) < 0)
-			should_create = 1;
-	}
-	if (should_create) {
-		check_remove (dbpaths->tmpdirfile);
-		check_remove (dbpaths->tmppagfile);
-		amount = create_db (database, manpath, catpath);
-		if (amount < 0)
-			goto out;
-	} else {
-		amount = update_db_wrapper (database, manpath, catpath);
-		if (amount < 0)
-			goto out;
-	}
-#  endif /* BERKELEY_DB NDBM */
-#else /* !NDBM */
-	dbpaths->xfile = dbname; /* steal memory */
-	dbpaths->xtmpfile = xstrdup (database);
-	if (!should_create) {
-		if (xcopy (dbpaths->xfile, dbpaths->xtmpfile) < 0)
-			should_create = 1;
-	}
-	if (should_create) {
-		check_remove (dbpaths->xtmpfile);
-		amount = create_db (database, manpath, catpath);
-		if (amount < 0)
-			goto out;
-	} else {
-		amount = update_db_wrapper (database, manpath, catpath);
-		if (amount < 0)
-			goto out;
-	}
-#endif /* NDBM */
+	dbpaths_init (dbpaths, dbname, database);
+	if (!should_create && dbpaths_copy_to_tmp (dbpaths) < 0)
+		should_create = true;
+	if (should_create)
+		dbpaths_remove_tmp (dbpaths);
 
-out:
+	if (!should_create) {
+		force_rescan = false;
+		if (purge)
+			purged += purge_missing (dbf, manpath, catpath);
+
+		if (force_rescan) {
+			/* We have an existing database and hadn't been
+			 * going to recreate it, but purge_missing has
+			 * discovered some kind of consistency problem and
+			 * requested that we do so anyway.  Close the
+			 * database and remove temporary copies so that we
+			 * start from scratch.
+			 */
+			MYDBM_FREE (dbf);
+			dbpaths_remove_tmp (dbpaths);
+			dbf = MYDBM_NEW (database);
+			should_create = true;
+		}
+	}
+
+	if (!quiet)
+		printf (_("Processing manual pages under %s...\n"), manpath);
+
+	if (should_create)
+		amount = create_db (dbf, manpath, catpath);
+	else
+		amount = update_db_wrapper (dbf, manpath, catpath);
+
+	if (check_for_strays && dbf->file)
+		strays += straycats (dbf, manpath);
+
+	MYDBM_FREE (dbf);
 	free (database);
+	free (dbname);
 	return amount;
 }
 
@@ -560,9 +644,11 @@ static int process_manpath (const char *manpath, bool global_manpath,
 	char *catpath;
 	struct tried_catdirs_entry *tried;
 	struct stat st;
-	int run_mandb = 0;
+	bool run_mandb = false;
 	struct dbpaths *dbpaths = NULL;
 	int amount = 0;
+	bool new_purged = false;
+	bool new_strays = false;
 
 	if (global_manpath) { 	/* system db */
 		catpath = get_catpath (manpath, SYSTEM_CAT);
@@ -574,12 +660,12 @@ static int process_manpath (const char *manpath, bool global_manpath,
 	}
 	tried = XMALLOC (struct tried_catdirs_entry);
 	tried->manpath = xstrdup (manpath);
-	tried->seen = 0;
+	tried->seen = false;
 	gl_map_put (tried_catdirs, xstrdup (catpath), tried);
 
 	if (stat (manpath, &st) < 0 || !S_ISDIR (st.st_mode))
 		goto out;
-	tried->seen = 1;
+	tried->seen = true;
 
 	if (single_filename) {
 		/* The file might be in a per-locale subdirectory that we
@@ -588,50 +674,43 @@ static int process_manpath (const char *manpath, bool global_manpath,
 		char *manpath_prefix = xasprintf ("%s/man", manpath);
 		if (STRNEQ (manpath_prefix, single_filename,
 		    strlen (manpath_prefix)))
-			run_mandb = 1;
+			run_mandb = true;
 		free (manpath_prefix);
 	} else
-		run_mandb = 1;
-
-	force_rescan = false;
-	if (purge) {
-		char *database = mkdbname (catpath);
-		purged += purge_missing (database,
-					 manpath, catpath, run_mandb);
-		free (database);
-	}
+		run_mandb = true;
 
 	dbpaths = XZALLOC (struct dbpaths);
-	push_cleanup (cleanup, dbpaths, 0);
-	push_cleanup (cleanup_sigsafe, dbpaths, 1);
+	push_cleanup ((cleanup_fun) dbpaths_free_elements, dbpaths, 0);
+	push_cleanup ((cleanup_fun) dbpaths_unlink_tmp, dbpaths, 1);
 	if (run_mandb) {
+		int purged_before = purged;
+		int strays_before = strays;
 		int ret = mandb (dbpaths, catpath, manpath, global_manpath);
 		if (ret < 0) {
 			amount = ret;
 			goto out;
 		}
 		amount += ret;
-	}
+		new_purged = purged != purged_before;
+		new_strays = strays != strays_before;
 
-	if (!opt_test && amount)
-		finish_up (dbpaths);
+		if (!opt_test && (amount || new_purged || new_strays)) {
+			dbpaths_rename_from_tmp (dbpaths);
 #ifdef MAN_OWNER
-	if (global_manpath)
-		do_chown (dbpaths);
+			if (global_manpath)
+				dbpaths_chown_if_possible (dbpaths);
 #endif /* MAN_OWNER */
+			reorganize (catpath, global_manpath);
+		}
+	}
 
 out:
 	if (dbpaths) {
-		cleanup_sigsafe (dbpaths);
-		pop_cleanup (cleanup_sigsafe, dbpaths);
-		cleanup (dbpaths);
-		pop_cleanup (cleanup, dbpaths);
-	}
-
-	if (check_for_strays && amount > 0) {
-		char *database = mkdbname (catpath);
-		strays += straycats (database, manpath);
-		free (database);
+		dbpaths_unlink_tmp (dbpaths);
+		pop_cleanup ((cleanup_fun) dbpaths_unlink_tmp, dbpaths);
+		dbpaths_free_elements (dbpaths);
+		pop_cleanup ((cleanup_fun) dbpaths_free_elements, dbpaths);
+		free (dbpaths);
 	}
 
 	free (catpath);
@@ -639,7 +718,7 @@ out:
 	return amount;
 }
 
-static int is_lang_dir (const char *base)
+static bool is_lang_dir (const char *base)
 {
 	return strlen (base) >= 2 &&
 	       base[0] >= 'a' && base[0] <= 'z' &&
@@ -665,7 +744,7 @@ static void purge_catdir (gl_map_t tried_catdirs, const char *path)
 		if (!quiet)
 			printf (_("Removing obsolete cat directory %s...\n"),
 				path);
-		remove_directory (path, 1);
+		remove_directory (path, true);
 	}
 }
 
@@ -685,13 +764,15 @@ static void purge_catsubdirs (const char *manpath, const char *catpath)
 			continue;
 
 		mandir = xasprintf ("%s/man%s", manpath, ent->d_name + 3);
+		assert (mandir);
 		catdir = xasprintf ("%s/%s", catpath, ent->d_name);
+		assert (catdir);
 
 		if (stat (mandir, &st) != 0 && errno == ENOENT) {
 			if (!quiet)
 				printf (_("Removing obsolete cat directory "
 					  "%s...\n"), catdir);
-			remove_directory (catdir, 1);
+			remove_directory (catdir, true);
 		}
 
 		free (catdir);
@@ -718,7 +799,7 @@ static void purge_catdirs (gl_map_t tried_catdirs)
 	const char *path;
 	struct tried_catdirs_entry *tried;
 
-	GL_MAP_FOREACH_START (tried_catdirs, path, tried) {
+	GL_MAP_FOREACH (tried_catdirs, path, tried) {
 		char *base;
 		DIR *dir;
 		struct dirent *subdirent;
@@ -766,7 +847,7 @@ static void purge_catdirs (gl_map_t tried_catdirs)
 			free (subdirpath);
 		}
 		closedir (dir);
-	} GL_MAP_FOREACH_END (tried_catdirs);
+	}
 }
 
 int main (int argc, char *argv[])
@@ -775,9 +856,7 @@ int main (int argc, char *argv[])
 	int amount = 0;
 	char *mp;
 	gl_map_t tried_catdirs;
-#ifdef SIGPIPE
 	struct sigaction sa;
-#endif /* SIGPIPE */
 
 #ifdef __profile__
 	char *cwd;
@@ -790,7 +869,6 @@ int main (int argc, char *argv[])
 	sandbox = sandbox_init ();
 	init_locale ();
 
-#ifdef SIGPIPE
 	/* Reset SIGPIPE to its default disposition.  Too many broken pieces
 	 * of software (Python << 3.2, gnome-session, etc.) spawn child
 	 * processes with SIGPIPE ignored, and this produces noise in cron
@@ -801,7 +879,6 @@ int main (int argc, char *argv[])
 	sigemptyset (&sa.sa_mask);
 	sa.sa_flags = 0;
 	sigaction (SIGPIPE, &sa, NULL);
-#endif /* SIGPIPE */
 
 	if (argp_parse (&argp, argc, argv, 0, 0, 0))
 		exit (FAIL);
@@ -819,8 +896,15 @@ int main (int argc, char *argv[])
 
 #ifdef MAN_OWNER
 	man_owner = get_man_owner ();
-	if (!user && euid != 0 && euid != man_owner->pw_uid)
+	if (!user && euid != 0 && euid != man_owner->pw_uid) {
 		user = true;
+		if (!quiet)
+			fprintf (stderr,
+				 _("Only the '%s' user can create or update "
+				   "system-wide databases; acting as if the "
+				   "--user-db option was used.\n"),
+				 man_owner->pw_name);
+	}
 #endif /* MAN_OWNER */
 
 	read_config_file (user);
@@ -845,14 +929,14 @@ int main (int argc, char *argv[])
 	}
 
 	/* get the manpath as a list of pointers */
-	manpathlist = create_pathlist (manp); 
+	manpathlist = create_pathlist (manp);
 
 	/* finished manpath processing, regain privs */
 	regain_effective_privs ();
 
 	tried_catdirs = new_string_map (GL_HASH_MAP, tried_catdirs_free);
 
-	GL_LIST_FOREACH_START (manpathlist, mp) {
+	GL_LIST_FOREACH (manpathlist, mp) {
 		bool global_manpath = is_global_mandir (mp);
 		int ret;
 		DIR *dir;
@@ -888,6 +972,7 @@ int main (int argc, char *argv[])
 
 			subdirpath = xasprintf ("%s/%s", mp,
 						subdirent->d_name);
+			assert (subdirpath);
 			ret = process_manpath (subdirpath, global_manpath,
 					       tried_catdirs);
 			if (ret < 0)
@@ -901,9 +986,7 @@ int main (int argc, char *argv[])
 next_manpath:
 		if (!global_manpath)
 			regain_effective_privs ();
-
-		chkr_garbage_detector ();
-	} GL_LIST_FOREACH_END (manpathlist);
+	}
 
 	purge_catdirs (tried_catdirs);
 	gl_map_free (tried_catdirs);

@@ -1,6 +1,6 @@
 /*
  * globbing_test.c: test program for file-finding functions
- *  
+ *
  * Copyright (C) 1995 Graeme W. Wilford. (Wilf.)
  * Copyright (C) 2001, 2002, 2003, 2006, 2007, 2008 Colin Watson.
  *
@@ -25,11 +25,13 @@
 #  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "argp.h"
+#include "error.h"
 #include "gl_list.h"
 #include "progname.h"
 
@@ -38,8 +40,10 @@
 
 #include "manconfig.h"
 
-#include "error.h"
+#include "debug.h"
 #include "glcontainers.h"
+#include "util.h"
+
 #include "globbing.h"
 
 extern const char *extension;
@@ -55,13 +59,15 @@ error_t argp_err_exit_status = FAIL;
 static const char args_doc[] = N_("PATH SECTION NAME");
 
 static struct argp_option options[] = {
-	{ "debug",		'd',	0,			0,	N_("emit debugging messages") },
-	{ "extension",		'e',	N_("EXTENSION"),	0,	N_("limit search to extension type EXTENSION") },
-	{ "ignore-case",	'i',	0,			0,	N_("look for pages case-insensitively (default)") },
-	{ "match-case",		'I',	0,			0,	N_("look for pages case-sensitively") },
-	{ "regex",		'r',	0,			0,	N_("interpret page name as a regex") },
-	{ "wildcard",		'w',	0,			0,	N_("the page name contains wildcards") },
-	{ 0, 'h', 0, OPTION_HIDDEN, 0 }, /* compatibility for --help */
+	OPT ("debug", 'd', 0, N_("emit debugging messages")),
+	OPT ("extension", 'e', N_("EXTENSION"),
+	     N_("limit search to extension type EXTENSION")),
+	OPT ("ignore-case", 'i', 0,
+	     N_("look for pages case-insensitively (default)")),
+	OPT ("match-case", 'I', 0, N_("look for pages case-sensitively")),
+	OPT ("regex", 'r', 0, N_("interpret page name as a regex")),
+	OPT ("wildcard", 'w', 0, N_("the page name contains wildcards")),
+	OPT_HELP_COMPAT,
 	{ 0 }
 };
 
@@ -95,6 +101,9 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 				argp_usage (state);
 			remaining_args = state->argv + state->next;
 			return 0;
+		case ARGP_KEY_NO_ARGS:
+			argp_usage (state);
+			break;
 	}
 	return ARGP_ERR_UNKNOWN;
 }
@@ -112,19 +121,19 @@ int main (int argc, char **argv)
 
 	if (argp_parse (&argp, argc, argv, 0, 0, 0))
 		exit (FAIL);
+	assert (remaining_args);
 
 	for (i = 0; i <= 1; i++) {
 		gl_list_t files;
 		const char *file;
 
 		files = look_for_file (remaining_args[0], remaining_args[1],
-				       remaining_args[2], i,
+				       remaining_args[2], (bool) i,
 				       (match_case ? LFF_MATCHCASE : 0) |
 				       (regex_opt ? LFF_REGEX : 0) |
 				       (wildcard ? LFF_WILDCARD : 0));
-		GL_LIST_FOREACH_START (files, file)
+		GL_LIST_FOREACH (files, file)
 			printf ("%s\n", file);
-		GL_LIST_FOREACH_END (files);
 		gl_list_free (files);
 	}
 	return 0;

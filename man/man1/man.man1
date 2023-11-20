@@ -6,7 +6,7 @@
 .\" Copyright (C) 2001-2019 Colin Watson.
 .\"
 .\" You may distribute under the terms of the GNU General Public
-.\" License as specified in the file COPYING that comes with the
+.\" License as specified in the file docs/COPYING.GPLv2 that comes with the
 .\" man-db distribution.
 .\"
 .\" Sat Oct 29 13:09:31 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
@@ -113,7 +113,7 @@ Games
 T}
 7@T{
 Miscellaneous (including macro packages and conventions),
-e.g.\& \fBman\fR(7), \fBgroff\fR(7)
+e.g.\& \fBman\fR(7), \fBgroff\fR(7), \fBman\-pages\fR(7)
 T}
 8@T{
 System administration commands (usually only for root)
@@ -139,7 +139,7 @@ Conventional section names include
 .BR ENVIRONMENT ,
 .BR FILES ,
 .BR VERSIONS ,
-.BR CONFORMING\ TO ,
+.BR STANDARDS ,
 .BR NOTES ,
 .BR BUGS ,
 .BR EXAMPLE ,
@@ -413,7 +413,7 @@ previous argument value.
 .TP
 .BI \-C\  file \fR,\ \fB\-\-config\-file= file
 Use this user configuration file rather than the default of
-.IR ~/.manpath .
+.IR \(ti/.manpath .
 .TP
 .if !'po4a'hide' .BR \-d ", " \-\-debug
 Print debugging information.
@@ -436,13 +436,19 @@ pages.
 .I warnings
 is a comma-separated list of warning names; if it is not supplied, the
 default is "mac".
+To disable a
+.I groff
+warning, prefix it with "!": for example,
+.B \-\-warnings=mac,!break
+enables warnings in the "mac" category and disables warnings in the "break"
+category.
 See the \(lqWarnings\(rq node in
 .B info groff
 for a list of available warning names.
 .SS "Main modes of operation"
 .TP
 .if !'po4a'hide' .BR \-f ", " \-\-whatis
-Equivalent to
+Approximately equivalent to
 .BR %whatis% .
 Display a short description from the manual page, if available.
 See
@@ -450,7 +456,7 @@ See
 for details.
 .TP
 .if !'po4a'hide' .BR \-k ", " \-\-apropos
-Equivalent to
+Approximately equivalent to
 .BR %apropos% .
 Search the short manual page descriptions for keywords and display any
 matches.
@@ -471,7 +477,8 @@ option is used.
 Note that this searches the
 .I sources
 of the manual pages, not the rendered text, and so may include false
-positives due to things like comments in source files.
+positives due to things like comments in source files, or false negatives
+due to things like hyphens being written as "\e-" in source files.
 Searching the rendered text would be much slower.
 .TP
 .if !'po4a'hide' .BR \-l ", " \-\-local\-file
@@ -485,10 +492,12 @@ correct format.
 .\" usual filters.
 No cat file is produced.
 If '\-' is listed as one of the arguments, input will be taken from stdin.
-When this option is not used, and man fails to find the page required,
-before displaying the error message, it attempts to act as if this
-option was supplied, using the name as a filename and looking for an
-exact match.
+.IP
+If this option is not used, then
+.B %man%
+will also fall back to interpreting manual page arguments as local file
+names if the argument contains a "/" character, since that is a good
+indication that the argument refers to a path on the file system.
 .TP
 .if !'po4a'hide' .BR \-w ", " \-\-where ", " \-\-path ", " \-\-location
 Don't actually display the manual page, but do print the location of the
@@ -562,7 +571,7 @@ determined locale.
 .TP
 \fB\-m\fR \fIsystem\fR\|[\|,.\|.\|.\|]\|, \
 \fB\-\-systems=\fIsystem\fR\|[\|,.\|.\|.\|]
-If this system has access to other operating system's manual pages, they can
+If this system has access to other operating systems' manual pages, they can
 be accessed using this option.
 To search for a manual page from NewOS's manual page collection,
 use the option
@@ -1068,6 +1077,13 @@ At least one of the pages/files/keywords didn't exist or wasn't matched.
 If
 .RB $ MANPATH
 is set, its value is used as the path to search for manual pages.
+
+See the
+.B SEARCH PATH
+section of
+.BR manpath (5)
+for the default behaviour and details of how this environment variable is
+handled.
 .TP
 .if !'po4a'hide' .B MANROFFOPT
 Every time
@@ -1219,6 +1235,26 @@ However, some users want to see them anyway, so, if
 .RB $ MAN_KEEP_STDERR
 is set to any non-empty value, error output will be displayed as usual.
 .TP
+.if !'po4a'hide' .B MAN_DISABLE_SECCOMP
+On Linux,
+.B %man%
+normally confines subprocesses that handle untrusted data using a
+.BR seccomp (2)
+sandbox.
+This makes it safer to run complex parsing code over arbitrary manual pages.
+If this goes wrong for some reason unrelated to the content of the page
+being displayed, you can set
+.RB $ MAN_DISABLE_SECCOMP
+to any non-empty value to disable the sandbox.
+.TP
+.if !'po4a'hide' .B PIPELINE_DEBUG
+If the
+.RB $ PIPELINE_DEBUG
+environment variable is set to "1", then
+.B %man%
+will print debugging messages to standard error describing each subprocess
+it runs.
+.TP
 .if !'po4a'hide' .BR LANG , " LC_MESSAGES"
 Depending on system and implementation, either or both of
 .RB $ LANG
@@ -1237,6 +1273,8 @@ man-db configuration file.
 .TP
 .if !'po4a'hide' .I /usr/share/man
 A global manual page hierarchy.
+.SH STANDARDS
+POSIX.1\-2001, POSIX.1\-2008, POSIX.1\-2017.
 .SH "SEE ALSO"
 .if !'po4a'hide' .BR %apropos% (1),
 .if !'po4a'hide' .BR groff (1),
@@ -1271,4 +1309,6 @@ help of all the community.
 31st March 2001 \(en present day: Colin Watson <cjwatson@debian.org> is now
 developing and maintaining man-db.
 .SH BUGS
+.if !'po4a'hide' https://gitlab.com/man-db/man-db/-/issues
+.br
 .if !'po4a'hide' https://savannah.nongnu.org/bugs/?group=man-db

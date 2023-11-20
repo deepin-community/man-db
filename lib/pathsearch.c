@@ -24,6 +24,8 @@
 #  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <assert.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
@@ -32,10 +34,16 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "gettext.h"
+#define _(String) gettext (String)
+
+#include "xalloc.h"
 #include "xgetcwd.h"
 #include "xvasprintf.h"
 
 #include "manconfig.h"
+
+#include "fatal.h"
 #include "pathsearch.h"
 
 static bool pathsearch (const char *name, const mode_t bits)
@@ -70,10 +78,14 @@ static bool pathsearch (const char *name, const mode_t bits)
 		if (!*element) {
 			if (!cwd)
 				cwd = xgetcwd ();
+			if (!cwd)
+				fatal (errno,
+				       _("can't determine current directory"));
 			element = cwd;
 		}
 
 		filename = xasprintf ("%s/%s", element, name);
+		assert (filename);
 		if (stat (filename, &st) == -1) {
 			free (filename);
 			continue;
@@ -116,6 +128,9 @@ bool directory_on_path (const char *dir)
 		if (!*element) {
 			if (!cwd)
 				cwd = xgetcwd ();
+			if (!cwd)
+				fatal (errno,
+				       _("can't determine current directory"));
 			element = cwd;
 		}
 

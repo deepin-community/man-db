@@ -1,3 +1,3648 @@
+2023-09-23  Colin Watson  <cjwatson@debian.org>
+
+	Release man-db 2.12.0
+
+2023-09-19  Colin Watson  <cjwatson@debian.org>
+
+	systemd: Avoid duplicate cleanup of old cat pages
+
+	Thanks to Ferenc Wágner.  Fixes https://bugs.debian.org/1052221.
+
+	* init/systemd/man-db.service.in: Remove call to `find`; this is already
+	handled equivalently by `init/systemd/man-db.conf.in`, and having both
+	can result in error messages due to the two cleanups running
+	concurrently.
+	* NEWS.md: Document this.
+
+2023-08-20  Colin Watson  <cjwatson@debian.org>
+
+	bootstrap: Make --skip-po disable Gnulib downloads too
+
+	Fixes https://bugs.debian.org/1050089.
+
+	* bootstrap.conf: If the `--skip-po` option is explicitly passed, then
+	don't pass `--po-base` or `--po-domain` options to `gnulib-tool`, and
+	don't merge `gl/ref-po/` into `gl/po/`.
+
+2023-08-07  Colin Watson  <cjwatson@debian.org>
+
+	README.md: Update my copyright notice
+
+2023-08-07  Colin Watson  <cjwatson@debian.org>
+
+	Update URLs for libpipeline and flex
+
+	* NEWS.md, docs/INSTALL.quick: Update libpipeline URLs to
+	<https://libpipeline.gitlab.io/libpipeline/>.
+	* docs/INSTALL.quick: Update flex URL to
+	<https://github.com/westes/flex>.
+
+2023-08-07  Colin Watson  <cjwatson@debian.org>
+
+	Update to Gnulib stable-202307 as of 20230728
+
+	* bootstrap.conf (GNULIB_REVISION): Set to
+	d1b40e09c9c04d5c1ff120373397c6180bc16beb.
+
+2023-08-07  Colin Watson  <cjwatson@debian.org>
+
+	Update syscall lists from systemd ab9617a766
+
+	* lib/sandbox.c (make_seccomp_filter): Add `futex_waitv`,
+	`riscv_hwprobe`, and `arm_fadvise64_64`.
+
+2023-08-07  Petr Pisar  <petr.pisar@atlas.cz>
+
+	Update Czech translation
+
+	* po/cs.po: Update from Translation Project.
+
+2023-08-07  Mario Blättermann  <mario.blaettermann@gmail.com>
+
+	Update German manual page translation
+
+	* man/po4a/po/de.po: Update from Translation Project.
+
+2023-08-07  Boyuan Yang  <073plan@gmail.com>
+
+	Update Simplified Chinese manual page translation
+
+	* man/po4a/po/zh_CN.po: Update from Translation Project.
+
+2023-08-07  Boyuan Yang  <073plan@gmail.com>
+
+	Update Simplified Chinese translation
+
+	* po/zh_CN.po: Update from Translation Project.
+
+2023-08-07  Remus-Gabriel Chelu  <remusgabriel.chelu@disroot.org>
+
+	Update Romanian manual page translation
+
+	* man/po4a/po/ro.po: Update from Translation Project.
+
+2023-08-07  Seong-ho Cho  <darkcircle.0426@gmail.com>
+
+	Update Korean manual page translation
+
+	* man/po4a/po/ko.po: Update from Translation Project.
+
+2023-08-07  Seong-ho Cho  <darkcircle.0426@gmail.com>
+
+	Update Korean translation
+
+	* po/ko.po: Update from Translation Project.
+
+2023-08-06  Colin Watson  <cjwatson@debian.org>
+
+	Release man-db 2.12.0-pre2
+
+2023-08-06  Colin Watson  <cjwatson@debian.org>
+
+	Update translation files
+
+	* man/po4a/po/*.pot, man/po4a/po/*.po, po/*.pot, po/*.po: Update.
+
+2023-08-06  Remus-Gabriel Chelu  <remusgabriel.chelu@disroot.org>
+
+	Update Romanian manual page translation
+
+	* man/po4a/po/ro.po: Update from Translation Project.
+
+2023-08-06  Colin Watson  <cjwatson@debian.org>
+
+	man(1): Document handling of file names without -l more accurately
+
+	Fixes https://gitlab.com/man-db/man-db/-/issues/18.
+
+	* man/man1/man.man1: Without `-l`, we only fall back to interpreting
+	arguments as local file names if they contain a slash.  Explain this
+	more accurately.
+	* NEWS.md: Document this.
+
+2023-08-06  Colin Watson  <cjwatson@chiark.greenend.org.uk>
+
+	Merge branch 'cjwatson/man-negative-warnings' into 'main'
+
+	man: Allow disabling warnings enabled by default in groff
+
+	See merge request man-db/man-db!8
+
+2023-08-06  Colin Watson  <cjwatson@chiark.greenend.org.uk>
+
+	man: Allow disabling warnings enabled by default in groff
+
+2023-08-06  Colin Watson  <cjwatson@debian.org>
+
+	man(1): Fix typography in STANDARDS
+
+	Reported by Mario Blättermann.
+
+	* man/man/man.man1 (STANDARDS): Use `\-`, not a mix of Unicode hyphens
+	and unescaped ASCII hyphens.
+	* man/po4a/po/*.pot, man/po4a/po/*.po: Update.
+
+2023-08-06  Remus-Gabriel Chelu  <remusgabriel.chelu@disroot.org>
+
+	Update Romanian translation
+
+	* po/ro.po: Update from Translation Project.
+
+2023-08-06  Mario Blättermann  <mario.blaettermann@gmail.com>
+
+	Update German manual page translation
+
+	* man/po4a/po/de.po: Update from Translation Project.
+
+2023-08-06  Mario Blättermann  <mario.blaettermann@gmail.com>
+
+	Update German translation
+
+	* po/de.po: Update from Translation Project.
+
+2023-08-06  Yi-Jyun Pan  <pan93412@gmail.com>
+
+	Update Traditional Chinese translation
+
+	* po/zh_TW.po: Update from Translation Project.
+
+2023-08-06  Colin Watson  <cjwatson@debian.org>
+
+	Declare variable as const
+
+	* lib/util.c (init_locale): Declare `locale` as const.
+
+2023-08-06  Colin Watson  <cjwatson@chiark.greenend.org.uk>
+
+	Merge branch 'guess_manpath_fix' into 'main'
+
+	Fixed add_man_subdirs to correctly add PATH elements with trailing paths
+
+	See merge request man-db/man-db!10
+
+2023-08-06  Jan Seeger  <jan.seeger@thenybble.de>
+
+	Fixed add_man_subdirs to correctly add PATH elements with trailing paths
+
+2023-08-06  Colin Watson  <cjwatson@debian.org>
+
+	Release man-db 2.12.0-pre1
+
+	* man/po4a/po/*.pot, man/po4a/po/*.po, po/man-db.pot, po/*.po: Update.
+	* NEWS.md: Bump next version to 2.12.0.
+	* configure.ac: Update version and date.
+
+2023-08-06  Colin Watson  <cjwatson@debian.org>
+
+	Always pass a line length to nroff
+
+	Fixes https://bugs.debian.org/1041704.
+
+	* src/man.c (get_roff_line_length): Remove `line_length != 80`
+	condition.
+	* NEWS.md: Document this.
+
+2023-08-01  Colin Watson  <cjwatson@chiark.greenend.org.uk>
+
+	Merge branch 'branden-lexgrog-thinko' into 'main'
+
+	lexgrog.1: Fix thinko in my recent contribution
+
+	See merge request man-db/man-db!9
+
+2023-07-28  G. Branden Robinson  <g.branden.robinson@gmail.com>
+
+	lexgrog.1: Fix thinko in my recent contribution
+
+	In commit bbf7701c4f, 19 July, I got the sense of the tests that
+	governed the macro definitions backwards.  I fooled myself because I use
+	a more complex test in groff's an-ext.tmac file (written in a
+	non-intuitive way due to AT&T troff limitations) so that it's easy to
+	run groff's automated tests on them.
+
+2023-07-22  Colin Watson  <cjwatson@debian.org>
+
+	Ensure that time_t can go past 2038
+
+	* bootstrap.conf (gnulib_modules): Add `year2038-recommended`.
+	* NEWS.md: Document this.
+
+2023-07-22  Colin Watson  <cjwatson@debian.org>
+
+	man: Pass --regex/--wildcard on to whatis/apropos
+
+	Fixes https://gitlab.com/man-db/man-db/-/issues/13.
+
+	* src/man.c (do_extern): Pass `-r` or `-w` options to the external
+	program if necessary.
+	* man/man1/man.man1 (Main modes of operation): Document that `-f` and
+	`-k` are still only approximately equivalent to `whatis` and `apropos`
+	respectively (since `man` accepts slightly different options).
+	* NEWS.md: Document this.
+
+2023-07-22  Colin Watson  <cjwatson@debian.org>
+
+	Update pre-commit hooks
+
+	* .pre-commit-config.yaml (shellcheck-py): Update to v0.9.0.5.
+
+2023-07-22  Colin Watson  <cjwatson@debian.org>
+
+	Upgrade to Gnulib stable-202307
+
+	* bootstrap: Sync to Gnulib b7f7ed06961454cdf77b93c6c00c3e3f26202663.
+	* bootstrap.conf (GNULIB_REVISION): Set to
+	b7f7ed06961454cdf77b93c6c00c3e3f26202663.
+	* src/tests/Makefile.am (fspause_LDADD): Link with `$(NANOSLEEP_LIB)`
+	instead of `$(LIB_NANOSLEEP)`.
+	* NEWS.md: Document this.
+
+2023-07-21  Colin Watson  <cjwatson@debian.org>
+
+	Include .lf corrections in debugging output
+
+	The pipeline command names in `PIPELINE_DEBUG` output are deliberately
+	abbreviated in the cases where the command is inserting data into the
+	`*roff` input stream, in an attempt to convey the essential parts
+	without overwhelming the reader.  However, it probably does make sense
+	to include `.lf` corrections there, since if you're relying on the
+	debugging output to construct a manual shell pipeline when debugging an
+	issue with a page, you'll want the `.lf` corrections so that line
+	numbers still come out correctly.
+
+	* src/man.c (add_roff_line_length, display): Include `echo .lf 1` in
+	command names where appropriate.
+
+2023-07-20  Colin Watson  <cjwatson@debian.org>
+
+	Take advantage of groff's AD string and HY register
+
+	Fixes https://gitlab.com/man-db/man-db/-/issues/23.  Thanks to G.
+	Branden Robinson for assistance.
+
+	* src/man.c (make_roff_command) [TROFF_IS_GROFF]: Implement
+	`--no-hyphenation` using `-rHY=0`.  This requires groff >= 1.19,
+	released in 2003.
+	(disable_hyphenation): Only define if `TROFF_IS_GROFF` is not defined.
+	(display): Only use the more complex hyphenation-control mechanism if
+	`TROFF_IS_GROFF` is not defined.
+
+	* src/man.c (disable_justification): Implement using `.ds AD l` if groff
+	is at least version 1.23.0.
+	(display): Adjust debugging output to reflect this (more or less).
+
+	* NEWS.md: Document this.
+
+2023-07-20  Colin Watson  <cjwatson@debian.org>
+
+	Document false negatives from "man -K"
+
+	Fixes https://gitlab.com/man-db/man-db/-/issues/14.
+
+	* man/man1/man.man1 (Main modes of operation): Document false negatives
+	due to things like `\-`.
+	* NEWS.md: Document this.
+
+2023-07-20  Colin Watson  <cjwatson@debian.org>
+
+	man(1): Add a STANDARDS section
+
+	Fixes https://gitlab.com/man-db/man-db/-/issues/20.
+
+	* man/man1/man.man1 (STANDARDS): New section.
+	* NEWS.md: Document this.
+
+2023-07-19  Colin Watson  <cjwatson@debian.org>
+
+	Change "CONFORMING TO" to "STANDARDS"
+
+	This is in line with `man-pages(7)`.
+
+	See https://gitlab.com/man-db/man-db/-/issues/20.
+
+	* man/man1/man.man1 (DESCRIPTION): Recommend `STANDARDS` rather than
+	`CONFORMING TO`.
+	* NEWS.md: Document this.
+
+2023-07-19  Colin Watson  <cjwatson@debian.org>
+
+	Fix test failures when a working iconv is not available
+
+	Part of https://gitlab.com/man-db/man-db/-/issues/25.
+
+	* configure.ac: Substitute `HAVE_ICONV`.
+	* src/tests/Makefile.am (TESTS_ENVIRONMENT): Export `HAVE_ICONV`.
+	* src/tests/testlib.sh (report_skip): New function to skip an individual
+	test out of several in a file.
+	(skip): Refactor slightly to call `report_skip`.
+	* src/tests/man-recode-in-place, src/tests/man-recode-suffix,
+	src/tests/manconv-coding-tags, src/tests/manconv-guess-from-encoding,
+	src/tests/manconv-incomplete-char-at-eof,
+	src/tests/manconv-odd-combinations: Skip several tests if `HAVE_ICONV`
+	is not `yes`.
+	* NEWS.md: Document this.
+
+2023-07-19  Colin Watson  <cjwatson@debian.org>
+
+	NEWS.md: Document some recent commits
+
+2023-07-19  Colin Watson  <cjwatson@debian.org>
+
+	Update warning regex for groff 1.23.0
+
+	Part of https://gitlab.com/man-db/man-db/-/issues/25.
+
+	* man/check-man: groff 1.23.0 says "cannot break line" rather than
+	"can't break line"; update regular expression.
+
+2023-07-19  Colin Watson  <cjwatson@debian.org>
+
+	Avoid translation fallout from lexgrog(1) fix
+
+	* man/man1/lexgrog.man1: Protect `.ds mC CW` with `.if !'po4a'hide'`, to
+	avoid "CW" showing up as a string for translation.
+
+2023-07-19  G. Branden Robinson  <g.branden.robinson@gmail.com>
+
+	Improve lexgrog(1) portability
+
+	This fixes a test failure in man1/lexgrog.1 when building against groff
+	1.23.0.
+
+	Borrow code from groff 1.23.0's "an-ext.tmac" file (licensed as
+	permissively as a decadent society) to implement `EX` and `EE` extension
+	macros from Ninth Edition Research Unix (1986) (and groff) to get
+	monospaced code displays in a more portable way.  There is no way to
+	portably change font families in pure man(7) itself, and the names of
+	troff typefaces aren't very portable either.  There is also no portable
+	way to test for the _existence_ of a font.  FTW.
+
+	("Portable" here largely means "to AT&T device-independent troff
+	implementations", for which there has been no official source since the
+	mid-1990s.[1]  Several AT&T Unix System V licensees/descendants have
+	continued to ship their own vendored versions, but these have enjoyed
+	little or no development for the past 3 decades.)
+
+	* Define a string `mC` to store the name of a presumed monospaced roman
+	  typeface.  Use "CW", which is portable to AT&T device-independent
+	  troff of the early 1980s before it occurred to anyone that Courier
+	  might someday be available in italic and bold styles (and budget
+	  available to purchase them).
+	* Define `mC` as "CR" if using a typesetting device and the formatter is
+	  groff, or claims groff compatibility by the setting the `.g` register.
+	  This is reasonably portable to modern implementations given
+	  traditional troff font naming practices and the pervasive influence of
+	  Adobe Software and the "base fonts" of its PostScript and PDF
+	  specifications.
+	* If not typesetting (i.e., if using nroff), define `mC` as "R", which
+	  is certain to be available.
+	* Define `EX` and `EE` macros as groff does, if the formatter does not
+	  set the `.g` register.
+	* Migrate from `ft CW` and `nf` requests to `EX` macro calls.
+	* Migrate from `ft P` and `fi` requests to `EE` macro calls.
+	* Replace an inline use of `\f(CW` with a change to inline bold.  There
+	  is to date no portable way to inline a font family change.
+
+	Test passes now.  Tested as-is and with the `EX` and `EE` macro
+	definitions forcibly enabled.
+
+	[1] https://groups.google.com/g/comp.text/c/COkqrii4W0E/m/7HarA8Ha2dAJ
+
+2023-07-08  Colin Watson  <cjwatson@debian.org>
+
+	Correct typography of "~/.manpath"
+
+	`~` should be written as `\(ti` in manual pages to avoid being rendered
+	as something along the lines of U+02DC SMALL TILDE in PDF output, or as
+	of groff 1.23.0 in UTF-8 output.
+
+	* man/man1/apropos.man1, man/man1/man.man1, man/man1/manpath.man1,
+	man/man1/whatis.man1, man/man8/catman.man8, man/man8/mandb.man8,
+	man/it/man1/apropos.man1, man/it/man1/man.man1: Write `\(ti` when shell
+	tilde expansion is intended.
+
+2023-07-03  Colin Watson  <cjwatson@debian.org>
+
+	systemd: Sort hardening options
+
+	* init/systemd/man-db.service.in: Sort hardening options.
+
+2023-05-21  Мирослав Николић  <miroslavnikolic@rocketmail.com>
+
+	Update Serbian manual page translation
+
+	* man/po4a/po/sr.po: Update from Translation Project.
+
+2023-04-14  Temuri Doghonadze  <temuri.doghonadze@gmail.com>
+
+	Add Georgian translation
+
+	* po/ka.po: New from Translation Project.
+	* po/LINGUAS: Add ka.
+	* man/THANKS: Add translator credit.
+
+2023-04-09  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Warn if not running as cache owner
+
+	Fixes https://gitlab.com/man-db/man-db/-/issues/17.
+
+	* src/mandb.c (main): If effective user ID doesn't match the configured
+	cache owner (if any), and the `--quiet` option wasn't used, then issue a
+	warning.
+	* NEWS.md: Document this.
+
+2023-04-09  Colin Watson  <cjwatson@debian.org>
+
+	Deduplicate search results from "man -K"
+
+	Reported by Alejandro Colomar.
+
+	* src/man.c (do_global_apropos_section): Skip entries whose ultimate
+	source path have already been seen.
+	(do_global_apropos): Create/free set used to track seen entries.
+	* NEWS.md: Document this.
+
+2023-03-29  Colin Watson  <cjwatson@debian.org>
+
+	README.md: Explain where INSTALL.autoconf comes from
+
+	Fixes https://gitlab.com/man-db/man-db/-/issues/16.
+
+	* README.md: Explain that you may need to run `./bootstrap` to create
+	`docs/INSTALL.autoconf`.
+
+2023-03-10  Colin Watson  <cjwatson@debian.org>
+
+	sandbox: Work around Firebuild
+
+	Fixes https://gitlab.com/man-db/man-db/-/issues/15.
+
+	* lib/sandbox.c (make_seccomp_filter): Allow some socket-related system
+	calls if libfirebuild.so is preloaded.
+	* NEWS.md: Document this.
+
+2023-03-02  Colin Watson  <cjwatson@debian.org>
+
+	Upgrade to Gnulib stable-202301 as of 20230209
+
+	* bootstrap.conf (GNULIB_REVISION): Set to
+	c5dc86ca5c2e5c16177508bc32afe755b7995685.
+
+2023-02-23  Colin Watson  <cjwatson@debian.org>
+
+	Fix several spelling errors
+
+	Found by codespell, although I haven't added it to our pre-commit hooks
+	since it gets confused by rather too many bits of syntax here.
+
+	* docs/manpages.example, lib/cleanup.c, lib/decompression.c,
+	lib/filenames.c (filename_info), src/ult_src.c (test_for_include): Fix
+	spelling errors.
+
+2023-01-14  Colin Watson  <cjwatson@debian.org>
+
+	Copy files during bootstrapping
+
+	* .gitlab-ci.yml (bootstrap): Run `./bootstrap` with `--copy`.
+
+2023-01-14  Colin Watson  <cjwatson@debian.org>
+
+	Fix bootstrap_epilogue to handle running without --copy
+
+	* bootstrap.conf (bootstrap_epilogue): Avoid leaving
+	`docs/INSTALL.autoconf` as a dangling symbolic link if the `--copy`
+	option is not used.
+
+2023-01-14  Colin Watson  <cjwatson@debian.org>
+
+	Ensure that .gitignore and po/LINGUAS remain sorted
+
+	* .pre-commit-config.yaml (pre-commit-hooks): Add `file-contents-sorter`
+	for `.gitignore` and `po/LINGUAS`.
+	* .gitignore: Sort.
+
+2023-01-14  Colin Watson  <cjwatson@debian.org>
+
+	Update pre-commit hooks
+
+	* .pre-commit-config.yaml (pre-commit-hooks): Update to v4.4.0.
+	(shellcheck-py): Update to v0.9.0.2.
+
+2023-01-14  Colin Watson  <cjwatson@debian.org>
+
+	Upgrade to Gnulib stable-202301
+
+	* bootstrap: Sync to Gnulib 32a72f45374c9a36afa574d1a08bb98090270012.
+	* bootstrap.conf (GNULIB_REVISION): Set to
+	32a72f45374c9a36afa574d1a08bb98090270012.
+	* NEWS.md: Document this.
+
+2023-01-14  Colin Watson  <cjwatson@debian.org>
+
+	Update syscall lists from systemd fc2a0bc05e
+
+	* lib/sandbox.c (make_seccomp_filter): Add `cacheflush`,
+	`clock_getres_time64`, `clock_nanosleep_time64`, `close_range`,
+	`clone3`, `epoll_pwait2`, `faccessat2`, `futex_time64`, `pidfd_open`,
+	`pidfd_send_signal`, `ppoll_time64`, `pselect6_time64`,
+	`riscv_flush_icache`, `rt_sigtimedwait_time64`, and `utimensat_time64`.
+	Reorganize positions of some other syscalls according to their positions
+	in systemd's sets.
+	* NEWS.md: Document this.
+
+2023-01-08  Colin Watson  <cjwatson@debian.org>
+
+	Release man-db 2.11.2
+
+2023-01-01  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Check for stray cats even if the manpath is unchanged
+
+	* src/mandb.c (mandb): Require the database file to be open before
+	calling `straycats`, but don't require `create_db` or
+	`update_db_wrapper` to have made any changes to it.
+	* src/tests/mandb-whatis-broken-link-changes: Update expected output.
+	* NEWS.md: Document this.
+
+2023-01-01  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Fix crash when processing stray cats
+
+	Regression introduced in man-db 2.11.0.  Fixes Debian bug #1027487.
+
+	* src/straycats.c (check_for_stray): Pass a basic trace list to
+	`store_descriptions`, since that's required as of commit
+	d3e4b5522ae8152f10db0bb98e6873c9cc17ed59.
+	* NEWS.md: Document this.
+
+2022-12-31  Colin Watson  <cjwatson@debian.org>
+
+	Pacify gcc -Wanalyzer-use-of-uninitialized-value
+
+	It incorrectly thought that `outleft` could be uninitialized in some
+	cases.  Restructure code slightly to simplify its analysis.
+
+	* src/manconv.c (try_iconv): Initialize `outptr` in all branches of the
+	conditional beginning with `if (handle_iconv_errors)`.
+
+2022-12-31  Colin Watson  <cjwatson@debian.org>
+
+	Fix segfault when nroff is not installed
+
+	* src/man.c (try_section): Only free the `names` list if it is non-NULL
+	due to `NROFF_MISSING` being defined, and return early if options are
+	set such that cat files cannot be used either.
+	* NEWS.md: Document this.
+
+2022-12-31  Colin Watson  <cjwatson@debian.org>
+
+	Fix compile and test failures when troff is not groff
+
+	Fixes https://gitlab.com/man-db/man-db/-/issues/12.
+
+	* src/man.c (ONLY_TROFF_IS_GROFF): Only define if `HAS_TROFF` is
+	defined.
+	(init_html_pager): Only define if `TROFF_IS_GROFF` is defined.
+	(format_display): Mark `man_file` as unused if `TROFF_IS_GROFF` is not
+	defined.
+
+	* configure.ac: Substitute `troff_is_groff`.
+	* src/tests/Makefile.am (TESTS_ENVIRONMENT): Export `troff_is_groff`.
+	* src/tests/man-language-specific-requests: Adjust expected
+	language-specific requests if `troff_is_groff` is not `yes`.
+
+	* NEWS.md: Document this.
+
+2022-11-29  Seong-ho Cho  <darkcircle.0426@gmail.com>
+
+	Update Korean manual page translation
+
+	* man/po4a/po/ko.po: Update from Translation Project.
+
+2022-11-28  Yuri Kozlov  <yuray@komyakino.ru>
+
+	Update Russian manual page translation
+
+	* man/po4a/po/ru.po: Update from Translation Project.
+
+2022-11-15  Colin Watson  <cjwatson@debian.org>
+
+	Release man-db 2.11.1
+
+2022-11-15  Colin Watson  <cjwatson@debian.org>
+
+	Tweak README for better readability
+
+	* README.md: Add blank line for improved Markdown rendering.
+
+2022-11-14  Colin Watson  <cjwatson@debian.org>
+
+	web: Fix man.png width/height
+
+	* web/index.html: Update width and height for man.png.
+
+2022-11-14  Colin Watson  <cjwatson@debian.org>
+
+	web: Update man(1) image
+
+	* web/man.png: Replace with a fresh screenshot.
+
+2022-11-14  Colin Watson  <cjwatson@debian.org>
+
+	Link to project home page
+
+	* README.md: Add home page link (https://man-db.gitlab.io/man-db/).
+
+2022-11-14  Colin Watson  <cjwatson@debian.org>
+
+	Add GitLab Pages site
+
+	* .gitlab-ci.yml (stages): Add deploy.
+	(pages): New job.
+	* web/development.html, web/index.html, web/man.png, web/standard.css,
+	web/white.css: New files.
+
+2022-11-14  Colin Watson  <cjwatson@debian.org>
+
+	Transfer Git repository to new group
+
+	* README.md, docs/HACKING.md, man/man1/apropos.man1,
+	man/man1/lexgrog.man1, man/man1/man-recode.man1, man/man1/man.man1,
+	man/man1/manconv.man1, man/man1/manpath.man1, man/man1/whatis.man1,
+	man/man1/zsoelim.man1, man/man5/manpath.man5, man/man8/accessdb.man8,
+	man/man8/catman.man8, man/man8/mandb.man8: Change GitLab URL to
+	https://gitlab.com/man-db/man-db.
+	* NEWS.md: Document this.
+
+2022-11-12  Colin Watson  <cjwatson@debian.org>
+
+	Remove unused include
+
+	* src/manconv_client.c: Remove unused `#include "idpriv.h"`.
+
+2022-11-05  Colin Watson  <cjwatson@debian.org>
+
+	Fix distribution of Korean manual page translation
+
+	Accidentally omitted from 8f12d39bbb6748a1257358269028ef919f9c92e6.
+
+	* man/Makefile.am (DIST_SUBDIRS): Add ko.
+
+2022-11-05  Colin Watson  <cjwatson@debian.org>
+
+	Replace $ in page names rather than trying to escape it
+
+	Jakub Wilk points out in Debian bug #1021951 that attempting to use the
+	`--use-backslash` option has a number of complications.  Just replace
+	dollar signs with question marks instead.
+
+	* include/manconfig.h (LESS_OPTS): Revert addition of `--use-backslash`.
+	* src/man.c: Replace `$` characters with `?` rather than trying to
+	escape them.
+	* NEWS.md: Document this.
+
+2022-11-05  Colin Watson  <cjwatson@debian.org>
+
+	Add Korean manual page translation
+
+	* man/po4a/po/ko.po: New from Translation Project (thanks, Seong-ho
+	Cho).
+	* configure.ac (AC_CONFIG_FILES): Add man/ko/Makefile.
+	* man/LINGUAS.po4a: Add ko.
+	* man/Makefile.am (DIST_SUBDIRS): Add ko.
+	* man/ko/Makefile.am, man/ko/translator.add: New files.
+	* man/po4a/Makefile.am (POFILES): Add po/ko.po.
+	* man/po4a/po4a.cfg (po4a_langs): Add ko.
+	* man/THANKS: Update translator credit.
+	* .gitignore: Add man/ko/man1, man/ko/man5, and man/ko/man8.
+
+2022-10-28  Seong-ho Cho  <darkcircle.0426@gmail.com>
+
+	Add Korean translation
+
+	* po/ko.po: New from Translation Project.
+	* po/LINGUAS: Add ko.
+	* man/THANKS: Add translator credit.
+
+2022-10-28  Sebastian Rasmussen  <sebras@gmail.com>
+
+	Update Swedish manual page translation
+
+	* man/po4a/po/sv.po: Update from Translation Project.
+
+2022-10-18  Colin Watson  <cjwatson@debian.org>
+
+	zsoelim_open_file: Fix use of uninitialized value
+
+	In the case where `filename` has no directory part and does not contain
+	a dot, we could reach the decision of whether to emit a "can't open %s"
+	error message without initializing `decomp`.  Noticed by `gcc -Og`.
+
+	* src/zsoelim.l (zsoelim_open_file): Initialize `decomp` to NULL.
+
+2022-10-18  Colin Watson  <cjwatson@debian.org>
+
+	Recognize more Hungarian translations of the NAME section
+
+	* src/lexgrog.l (hu_name): Handle the case where "É" or "é" is written
+	as "\('E" or "\('e".
+	* NEWS.md: Document this.
+
+2022-10-18  Colin Watson  <cjwatson@debian.org>
+
+	Sort whatis references below real pages more aggressively
+
+	I think this makes more sense in most cases, and it definitely fixes
+	some observed odd behaviour.
+
+	Fixes Debian bug #780235.
+
+	* src/man.c (compare_candidates): Compare IDs before comparing sections.
+	* NEWS.md: Document this.
+
+2022-10-17  Colin Watson  <cjwatson@debian.org>
+
+	Silence error for empty mandir with missing catdir
+
+	Fixes https://gitlab.com/cjwatson/man-db/-/issues/8.
+
+	* src/check_mandirs.c (ensure_db_open): Don't call `gripe_rwopen_failed`
+	before returning false (since it only makes sense for one of the two
+	callers).
+	(testmandirs): Call `gripe_rwopen_failed` if `ensure_db_open` returns
+	false.
+
+2022-10-17  Colin Watson  <cjwatson@debian.org>
+
+	Add 3type to default section list
+
+	This is used by the Linux man-pages package, and should be lower
+	priority than section 2.  Suggested by Alejandro Colomar.
+
+	Fixes https://gitlab.com/cjwatson/man-db/-/issues/5.
+
+	* include/manconfig.h (STD_SECTIONS): Add `3type` between sections `2`
+	and `5`.
+	* m4/man-arg-sections.m4 (MAN_ARG_SECTIONS): Likewise.
+	* man/man5/manpath.man5 (FORMAT): Update documentation of SECTION.
+	* src/tests/man-exact-section-matches: Update default section order.
+	* src/man_db.conf.in (SECTION): Update documentation.
+	* NEWS.md: Document this.
+
+2022-10-17  Colin Watson  <cjwatson@debian.org>
+
+	Escape $ in page names when constructing less prompts
+
+	Fixes Debian bug #1021951.
+
+	* include/manconfig.h (LESS_OPTS): Add `--use-backslash`.
+	* src/man.c (escape_less): Also escape `$` characters.
+	* NEWS.md: Document this.
+
+2022-10-15  Colin Watson  <cjwatson@debian.org>
+
+	Release man-db 2.11.0
+
+2022-10-13  Colin Watson  <cjwatson@debian.org>
+
+	ult_src: Fix possible NULL dereference
+
+	`gcc -fanalyzer` noticed that `canonicalize_file_name` can return NULL,
+	therefore `find_include` could return NULL, and therefore it was
+	possible for `ult_src` to attempt to dereference NULL in the `stat
+	(base, &st)` call.  Push more work down to `find_include` so that we can
+	consistently treat it as an error if it returns NULL.
+
+	* src/ult_src.c (ult_softlink): Move error messages to ...
+	(gripe_canonicalize_failed): ... here (new function).
+	(find_include): Replace simple suffix globbing with `comp_file`, and use
+	this approach in both the relative-to-mantree and
+	relative-to-dirname-of-page cases; we previously only tried it in the
+	latter case.  Call `gripe_canonicalize_failed` if the final
+	canonicalization step fails; print a "can't resolve %s" error if we
+	can't even find anything to canonicalize.
+	(ult_src): Remove `comp_file` processing, now done by `find_include`.
+	* src/ult_src.h (gripe_canonicalize_failed): Add prototype.
+	* src/straycats.c (check_for_stray): Use `gripe_canonicalize_failed`.
+
+2022-10-11  Colin Watson  <cjwatson@debian.org>
+
+	Fix regression in preprocessor string handling
+
+	We need to stop looking for characters that identify preprocessors after
+	the first space or dash, as otherwise encoding declarations of the kind
+	specified in man-recode(1) may break.
+
+	* src/man.c (make_roff_command): Only consider the part of the
+	preprocessor string up to the first space or dash, if any.
+
+2022-10-11  Colin Watson  <cjwatson@debian.org>
+
+	match_in_directory: Split into multiple functions
+
+	`match_in_directory` had two almost entirely disjoint code paths, one
+	for regex patterns and one for wildcard patterns; but its structure made
+	it difficult for `gcc -fanalyzer` to understand that, and it was a bit
+	unclear for humans too.  Split it up for clarity.
+
+	* src/globbing.c (match_in_directory): Split out the
+	regex/wildcard-handling parts to ...
+	(match_regex_in_directory, match_wildcard_in_directory): ... here,
+	respectively.
+
+2022-10-11  Colin Watson  <cjwatson@debian.org>
+
+	Assert that another xasprintf call returns non-NULL
+
+	As with commit a22f140354c80a7c5c52c4a413f1c929e105a24c, `gcc
+	-fanalyzer` notices that `xasprintf` can return NULL in some situations.
+	I believe those situations would all amount to programming errors here,
+	so add an assert.
+
+	* src/mandb.c (main): Assert that `xasprintf` returns non-NULL.
+
+2022-10-09  Colin Watson  <cjwatson@debian.org>
+
+	Fix error message
+
+	* src/straycats.c (check_for_stray): If canonicalizing `catdir` returns
+	NULL, then substitute `catdir` into the "warning: %s is a dangling
+	symlink" message, not `fullpath` (which at this point must be NULL).
+
+2022-10-08  Colin Watson  <cjwatson@debian.org>
+
+	Convert many more ints to bools
+
+	I don't expect this to make a significant runtime difference, but it
+	makes some things easier to analyse visually.
+
+	* lib/cleanup.c (do_cleanups_sigsafe): Change `in_sighandler` parameter
+	type to bool.  Update all callers.
+	(push_cleanup): Change `handler_installed` local variable type to bool.
+	* lib/cleanup.h (do_cleanups_sigsafe): Update prototype.
+	* lib/compression.c (comp_info): Change `want_stem` parameter type to
+	bool.  Update all callers.
+	* lib/compression.h (comp_info): Update prototype.
+	* lib/sandbox.c (seccomp_filter_unavailable): Change type to bool.
+	Update all references.
+	(make_seccomp_filter): Change `permissive` parameter type to bool.
+	Update all callers.
+	(_sandbox_load): Likewise.
+	* lib/util.c (remove_directory): Change `recurse` parameter type to
+	bool.  Update all callers.
+	* lib/util.h (remove_directory): Update prototype.
+	* libdb/db_gdbm.c (opening): Change type to bool.  Update all
+	references.
+	* libdb/db_store.c (compare_ids): Change `promote_links` parameter type
+	to bool.  Update all callers.
+	* libdb/db_storage.h (compare_ids): Update prototype.
+	* src/catman.c (parse_for_sec): Change `message` local variable type to
+	bool.
+	(check_access): Change return type to bool.
+	(purge_whatis): Change `cat` parameter type to bool.  Update all
+	callers.
+	(check_multi_key): Change return type to bool.
+	* src/descriptions.c (parse_descriptions): Change `seen_base` local
+	variable type to bool.
+	* src/globbing.c (look_for_file): Change `cat` parameter type to bool.
+	Update all callers.
+	* src/globbing.h (look_for_file): Update prototype.
+	* src/lexgrog.l (fill_mode, waiting_for_quote): Change types to bool.
+	Update all references.
+	* src/man.c (skip, created_tmp_cat): Change types to bool.  Update all
+	references.
+	(run_mandb): Change `create` parameter type to bool.  Update all
+	callers.
+	(squeeze_blank_lines): Change `in_blank_line` and `got_blank_line` local
+	variable types to bool.
+	(display): Change `format` and `printed` local variable types to bool.
+	(convert_name): Change `fsstnd` parameter type to bool.  Update all
+	callers.
+	(add_candidate): Change `dupcand` local variable type to bool.
+	(main): Change `maybe_section` local variable type to bool.
+	* src/manp.c (add_sections): Change `user` parameter type to bool.
+	Update all callers.
+	(add_def): Likewise.
+	(add_mandb_map): Likewise.
+	(add_to_dirlist): Likewise.
+	(read_config_file): Change `done` local variable type to bool.
+	(get_manpath_from_path): Change `mandatory` parameter type to bool.
+	Update all callers.
+	* src/manp.h (get_manpath_from_path): Update prototype.
+	* src/whatis.c (do_apropos): Change `matched` local variable type to
+	bool.
+	* src/zsoelim.l (no_newline): Change type to bool.  Update all
+	references.
+	(zsoelim_open_file): Change return type to true.
+	* src/zsoelim.h (zsoelim_open_file): Update prototype.
+
+2022-10-07  Colin Watson  <cjwatson@debian.org>
+
+	Remove unused variable
+
+	* src/man.c (found_a_stray): Remove; it was set but no longer used.
+	(display_database): Remove setting of `found_a_stray`.
+
+2022-10-07  Colin Watson  <cjwatson@debian.org>
+
+	Add some more pure function attributes
+
+	* lib/encodings.c (compatible_encodings): Mark as pure.
+	* src/man.c (is_section): Likewise.
+	* src/manp.c (get_config, get_def, get_def_user, is_global_mandir):
+	Likewise.
+
+2022-10-07  Colin Watson  <cjwatson@debian.org>
+
+	Default to --disable-cache-owner on systems without getuid
+
+	* m4/man-arg-cache-owner.m4 (MAN_ARG_CACHE_OWNER): If the system doesn't
+	have `getuid`, force cache files to have unconstrained cache ownership,
+	and issue a warning if `--enable-cache-owner` was given.
+
+2022-10-07  Colin Watson  <cjwatson@debian.org>
+
+	Fix installation on systems with non-empty EXEEXT
+
+	* src/Makefile.am (install-exec-hook): Add `$(EXEEXT)` to
+	`chown`/`chmod` calls.
+	* NEWS.md: Document MinGW portability work.
+
+2022-10-07  Colin Watson  <cjwatson@debian.org>
+
+	Fix build on systems without SIGPIPE
+
+	* bootstrap.conf (gnulib_modules): Add sigpipe.
+	* src/mandb.c (main): Drop `#ifdef SIGPIPE` guards, as Gnulib now
+	ensures that it's defined.
+
+2022-10-07  Colin Watson  <cjwatson@debian.org>
+
+	Fix build on systems without getuid
+
+	* lib/tempfile.c (running_setid): New function; always returns false if
+	the system doesn't have `getuid`, since in that case we won't have been
+	able to drop privileges either.
+
+2022-10-07  Colin Watson  <cjwatson@debian.org>
+
+	Fix build on systems without <pwd.h>
+
+	* lib/security.h: Only include `<pwd.h>` if `MAN_OWNER` is defined.
+
+2022-10-07  Colin Watson  <cjwatson@debian.org>
+
+	Fix build on systems without <termios.h>
+
+	* bootstrap.conf (gnulib_modules): Add termios.
+	* src/man.c (get_term): Replace with a no-op stub if the system has no
+	`<termios.h>` (Gnulib tests for it and can replace some functions, but
+	its replacement isn't sufficient here).
+
+2022-10-07  Colin Watson  <cjwatson@debian.org>
+
+	Fix build on systems without SIGHUP
+
+	* lib/cleanup.c (trap_abnormal_exits, untrap_abnormal_exits): Guard uses
+	of `SIGHUP` with an `#ifdef`.
+
+2022-10-06  Colin Watson  <cjwatson@debian.org>
+
+	Run preprocessors in the correct order
+
+	We have no particular reason to trust the order of filters in a
+	preprocessor string specified in a page; it's easy for authors to get
+	this wrong by accident.  Do as groff(1) does and run them in a
+	canonicalized order.
+
+	Fixes Debian bug #1012078.
+
+	* src/man.c (add_filter): New function, split out from
+	`make_roff_command`.
+	(make_roff_command): Iterate through possible preprocessors and add each
+	one depending on whether it's present in the preprocessor string, rather
+	than iterating through the preprocessor string and acting on each of its
+	characters.  Turn several `int` variables into `bool` variables in
+	passing.
+	* NEWS.md: Document this.
+
+2022-10-06  Emir SARI  <emir_sari@icloud.com>
+
+	Update Turkish translation
+
+	* po/tr.po: Update from Translation Project.
+
+2022-10-06  Emir SARI  <emir_sari@icloud.com>
+
+	Update Turkish manual page translation
+
+	* man/po4a/po/tr.po: Update from Translation Project.
+
+2022-10-06  Boyuan Yang  <073plan@gmail.com>
+
+	Update Simplified Chinese manual page translation
+
+	* man/po4a/po/zh_CN.po: Update from Translation Project.
+
+2022-10-06  Remus-Gabriel Chelu  <remusgabriel.chelu@disroot.org>
+
+	Update Romanian manual page translation
+
+	* man/po4a/po/ro.po: Update from Translation Project.
+
+2022-10-06  Remus-Gabriel Chelu  <remusgabriel.chelu@disroot.org>
+
+	Update Romanian translation
+
+	* po/ro.po: Update from Translation Project.
+
+2022-10-03  Mario Blättermann  <mario.blaettermann@gmail.com>
+
+	Update German manual page translation
+
+	* man/po4a/po/de.po: Update from Translation Project.
+
+2022-10-02  Colin Watson  <cjwatson@debian.org>
+
+	Release man-db 2.11.0-pre1
+
+2022-10-02  Colin Watson  <cjwatson@debian.org>
+
+	Bump next version to 2.11.0
+
+	There are quite a few substantial changes here that I think justify an
+	updated minor number.
+
+	* NEWS.md: Bump to 2.11.0.
+
+2022-10-02  Colin Watson  <cjwatson@debian.org>
+
+	Update translation files
+
+	* po/man-db.pot, po/*.po: Update.
+
+2022-10-02  Colin Watson  <cjwatson@debian.org>
+
+	Fix harmless but incorrect cast
+
+	* libdb/db_xdbm.c (man_xdbm_firstkey): Cast `gl_list_free` to
+	`gl_mapvalue_dispose_fn`, not `gl_listelement_dispose_fn`.  (These were
+	in practice identical but are semantically distinct.)
+
+2022-10-02  Colin Watson  <cjwatson@debian.org>
+
+	Reformat option declarations using macros
+
+	The previous tabular presentation had some advantages, but it only
+	looked reasonable in wide terminals, was often quite cumbersome to
+	maintain, and played poorly with `clang-format`.
+
+	* include/manconfig.h (OPT, OPT_FULL, OPT_ALIAS, OPT_HIDDEN,
+	OPT_GROUP_HEADER, OPT_HELP_COMPAT): New macros.
+	* src/accessdb.c (options): Rewrite using `OPT*` macros.
+	* src/catman.c (options): Likewise.
+	* src/globbing_test.c (options): Likewise.
+	* src/lexgrog_test.c (options): Likewise.
+	* src/man-recode.c (options): Likewise.
+	* src/man.c (options): Likewise.
+	* src/manconv_main.c (options): Likewise.
+	* src/mandb.c (options): Likewise.
+	* src/manpath.c (options): Likewise.
+	* src/whatis.c (options): Likewise.
+	* src/zsoelim_main.c (options): Likewise.
+
+2022-10-02  Colin Watson  <cjwatson@debian.org>
+
+	Add CI checks for Berkeley DB and NDBM
+
+	* .gitlab-ci.yml (build-berkeley-db, build-ndbm): New jobs.
+
+2022-10-02  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Fully reorganize databases
+
+	This allows us to produce bitwise-identical databases regardless of the
+	order in which pages were scanned (at least with GDBM).
+	`gdbm_reorganize` isn't enough for this, probably because entries end up
+	in different positions in hash buckets depending on insertion order; but
+	reading in the entire database and writing it back out in sorted order
+	seems to do the job with negligible cost.
+
+	Fixes Debian bug #1010957.
+
+	* src/mandb.c (reorganize): New function: read all the items from a
+	database in sorted order and write them back out.
+	(mandb): Stop calling `MYDBM_REORG`, which saved space after deletions
+	but didn't help with reproducibility.
+	(process_manpath): Call `reorganize` if any changes were made to a
+	database.
+	* libdb/mydbm.h (MYDBM_REORG): Remove macro.
+	* NEWS.md: Document this.
+
+2022-10-02  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Rearrange database path operations
+
+	Moving these into "methods" of `struct dbpaths` makes the control flow
+	clearer by avoiding lots of inlined `#ifdef`s.
+
+	I fixed a possible crash in `mandb -f` in the process, exposed by the
+	clearer control flow.
+
+	* src/mandb.c (dbpaths_init, dbpaths_copy_to_tmp, dbpaths_remove_tmp):
+	New functions.
+	(finish_up): Rename to ...
+	(dbpaths_rename_from_tmp): ... this.
+	(do_chown): Rename to ...
+	(dbpaths_chown_if_possible): ... this.
+	(cleanup_sigsafe): Rename to ...
+	(dbpaths_unlink_tmp): ... this, and take a `struct dbpaths *` argument
+	rather than `void *`.
+	(cleanup): Rename to ...
+	(dbpaths_free_elements): ... this, and take a `struct dbpaths *`
+	argument rather than `void *`.
+	(mandb, process_manpath): Use new `dbpaths_*` functions.  Only call
+	`dbpaths_rename_from_tmp` if `run_mandb` is set (in practice this was
+	always true anyway but this makes it clearer).  Only call
+	`dbpaths_chown_if_possible` if `run_mandb` is set and
+	`dbpaths_rename_from_tmp` was called (this may have caused a crash in
+	some edge cases involving `mandb -f`).
+
+2022-10-01  Colin Watson  <cjwatson@debian.org>
+
+	test_manfile: Remove "already exists" check
+
+	This produced inconsistent results in some unusual cases.  For example,
+	if `/usr/share/man/man5/inetd.conf.5.gz` was a symlink to
+	`/usr/share/man/man8/inetd.8.gz` and had `NAME` entries for both `inetd`
+	and `inetd.conf`, then if `inetd.8.gz` was scanned first we would
+	include a `WHATIS_MAN` entry in section 8 for `inetd.conf`, while if
+	`inetd.conf.5.gz` was scanned first we'd skip that due to hitting the
+	already-exists check when scanning `inetd.8.gz`.
+
+	This was originally a performance optimization.  Now that we cache the
+	results of `ult_src` and `find_name`, this optimization no longer helps
+	us much, so it can go.
+
+	* src/check_mandirs.c (test_manfile): Don't return early if the page
+	already exists with matching details.
+	* NEWS.md: Document this.
+
+2022-10-01  Colin Watson  <cjwatson@debian.org>
+
+	Further improve name selection for whatis targets
+
+	In commit 9aff3c30b0, I used the rule "first name in the trace out of
+	those that have the best ID".  However, a better rule turns out to be to
+	pick the last entry in the trace that has the same section and extension
+	as the starting page.  This is already guaranteed to have at least as
+	good an ID as the starting page, and since whatis pointers don't include
+	the target section and extension we need to ensure that they don't cross
+	sections/extensions; otherwise we just end up with database entries that
+	man(1) refuses to use, which isn't particularly useful.
+
+	* src/descriptions_store.c (store_descriptions): Parse and cache all the
+	filenames in the trace at the start.  Use the last entry in the trace
+	with the same section/extension as the starting page as the pointer for
+	`WHATIS_*` entries.
+
+2022-10-01  Colin Watson  <cjwatson@debian.org>
+
+	test_manfile: Stop caching ult_src traces
+
+	Now that `test_manfile` always calls `ult_src` before adding database
+	entries, there's no need for it to cache the resulting traces, and doing
+	so had some confusing consequences since `store_descriptions` could end
+	up seeing cached traces that didn't include the initial path.
+
+	* src/check_mandirs.c (struct whatis): Remove `trace` element.
+	(whatis_free): Stop freeing `whatis->trace`.
+	(test_manfile): Stop caching `ult->trace`; pass it directly to
+	`store_descriptions` instead.
+
+2022-10-01  Colin Watson  <cjwatson@debian.org>
+
+	Restructure ult_src to add caching
+
+	* src/ult_src.c (struct ult_key): New structure.
+	(ult_key_new, ult_key_equals, ult_key_hash, ult_key_free, ult_value_new,
+	ult_value_free): New functions.
+	(ult_cache): New map.
+	(ult_src): Instead of returning a path as a string and taking `trace` as
+	an output parameter, return a `struct ult_value *` containing both path
+	and trace.  Cache the return value in a hash map (indexed by a composite
+	key consisting of `name` and `flags`), and return cached values where
+	possible rather than repeating the same work.  Update all callers to
+	reflect the new signature.
+	* src/ult_src.h (struct ult_value): New structure.
+	(ult_src): Update prototype.
+
+	* src/check_mandirs.c (test_manfile): Simplify `ult_src` calling
+	arrangements now that repeated calls with the same `name` and `flags`
+	arguments are cheap.  At the moment this may end up doing a little more
+	work in some rare cases (links to already-scanned pages with `.so`
+	links), but that doesn't seem to be very significant at the moment, and
+	caching could be improved inside `ult_src` if it proves to be a problem.
+	* src/descriptions_store.c (store_descriptions): `trace` is now always
+	set.  Add an assertion of this and drop a couple of conditionals.
+
+2022-09-25  Colin Watson  <cjwatson@debian.org>
+
+	ult_src: Remove recursion
+
+	The use of recursion for `.so` handling in `ult_src` is somewhat
+	inconvenient, and it's relatively easy to convert it to an iterative
+	implementation.
+
+	There should be no functional change from this commit, except to some
+	details of debug messages.
+
+	* src/ult_src.c (find_include_directive): New function, extracted from
+	`ult_src`.
+	(ult_src): Handle `.so` links using a loop rather than recursion.  Check
+	for compression extensions towards the end of the loop rather than at
+	the beginning, to avoid nonexistent files showing up in the trace.
+
+2022-09-25  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Improve debugging
+
+	* src/check_mandirs.c (test_manfile): Log the file under consideration
+	on entry.  Log when we return early due to an existing database entry.
+	Remove some unnecessary parentheses from debug messages.
+	* src/ult_src.c (ult_src): Remove leading newline from debug message.
+
+2022-09-25  Colin Watson  <cjwatson@debian.org>
+
+	Don't skip adding a database entry due to SO_MAN
+
+	An existing `SO_MAN` entry shouldn't stop us considering a page for
+	insertion into the database, because until we run `ult_src` we don't yet
+	know whether that page will be `ULT_MAN` (which should replace the
+	existing entry) or `SO_MAN` (which shouldn't).
+
+	* src/check_mandirs.c (test_manfile): Don't return early due to an
+	existing matching `SO_MAN` entry, but only due to an `ULT_MAN` entry.
+	* NEWS.md: Document this.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	Fix section/extension for whatis entries in database
+
+	* src/descriptions_store.c (store_descriptions): Use the
+	section/extension of the best name for whatis entries, since we don't
+	have anything better.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	store_descriptions: Improve debugging
+
+	* src/descriptions_store.c (store_descriptions): Log the extension of
+	each entry being stored.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	Extend database entry replacement rules
+
+	These rules were previously ambiguous such that the targets of whatis
+	entries depended on the order in which files were scanned.
+
+	* libdb/db_store.c (enum replace_action): Add.
+	(replace_if_necessary): Extend rules for greater stability.  We now also
+	take mtimes and pointers into account, as well as including a case for
+	when the new ID is weaker than the old one (there was already a case for
+	when it was stronger).
+	(dbstore): Use `replace_if_necessary` when considering replacing multi
+	keys.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	Fix section/extension for links in database
+
+	In some cases this resulted in spurious database entries.  For example,
+	if `man5/inetd.conf.5` was a symlink to `man8/inetd.8` and that page had
+	a `NAME` entry for `inetd`, then as well as entries for `inetd` in
+	section 8 and `inetd.conf` in section 5, we would also store a spurious
+	entry for `inetd` in section 5.  We no longer do that.
+
+	* src/descriptions_store.c (store_descriptions): For names corresponding
+	to entries in the ultimate source trace and not to the base name of the
+	file, use the section and extension of the trace entry rather than of
+	the ultimate source.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	Pick a more consistent name for whatis targets
+
+	We don't want the targets of whatis entries in the database to depend on
+	the order in which files were scanned.  Prefer the first name in the
+	trace out of those that have the best ID.
+
+	* src/descriptions_store.c (store_descriptions): Defer adding names that
+	don't appear in the ultimate source trace (i.e. whatis entries) until we
+	know the best name to use as the target, and use that best name as the
+	pointer for each of them.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	Fix stored ID for links
+
+	Database entries for links were often incorrectly stored as `ULT_MAN`,
+	depending on the exact order in which pages were scanned.  They are now
+	stored more consistently as `SO_MAN`.
+
+	* src/descriptions_store.c (store_descriptions): Override the ID from
+	`ULT_MAN` to `SO_MAN` if the name is not the last entry in the trace.
+	(Previously we overrode from `SO_MAN` to `ULT_MAN` if the name was the
+	last entry in the trace, but not the converse.)
+	* NEWS.md: Document this.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	Simplify struct mandata memory allocation
+
+	The arrangement where most of the fields of `struct mandata` were
+	constant pointers into the `addr` field was a bit more memory-efficient,
+	but it made some kinds of analysis and reorganization very difficult,
+	and we don't actually need to be quite that frugal about memory.
+	Reorganize this to allocate each field independently instead.
+
+	* lib/filenames.c (filename_info): Allocate each field independently.
+	Use Gnulib's `base_name` and `dir_name` functions to parse paths.  Stop
+	setting `info->addr`.
+	(free_mandata_struct): Free the `ext`, `sec`, `pointer`, `comp`,
+	`filter`, and `whatis` fields.  Stop freeing `addr`.
+	* lib/filenames.h (struct mandata): Remove `addr`.  Make `ext`, `sec`,
+	`pointer`, `comp`, `filter`, and `whatis` non-`const`.
+	* libdb/db_lookup.c (split_content): Copy the `ext`, `sec`, `pointer`,
+	`filter`, `comp`, and `whatis` fields.  Stop setting `addr`.
+	* libdb/db_store.c (make_content): Copy the `pointer`, `comp`, `filter`,
+	and `whatis` fields.
+	* src/descriptions_store.c (store_descriptions): Copy `pointer` and
+	`whatis` fields.
+	* src/straycats.c (check_for_stray): Copy `comp`, `ext`, `sec`, and
+	`filter` fields.
+
+	* libdb/db_lookup.c (dblookup): Always free `cont`'s data pointer, since
+	it's no longer sometimes borrowed.
+	* libdb/db_store.c (dbstore): Free `cont`'s and `oldcont`'s data
+	pointers, since they're no longer borrowed.
+	* src/check_mandirs.c (purge_missing): Free `content`'s data pointer,
+	since it's no longer borrowed.
+
+	* libdb/db_lookup.c (dblookup_pattern): Stop freeing `info->addr`.
+	* src/catman.c (parse_for_sec): Stop freeing `entry->addr`.
+	* src/whatis.c (do_apropos): Stop freeing `info->addr`.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	Stop using the addr field of struct mandata
+
+	The `addr` field of `struct mandata` is just intended as an internal
+	buffer, but some functions were extracting information from it in
+	complicated ways, which made it difficult to refactor the memory
+	allocation here.  Use different approaches.
+
+	* src/check_mandirs (test_manfile): Calculate `len` using `comp_info`.
+	This duplicates some of what `filename_info` does, but it's just some
+	cheap string manipulation, and it expresses what we want in a less
+	confusing way (the length of the file name with any compression
+	extension removed).
+	* src/descriptions_store.c (store_descriptions): Check whether `path` is
+	a prefix of `trace_name` rather than of `trace_info->addr`.
+	`trace_info->addr` is always itself a prefix of `trace_name`, so if
+	`path` is not a prefix of `trace_name` then it can't be a prefix of
+	`trace_info->addr`.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	is_prefix: Improve parameter naming
+
+	The second parameter doesn't have to be a directory, so stop implying
+	that in the parameter name.
+
+	* src/descriptions_store.c (is_prefix): Rename `path` to `parent`; rename
+	`dir` to `child`.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	Simplify split_content interface
+
+	Now that `struct mandata` is always allocated on the heap, we might as
+	well just have `split_content` return a freshly-allocated `struct
+	mandata` rather than taking a pointer to one as a parameter.
+
+	* libdb/db_lookup.c (split_content): Allocate and return a `struct
+	mandata`; remove `pinfo` parameter.  Update all callers.
+	* libdb/db_storage.h (split_content): Update prototype.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	Always allocate struct mandata on the heap
+
+	This means we no longer need two slightly different functions for
+	freeing it.
+
+	* libdb/db_lookup.c (dblookup_pattern): Allocate `struct mandata` on the
+	heap.  Simplify arrangements for adding to the `infos` list.
+	(dbstore): Allocate `struct mandata` on the heap.
+	* src/catman.c (parse_for_sec): Likewise.
+	* src/check_mandirs.c (purge_pointers, purge_missing): Likewise.
+	* src/straycats.c (check_for_stray): Likewise.
+	* src/whatis.c (do_apropos): Likewise.
+
+	* lib/filenames.c (free_mandata_elements): Remove function and move its
+	contents to ...
+	(free_mandata_struct): ... here, if `pinfo` is set.
+	* lib/filenames.h (free_mandata_elements): Remove prototype.
+
+2022-09-24  Colin Watson  <cjwatson@debian.org>
+
+	filename_info: Always allocate info->name
+
+	Only one call site has any interest in this being unset (in order to
+	pass the result to `dbstore`), and even there it's easier for the caller
+	to deal with unsetting it.  Otherwise, it's strictly more convenient if
+	the structure returned by `filename_info` always includes the name of
+	the page.
+
+	* lib/filenames.c (filename_info): Remove `req_name` parameter; update
+	all callers.  Always set `info->name` before returning successfully.
+	* lib/filenames.h (filename_info): Update prototype.
+	* src/check_mandirs.c (test_manfile): Use `info->name` for
+	`manpage_base` rather than poking around in `info->addr`.
+	(count_glob_matches): Remove `name` parameter; update all callers.
+	* src/descriptions_store.c (store_descriptions): Drop now-unnecessary
+	check for `trace_info->name`.
+	* src/man.c (do_global_apropos_section): Build `title` using
+	`info->name` rather than poking around in `info->addr`.
+	* src/mandb.c (update_one_file): Drop now-unnecessary check for
+	`info->name`.
+
+2022-09-23  Colin Watson  <cjwatson@debian.org>
+
+	Reduce indentation in store_descriptions a bit
+
+	* src/descriptions_store.c (store_descriptions): Use an early-continue
+	construction to save a level of indentation.
+
+2022-09-23  Colin Watson  <cjwatson@debian.org>
+
+	Simplify the filename_info interface
+
+	This interface is a bit less confusing.
+
+	* libdb/db_lookup.c (free_mandata_elements, free_mandata_struct): Move
+	to ...
+	* lib/filenames.c (free_mandata_elements, free_mandata_struct): ...
+	here.
+	* libdb/db_storage.h (free_mandata_elements, free_mandata_struct): Move
+	to ...
+	* lib/filenames.h (free_mandata_elements, free_mandata_struct): ...
+	here.
+
+	* lib/filenames.c (filename_info): Return a `struct mandata` with the
+	`addr` element set to the buffer containing the fields, rather than
+	returning the buffer and taking a pointer to a `struct mandata` as a
+	parameter.  Update all callers.
+	* lib/filenames.h (filename_info): Update prototype.
+
+2022-09-23  Colin Watson  <cjwatson@debian.org>
+
+	Move manual page file name utilities to lib/
+
+	* src/filenames.c: Move to ...
+	* lib/filenames.c: ... here.
+	* src/filenames.h: Move to ...
+	* lib/filenames.h: ... here.  Update positioning of all includes.
+	* lib/Makefile.am (libman_la_SOURCES): Add `filenames.c` and
+	`filenames.h`.
+	* src/Makefile.am (man_recode_LDADD): Link with `$(LIBMAN)` instead of
+	`$(LIBMANDB)`.
+	(lexgrog_SOURCES, man_SOURCES, mandb_SOURCES): Remove `filenames.c` and
+	`filenames.h`.
+	* po/POTFILES.in: Rename `src/filenames.c` to `lib/filenames.c`.
+
+	* lib/filenames.c (gripe_bogus_manpage): Remove `quiet < 2` condition.
+	(filename_info): Add `warn_if_bogus` parameter; only call
+	`gripe_bogus_manpage` if it is set.  Update all callers.
+	* lib/filename.h (filename_info): Update prototype.
+
+	* libdb/db_storage.h (struct mandata): Move to ...
+	* lib/filenames.h (struct mandata): ... here.  Add includes where
+	necessary.
+
+2022-09-23  Colin Watson  <cjwatson@debian.org>
+
+	Fix distcheck
+
+	* po/POTFILES.in: Rename `src/compression.c` to `lib/compression.c`.
+
+2022-09-23  Colin Watson  <cjwatson@debian.org>
+
+	Move compression file name utilities to lib/
+
+	This makes more sense as a home for plain file name manipulation
+	utilities.  I also merged `include/comp_src.h.in` into
+	`lib/compression.c`, because structure definitions (as opposed to
+	declarations) don't belong in header files.
+
+	* src/compression.c: Move to ...
+	* lib/compression.c: ... here.  Remove unnecessary `pipeline.h` include.
+	* src/compression.h: Move to ...
+	* lib/compression.h: ... here.  Update positioning of all includes.
+	* lib/Makefile.am (libman_la_SOURCES): Add `compression.c` and
+	`compression.h`.
+	* lib/README: Add `compression.*`.
+	* src/Makefile.am (lexgrog_SOURCES, man_SOURCES, man_recode_SOURCES,
+	mandb_SOURCES): Remove `compression.c` and `compression.h`.
+
+	* include/comp_src.h (comp_list): Move to ...
+	* lib/compression.c (comp_list): ... here.  Update all references.
+	* include/manconfig.h (struct compression, comp_list): Move to ...
+	* lib/compression.h (struct compression, comp_list): ... here.  Add
+	includes where necessary.
+	* Makefile.am (noinst_HEADERS): Remove `include/comp_src.h`.
+
+2022-09-23  Colin Watson  <cjwatson@debian.org>
+
+	Remove infoalloc macro
+
+	It doesn't really pull its weight.
+
+	* libdb/db_lookup.c (dblookup, dblookup_pattern): Call `XZALLOC (struct
+	mandata)` rather than `infoalloc ()`.
+	* src/man.c (try_section, do_global_apropos_section): Likewise.
+	* libdb/db_storage.h (infoalloc): Remove.
+
+2022-09-19  Colin Watson  <cjwatson@debian.org>
+
+	Maintain multi key references in sorted order
+
+	This is a step towards being able to reproduce the same database given
+	the same manual page tree.
+
+	* bootstrap.conf (gnulib_modules): Add stpcpy.
+	* libdb/db_lookup.c (name_ext_equals): Remove static; add pure
+	attribute.
+	(name_ext_compare): New function.
+	(list_extensions): Add entries in sorted order.
+	* libdb/db_storage.h (name_ext_equals, name_ext_compare): Add
+	prototypes.
+	* libdb/db_store.c (make_extensions_reference): New function.
+	(dbstore): When building or updating multi key references, maintain them
+	in sorted order.
+	* NEWS.md: Document this.
+
+2022-09-19  Colin Watson  <cjwatson@debian.org>
+
+	Remove some excessive debugging output
+
+	This hasn't been of any practical use for many years.
+
+	* lib/security.c (drop_effective_privs, regain_effective_privs): Remove
+	debug messages emitted when increasing or decreasing the privilege drop
+	count.
+
+2022-08-11  Colin Watson  <cjwatson@debian.org>
+
+	Fix use of pointer (address only) after free
+
+	I don't believe this was technically undefined behaviour, since we
+	didn't actually dereference the dangling pointer, merely compared its
+	value (the pointer address itself) against entries in the cleanup stack.
+	However, the compiler probably had a hard time proving that, so the
+	use-after-free warning issued by recent versions of GCC seems fair
+	enough.
+
+	* src/mandb.c (cleanup): Don't free dbpaths.
+	(process_manpath): Free it here instead, after calling pop_cleanup.
+
+2022-08-11  Colin Watson  <cjwatson@debian.org>
+
+	Make CATWIDTH override MINCATWIDTH/MAXCATWIDTH
+
+	Otherwise setting `CATWIDTH` to something larger than 80 confusingly
+	doesn't work unless you also set `MAXCATWIDTH`.
+
+	Fixes https://gitlab.com/cjwatson/man-db/-/issues/9.
+
+	* src/man.c (add_roff_line_length): Skip terminal width range check if
+	`cat_width` is set.
+	* man/man5/manpath.man5 (FORMAT): Remove note that `CATWIDTH` should be
+	within the range set by `MINCATWIDTH` and `MAXCATWIDTH`, and instead say
+	that it overrides them.
+	* NEWS.md: Document this.
+
+2022-07-22  Colin Watson  <cjwatson@debian.org>
+
+	Add more case variants of localized versions of NAME
+
+	* src/lexgrog.l (bg_name, lt_name, ru_name, sr_name, srlatin_name,
+	tr_name, uk_name, vi_name): Add more case variants.
+	* NEWS.md: Document this.
+
+2022-07-18  Colin Watson  <cjwatson@debian.org>
+
+	Update pre-commit hooks
+
+	* .pre-commit-config.yaml (pre-commit-hooks): Update to v4.3.0.
+
+2022-07-18  Colin Watson  <cjwatson@debian.org>
+
+	Update to Gnulib 20220717
+
+	Fixes https://gitlab.com/cjwatson/man-db/-/issues/6.
+
+	* bootstrap: Sync to Gnulib df336dc1ae60d8ad9f452f2234951133fe617bb0.
+	* bootstrap.conf (GNULIB_REVISION): Set to
+	df336dc1ae60d8ad9f452f2234951133fe617bb0.
+	* NEWS.md: Document build fix.
+
+2022-07-15  Colin Watson  <cjwatson@chiark.greenend.org.uk>
+
+	Merge branch 'drop-lsm' into 'main'
+
+	Drop LSM file
+
+	See merge request cjwatson/man-db!4
+
+2022-07-13  Pino Toscano  <toscano.pino@tiscali.it>
+
+	Drop LSM file
+
+	The LSM format is a very old format for software, and it is dead for
+	many years already. Since keeping the .lsm up-to-date is basically not
+	much of use, simply drop it altogether.
+
+	* docs/Makefile.am (dist_noinst_DATA): Remove man-db.lsm.
+	* docs/HACKING.md: Stop mentioning man-db.lsm.
+	* docs/man-db.lsm: Remove file.
+
+2022-07-05  Stéphane Aulery  <lkppo@free.fr>
+
+	Update French manual page translation
+
+	* man/po4a/po/fr.po: Update from Translation Project.
+
+2022-06-02  Joe Hansen  <joedalton2@yahoo.dk>
+
+	Update Danish translation
+
+	* po/da.po: Update from Translation Project.
+
+2022-05-18  Colin Watson  <cjwatson@debian.org>
+
+	Cache filters alongside whatis information
+
+	`mandb` needs to cache filters together with whatis information, as
+	otherwise pages were incorrectly recorded with no filters if `mandb`
+	happened to use cached whatis information for them rather than reading
+	it from scratch.
+
+	* src/check_mandirs.c (struct whatis): Add filters.
+	(whatis_free): Free whatis->filters.
+	(test_manfile): Store and use whatis->filters.
+	* NEWS.md: Document this.
+
+2022-04-27  Andika Triwidada  <andika@gmail.com>
+
+	Update Indonesian translation
+
+	* po/id.po: Update from Translation Project.
+	* man/THANKS: Add translator credit.
+
+2022-04-23  Colin Watson  <cjwatson@debian.org>
+
+	Stop GitLab from getting confused about licences
+
+	GitLab uses https://github.com/licensee/licensee to detect the project's
+	licence, and if that finds multiple matching files then it throws up its
+	hands and refuses to make a licence assertion, with no apparent way to
+	override it.
+
+	To avoid this problem, move the secondary licence files (those that
+	apply only to some files, rather than to the project as a whole) back
+	into a subdirectory, so that `licensee` doesn't notice them.
+
+	* COPYING.GPLv2: Move to ...
+	* docs/COPYING.GPLv2: ... here.  Update all references.
+	* COPYING.LIB: Move to ...
+	* docs/COPYING.LIB: ... here.  Update all references.
+	* Makefile.am (dist_noinst_DATA): Remove COPYING.GPLv2.
+	* docs/Makefile.am (dist_noinst_DATA): Add COPYING.GPLv2 and
+	COPYING.LIB.
+
+2022-04-23  Colin Watson  <cjwatson@debian.org>
+
+	Clarify effective GPLv3 licensing
+
+	While man-db's own files are individually licensed under GPLv2 (or in a
+	few cases LGPLv2.1), the project as a whole is effectively GPLv3 due to
+	Gnulib.  This was already explained in README.md, but make it a bit
+	clearer by having the top-level COPYING file be a copy of GPLv3.
+
+	* COPYING: Move to ...
+	* COPYING.GPLv2: ... here.
+	* COPYING: New file.
+	* Makefile.am (dist_noinst_DATA): Add COPYING.GPLv2.
+	* lib/README, man/it/man1/apropos.man1, man/it/man1/man.man1,
+	man/it/man1/manpath.man1, man/it/man1/whatis.man1,
+	man/it/man1/zsoelim.man1, man/it/man5/manpath.man5,
+	man/it/man8/accessdb.man8, man/it/man8/catman.man8,
+	man/it/man8/mandb.man8, man/man1/apropos.man1, man/man1/lexgrog.man1,
+	man/man1/man-recode.man1, man/man1/man.man1, man/man1/manconv.man1,
+	man/man1/manpath.man1, man/man1/whatis.man1, man/man1/zsoelim.man1,
+	man/man5/manpath.man5, man/man8/accessdb.man8, man/man8/catman.man8,
+	man/man8/mandb.man8, manual/comp.me, manual/db.me, manual/files.me,
+	manual/format.me, manual/glossary.me, manual/intro.me, manual/leader.me,
+	manual/man_db.me, manual/misc.me, manual/sec.me: Refer to COPYING.GPLv2
+	rather than COPYING.
+
+2022-04-23  Colin Watson  <cjwatson@debian.org>
+
+	Update pre-commit hooks
+
+	* .pre-commit-config.yaml (pre-commit-hooks): Update to v4.2.0.
+
+2022-04-17  Emir SARI  <emir_sari@icloud.com>
+
+	Update Turkish manual page translation
+
+	* man/po4a/po/tr.po: Update from Translation Project.
+	* man/THANKS: Update translator credit.
+
+2022-04-16  Colin Watson  <cjwatson@debian.org>
+
+	Recognize another Turkish translation of NAME
+
+	Emir SARI reports that "AD" is the de facto standard technical
+	terminology for "NAME" in Turkish, rather than "İSİM" which sounds
+	slightly colloquial.  Recognize it as well.
+
+	* src/lexgrog.l (tr_name): Add "AD".
+
+2022-04-12  Emir SARI  <emir_sari@icloud.com>
+
+	Update Turkish translation
+
+	* po/tr.po: Update from Translation Project.
+	* man/THANKS: Add translator credit.
+
+2022-03-17  Colin Watson  <cjwatson@debian.org>
+
+	Release man-db 2.10.2
+
+	NEWS.md: Fix typo for 2.7.6
+
+2022-03-08  Colin Watson  <cjwatson@debian.org>
+
+	pre-commit: Avoid need for multiple shellcheck runs
+
+	* .shellcheckrc: Set `external-sources=true`.
+	* src/tests/lexgrog-backslash-dash-rhs, src/tests/lexgrog-basic,
+	src/tests/lexgrog-multiple-whatis, src/tests/man-deleted-directory,
+	src/tests/man-exact-section-matches,
+	src/tests/man-executable-page-on-path, src/tests/man-invalid-db-entry,
+	src/tests/man-language-specific-requests,
+	src/tests/man-mandatory-manpath, src/tests/man-missing-locales,
+	src/tests/man-override-dir, src/tests/man-recode-in-place,
+	src/tests/man-recode-suffix, src/tests/man-so-links-same-section,
+	src/tests/man-suffixed-extension,
+	src/tests/man-symlinks-with-matching-names,
+	src/tests/manconv-coding-tags, src/tests/manconv-guess-from-encoding,
+	src/tests/manconv-incomplete-char-at-eof,
+	src/tests/manconv-odd-combinations, src/tests/mandb-basic,
+	src/tests/mandb-bogus-symlink, src/tests/mandb-cachedir-tag,
+	src/tests/mandb-empty-page, src/tests/mandb-purge-updates-timestamp,
+	src/tests/mandb-regular-file-symlink-changes,
+	src/tests/mandb-symlink-beats-whatis-ref,
+	src/tests/mandb-symlink-target-timestamp,
+	src/tests/mandb-whatis-broken-link-changes,
+	src/tests/whatis-path-to-executable, src/tests/zsoelim-so-includes: Add
+	`shellcheck source-path=SCRIPTDIR` directive before sourcing testlib.sh.
+	* .pre-commit-config.yaml: Consolidate the two shellcheck hooks into
+	one.
+
+2022-03-08  Colin Watson  <cjwatson@debian.org>
+
+	pre-commit: Add shellcheck
+
+	* .pre-commit-config.yaml: Add shellcheck.  We need separate hooks for
+	`src/tests/` and for everything else, since shellcheck needs a `-P`
+	option to correctly handle sourced files in `src/tests/`.
+	* .shellcheckrc: New file.
+
+2022-03-08  Colin Watson  <cjwatson@debian.org>
+
+	Refactor use of cd in shell scripts
+
+	shellcheck warns about unchecked uses of `cd` (SC2164).  Either check it
+	or refactor to avoid changing directory.
+
+	* src/tests/man-deleted-directory: Check `cd` call.
+	* src/tests/man-suffixed-extension: Avoid changing directory.
+	* tools/mkcatdirs: Likewise.
+
+2022-03-08  Colin Watson  <cjwatson@debian.org>
+
+	mkcatdirs: Skip nonexistent man directories
+
+	* tools/mkcatdirs: `manpath -qg` may return man directories that are
+	mentioned in the configuration file but that don't exist on the
+	filesystem.  Skip these.
+
+2022-03-08  Colin Watson  <cjwatson@debian.org>
+
+	mkcatdirs: Refactor using install(1)
+
+	I'm not sure this script is widely-used, but it might as well work.  It
+	previously relied on `mkinstalldirs`, which is a build tool not
+	typically installed on end-user systems.
+
+	* tools/mkcatdirs: Refactor cat directory creation using install(1).
+
+2022-03-08  Colin Watson  <cjwatson@debian.org>
+
+	Apply various minor shell syntax improvements
+
+	* manual/print-options: Explicitly set `LANGUAGE=''` rather than
+	`LANGUAGE=`, pacifying shellcheck SC1007 which notes that this
+	construction might otherwise be misread.
+	* src/tests/manconv-odd-combinations: Use `printf %b` to pacify
+	shellcheck SC2059.
+	* src/tests/testlib.sh: Tell shellcheck which shell syntax to assume,
+	since this file has no `#!` line.
+	(run): Disable shellcheck SC2154; `abs_top_builddir` is always set by
+	the test runner.
+	(report): Remove unnecessary `$` before variable in arithmetic context.
+	(tools/checkman): Use `$(...)` for command substitution.  Quote
+	variables properly where possible, and ignore shellcheck SC2068 in a
+	couple of other places.
+
+2022-03-07  Colin Watson  <cjwatson@debian.org>
+
+	tests: Pacify shellcheck SC2188
+
+	The previous construction resulted in:
+
+	  SC2188 (warning): This redirection doesn't have a command. Move to its
+	  command (or use 'true' as no-op).
+
+	* src/tests/man-mandatory-manpath, src/tests/testlib.sh: Avoid
+	redirections without a command.
+
+2022-03-07  Colin Watson  <cjwatson@debian.org>
+
+	tests: Make pass/fail reporting more shellcheck-friendly
+
+	* src/tests/testlib.sh (report): New function, similar to expect_pass
+	but taking an exit code rather than a command string to evaluate.
+	(expect_pass): Remove.
+	(expect_files_equal): Refactor using report function.
+	* src/tests/man-deleted-directory,
+	src/tests/man-executable-page-on-path, src/tests/man-missing-locales,
+	src/tests/man-recode-in-place, src/tests/manconv-incomplete-char-at-eof,
+	src/tests/mandb-bogus-symlink, src/tests/mandb-cachedir-tag,
+	src/tests/mandb-empty-page, src/tests/mandb-purge-updates-timestamp:
+	Refactor to use report function rather than expect_pass.
+
+2022-03-07  Colin Watson  <cjwatson@debian.org>
+
+	tests: Add an expect_files_equal helper function
+
+	* src/tests/testlib.sh (expect_files_equal): New function.
+	* src/tests/lexgrog-backslash-dash-rhs, src/tests/lexgrog-basic,
+	src/tests/lexgrog-multiple-whatis, src/tests/man-exact-section-matches,
+	src/tests/man-invalid-db-entry,
+	src/tests/man-language-specific-requests,
+	src/tests/man-mandatory-manpath, src/tests/man-override-dir,
+	src/tests/man-recode-in-place, src/tests/man-recode-suffix,
+	src/tests/man-so-links-same-section, src/tests/man-suffixed-extension,
+	src/tests/man-symlinks-with-matching-names,
+	src/tests/manconv-coding-tags, src/tests/manconv-guess-from-encoding,
+	src/tests/manconv-odd-combinations, src/tests/mandb-basic,
+	src/tests/mandb-purge-updates-timestamp,
+	src/tests/mandb-regular-file-symlink-changes,
+	src/tests/mandb-symlink-beats-whatis-ref,
+	src/tests/mandb-symlink-target-timestamp,
+	src/tests/mandb-whatis-broken-link-changes,
+	src/tests/whatis-path-to-executable, src/tests/zsoelim-so-includes: Use
+	expect_files_equal instead of the equivalent expect_pass construction.
+
+2022-03-07  Colin Watson  <cjwatson@debian.org>
+
+	tests: Improve quoting
+
+	* src/tests/lexgrog-backslash-dash-rhs, src/tests/lexgrog-basic,
+	src/tests/lexgrog-multiple-whatis, src/tests/man-deleted-directory,
+	src/tests/man-exact-section-matches,
+	src/tests/man-executable-page-on-path, src/tests/man-invalid-db-entry,
+	src/tests/man-language-specific-requests,
+	src/tests/man-mandatory-manpath, src/tests/man-missing-locales,
+	src/tests/man-override-dir, src/tests/man-recode-in-place,
+	src/tests/man-recode-suffix, src/tests/man-so-links-same-section,
+	src/tests/man-suffixed-extension,
+	src/tests/man-symlinks-with-matching-names,
+	src/tests/manconv-coding-tags, src/tests/manconv-guess-from-encoding,
+	src/tests/manconv-incomplete-char-at-eof,
+	src/tests/manconv-odd-combinations, src/tests/mandb-basic,
+	src/tests/mandb-bogus-symlink, src/tests/mandb-cachedir-tag,
+	src/tests/mandb-empty-page, src/tests/mandb-purge-updates-timestamp,
+	src/tests/mandb-regular-file-symlink-changes,
+	src/tests/mandb-symlink-beats-whatis-ref,
+	src/tests/mandb-symlink-target-timestamp,
+	src/tests/mandb-whatis-broken-link-changes,
+	src/tests/whatis-path-to-executable, src/tests/zsoelim-so-includes: Use
+	': "${var=default}"' idiom to assign default values rather than
+	': ${var=default}', pacifying shellcheck.
+
+2022-03-06  Nikola Forró  <nforro@redhat.com>
+
+	Add --with-snapdir configure option
+
+	* m4/man-arg-snapdir.m4: New file.
+	* configure.ac: Call MAN_ARG_SNAPDIR.
+	* src/man_db.conf.in: Use @snapdir@ rather than hardcoding /snap.
+	* NEWS.md: Document this.
+
+2022-03-06  Colin Watson  <cjwatson@debian.org>
+
+	Tidy up NEWS.md slightly
+
+	* NEWS.md: Reorder fixes and improvements; add credit for last commit.
+
+2022-03-06  Mihail Konev  <k.mvc@ya.ru>
+
+	man(1): Fix override dir handling
+
+	Previously, override dir was affecting only some cases of manpath
+	determination.  Apply it only when all paths have been gathered instead.
+
+	Also look for override dir when sorting candidates.
+
+	Fixes src/tests/man-override-dir failing when --with-override-dir=od is
+	passed to ./configure.
+
+	[cjwatson: Refactored candidate comparison to use a strcmp-style
+	function, and simplified the addition of override directories a little
+	more.]
+
+	* src/man.c (compare_override_dir): New function.
+	(compare_candidates): Compare override directory status between
+	comparing section extensions and comparing locale elements.
+	* src/manp.c (insert_override_dir): Remove.
+	(get_manpath_from_path, add_man_subdirs): Remove calls to
+	insert_override_dir.
+	(create_pathlist): Add OVERRIDE_DIR at the canonicalization stage
+	instead.
+	* NEWS.md: Document this.
+
+	Reported-by: Nikola Forró <nforro@redhat.com>
+	Tested-by: Nikola Forró <nforro@redhat.com>
+
+2022-03-06  Colin Watson  <cjwatson@debian.org>
+
+	Update to Gnulib 20220301
+
+	In line with Gnulib, we now require Automake 1.14.
+
+	* bootstrap.conf (GNULIB_REVISION): Set to
+	8c4f4d7a3c28f88b64fce2fb1d0dc0e570d1a482.
+	(buildreq): Bump required automake version to 1.14.
+	* configure.ac (AM_INIT_AUTOMAKE): Bump minimum version to 1.14.
+	* NEWS.md: Document this.
+
+2022-03-06  Colin Watson  <cjwatson@debian.org>
+
+	Add some hardening options to the systemd service
+
+	Based on a patch by Johannes Segitz in the openSUSE packaging, although
+	I added `PrivateTmp=true` and `LockPersonality=true` as well.
+
+	* init/systemd/man-db.service.in: Add some hardening options.  (This may
+	produce warnings with `systemd < 244`.)
+	* NEWS.md: Document this.
+
+2022-03-05  Colin Watson  <cjwatson@debian.org>
+
+	Make the man-db manual build reproducible
+
+	Inspired by a patch from B. Wiedemann, but implemented differently.
+
+	* manual/Makefile.am (version): Set "td" string to the package's release
+	date, since otherwise groff's me package will use the current date.
+	* NEWS.md: Document this.
+
+2022-03-05  Dr. Werner Fink  <werner@suse.de>
+
+	Fix showing HTML, as firefox runs into background too fast
+
+	[cjwatson: I'm not 100% keen on this approach, since it randomly depends
+	on how long the browser happens to take to launch and might be a bit
+	annoying for users of light browsers such as w3m, but there doesn't seem
+	to be any other good alternative for the more common case of people
+	using typical graphical browsers.]
+
+	Fixes Debian bug #335411 and Savannah bug #59542.
+
+	* src/man.c (format_display): Sleep for a few seconds after starting the
+	browser, since it may background itself before loading files.
+	* NEWS.md: Document this.
+
+2022-02-18  Мирослав Николић  <miroslavnikolic@rocketmail.com>
+
+	Update Serbian manual page translation
+
+	* man/po4a/po/sr.po: Update from Translation Project.
+
+2022-02-17  Remus-Gabriel Chelu  <remusgabriel.chelu@disroot.org>
+
+	Update Romanian translation
+
+	* po/ro.po: Update from Translation Project.
+	* man/THANKS: Update translator credit.
+
+2022-02-15  Remus-Gabriel Chelu  <remusgabriel.chelu@disroot.org>
+
+	Update Romanian manual page translation
+
+	* man/po4a/po/ro.po: Update from Translation Project.
+
+2022-02-15  Remus-Gabriel Chelu  <remusgabriel.chelu@disroot.org>
+
+	Update Romanian manual page translation
+
+	* man/po4a/po/ro.po: Update from Translation Project.
+	* man/THANKS: Add translator credit.
+
+2022-02-10  Colin Watson  <cjwatson@debian.org>
+
+	Release man-db 2.10.1
+
+2022-02-10  Colin Watson  <cjwatson@debian.org>
+
+	Add a top-level update-po target
+
+	This simplifies the common task of ensuring that both program and manual
+	page translation files are up to date.
+
+	* Makefile.am (update-po): New target.
+
+2022-02-09  Colin Watson  <cjwatson@debian.org>
+
+	Fix warnings when building without zlib
+
+	* src/decompress.c (decompress_new_inprocess): Only define this function
+	if HAVE_LIBZ is defined.
+	(OPEN_FLAGS_UNUSED): New macro, defined to MAYBE_UNUSED if HAVE_LIBZ is
+	undefined.
+	(decompress_open): Declare flags as unused if HAVE_LIBZ is defined.
+
+2022-02-08  Colin Watson  <cjwatson@debian.org>
+
+	Use Gnulib raise module
+
+	This can be made slightly more portable (e.g. to MinGW).
+
+	* bootstrap.conf (gnulib_modules): Add raise.
+	* lib/cleanup.c (sighandler): Call raise rather than kill.
+
+2022-02-08  Colin Watson  <cjwatson@chiark.greenend.org.uk>
+
+	Merge branch 'libintl' into 'main'
+
+	libdb: link against libintl explicitly
+
+	See merge request cjwatson/man-db!3
+
+2022-02-08  Colin Watson  <cjwatson@debian.org>
+
+	Use @LTLIBINTL@ rather than $(LIBINTL)
+
+	This matches our other Makefiles.
+
+2022-02-08  Boyuan Yang  <073plan@gmail.com>
+
+	Update Simplified Chinese manual page translation
+
+	Fixes Debian bug #1005139.
+
+	* man/po4a/po/zh_CN.po: Update from Translation Project.
+
+2022-02-08  Colin Watson  <cjwatson@debian.org>
+
+	Fix building on Cygwin
+
+	Achim reported that 2.10.0 no longer builds on Cygwin, while 2.9.4 did.
+	This was magnificently obscure, at least to this Unix-head.  Initially
+	it appeared to be an issue with inter-library linking between libman and
+	libmandb, but 2.9.4 relied on that too, just slightly less so.
+
+	The actual problem was that libman only exported
+	`gl_get_setlocale_null_lock` and not all the other symbols it's supposed
+	to export, which is because that was explicitly marked for export and no
+	other symbols were.  Building libman with `-Wl,--export-all-symbols`
+	fixes this; libman is intended as an aggregation of various helper
+	functions, including those from Gnulib, and it doesn't make sense to be
+	especially selective since it's only installed as a private library
+	anyway.
+
+	(I'm still not exactly sure why 2.9.4 didn't do the same thing, but this
+	seems to be a good enough fix.)
+
+	* configure.ac: Set LIBMAN_EXPORT_LDFLAGS to '-Wl,--export-all-symbols'
+	when linking with GNU ld on Windows platforms.
+	* lib/Makefile.am (libman_la_LDFLAGS): Add $(LIBMAN_EXPORT_LDFLAGS).
+	* src/Makefile.am (LIBMAN): Remove $(top_builddir)/gl/lib/libgnu.la; as
+	a convenience library, this is already incorporated into libman.la, and
+	specifying it again causes multiple-definition errors on Cygwin.
+	* src/tests/Makefile.am (get_mtime_LDADD): Likewise.
+	* NEWS.md: Document this.
+
+2022-02-08  Colin Watson  <cjwatson@debian.org>
+
+	Document fix for building without iconv
+
+	* NEWS.md: Document previous change.
+
+2022-02-08  Colin Watson  <cjwatson@debian.org>
+
+	Fix building without iconv
+
+	* src/convert.c (convert_to_locale) [!HAVE_ICONV]: Declare a function
+	rather than a macro.
+	(convert_to_locale): Add ATTRIBUTE_MALLOC.
+
+2022-02-08  Colin Watson  <cjwatson@debian.org>
+
+	Remove some unused includes
+
+	* lib/encodings.c: Remove unused #include "pipeline.h".  Explicitly
+	include <stdio.h>, previously included implicitly via "pipeline.h".
+	* lib/security.c, lib/util.c: Remove unused #include "pipeline.h".
+
+2022-02-07  Fabian Groffen  <grobian@gentoo.org>
+
+	libdb: link against libintl explicitly
+
+	Necessary since gettext is used for translations.
+
+	[sam: originally found downstream in Gentoo on Gentoo Prefix on macOS.]
+
+2022-02-06  Colin Watson  <cjwatson@debian.org>
+
+	Suppress Clang warnings with -Wconstant-logical-operand
+
+	* src/lexgrog.l (find_name): Explicitly test `*PROG_COL != '\0'` rather
+	than just `*PROG_COL`, to pacify `clang -Wconstant-logical-operand`.
+	* src/man.c (make_roff_command, make_display_command): Likewise.
+
+2022-02-06  Colin Watson  <cjwatson@debian.org>
+
+	Revert "Reduce indentation depth using C99"
+
+	This reverts commit c4d20840f3487588c4a0da4397b1acb6dc83a1e5.  Even in
+	C99, a declaration isn't valid immediately after a label; this didn't
+	become valid until C2x, although gcc allows it as an extension.
+
+	Fixes https://gitlab.com/cjwatson/man-db/-/issues/2.
+
+	* src/man.c (parse_opt): Restore enclosing block for OPT_WARNINGS.
+	* NEWS: Document this.
+
+2022-02-04  Colin Watson  <cjwatson@debian.org>
+
+	Fix another edge case in mandb-symlink-target-timestamp
+
+	* src/tests/mandb-symlink-target-timestamp: Fix handling of the case
+	where the nanosecond part of a timestamp is exactly 0 (probably because
+	the filesystem doesn't support nanosecond resolution).
+
+2022-02-04  Colin Watson  <cjwatson@debian.org>
+
+	Fix occasional mandb-symlink-target-timestamp test failure
+
+	* src/tests/mandb-symlink-target-timestamp: Fix handling of the case
+	where the nanosecond part of a timestamp starts with a zero.
+	* NEWS.md: Document this.
+
+2022-02-04  Colin Watson  <cjwatson@debian.org>
+
+	Update man-db.lsm properly
+
+	Release man-db 2.10.0
+
+2022-01-31  Colin Watson  <cjwatson@debian.org>
+
+	gitlab-ci: Run tests with VERBOSE=1
+
+	This makes it easier to diagnose test failures.
+
+	* .gitlab-ci.yml (build-distcheck:script, build-out-of-tree:script): Set
+	VERBOSE=1.
+
+2022-01-31  Colin Watson  <cjwatson@debian.org>
+
+	man: Avoid spurious error messages due to subpages
+
+	Since man-db 2.4.2, `man` has behaved as if the `-l` option was given if
+	a manual page argument contains a slash.  Since man-db 2.5.6, this has
+	interacted slightly poorly with the subpage feature, emitting spurious
+	error messages if given multiple manual page arguments some of which
+	include a slash.  `man` no longer emits spurious error messages in this
+	case.
+
+	Fixes Savannah bug #53708.
+
+	* src/man.c (man): Move name-contains-slash case to ...
+	(man_maybe_local): ... here (new function).
+	(main): Call man_maybe_local instead of man where checking for names
+	containing slashes is acceptable.
+	* NEWS.md: Document this.
+
+2022-01-31  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Fix handling of link target mtimes
+
+	Depending on directory iteration order, mandb sometimes incorrectly
+	stored the mtime of a symlink as the mtime of its target as well.
+
+	Fixes Debian bug #691643.
+
+	* src/descriptions_store.c (store_descriptions): When adding entries
+	based on an ult_src trace, use the mtime of the target file if possible
+	rather than the mtime of the base entry.
+	* src/tests/Makefile.am (ALL_TESTS): Add mandb-symlink-target-timestamp.
+	* src/tests/get-mtime.c (main): Use lstat rather than stat.
+	* src/tests/mandb-symlink-target-timestamp: New file.
+	* NEWS.md: Document this.
+
+2022-01-30  Colin Watson  <cjwatson@debian.org>
+
+	Update translation files
+
+	* po/man-db.pot, po/*.po: Update.
+
+2022-01-30  Colin Watson  <cjwatson@debian.org>
+
+	Update to Gnulib 20220130
+
+	* bootstrap: Sync to Gnulib 735f319cde4ab7e98294557181d682564241d846.
+	* bootstrap.conf (GNULIB_REVISION): Set to
+	735f319cde4ab7e98294557181d682564241d846.
+
+2022-01-30  Colin Watson  <cjwatson@debian.org>
+
+	Simplify static analysis of fatal errors
+
+	The usual idiom for fatal error reporting in man-db is `error (FATAL,
+	...)` (there are a few cases using different exit codes, but they're
+	less common).  Unfortunately, there's no easy way to tell the compiler
+	that this call doesn't return, because `error (0, ...)` *does* return.
+	As a result, some call sites required extra work to give the compiler
+	this information, which can sometimes make a difference to static
+	analysis.
+
+	To simplify this, add a new `fatal` helper function which always exits
+	`FATAL` (i.e. 2) and never returns.  This is declared with `_Noreturn`
+	so that the compiler can straightforwardly know what's going on.
+
+	* bootstrap.conf (gnulib_modules): Add verror.
+	(XGETTEXT_OPTIONS): Add --flag=fatal:2:c-format.
+	* lib/fatal.c, lib/fatal.h: New files.
+	* lib/Makefile.am (libman_la_SOURCES): Add fatal.c and fatal.h.
+	* src/tests/Makefile.am (AM_CPPFLAGS): Add -I$(top_srcdir)/lib.
+	(get_mtime_LDADD): Add $(top_builddir)/lib/libman.la.
+
+	* lib/pathsearch.c (pathsearch, directory_on_path): Use fatal.
+	* lib/sandbox.c (can_load_seccomp, make_seccomp_filter, _sandbox_load):
+	Likewise.
+	* lib/security.c (gripe_set_euid): Likewise.
+	* lib/xregcomp.c (xregcomp): Likewise.
+	* libdb/db_lookup.c (gripe_corrupt_data, dblookup_pattern): Likewise.
+	* libdb/db_ver.c (dbver_wr): Likewise.
+	* src/accessdb.c (main): Likewise.
+	* src/catman.c (parse_for_sec): Likewise.
+	* src/check_mandirs.c (chown_if_possible): Likewise.
+	* src/man-recode.c (recode): Likewise.
+	* src/man.c (open_cat_stream, format_display, gripe_converting_name):
+	Likewise.
+	* src/manconv.c (add_output): Likewise.
+	* src/manp.c (add_dir_to_path_list): Likewise.
+	* src/tests/get-mtime.c (main): Likewise.
+	* src/whatis.c (do_apropos): Likewise.
+	* src/zsoelim.l (<so>\"?[^ \t\n\"]+\"?): Likewise.
+
+	* libdb/db_lookup.c (gripe_corrupt_data, gripe_replace_key): Declare as
+	_Noreturn.
+
+	* src/accessdb.c (main): Remove now-unnecessary assertion.
+	* src/man.c (gripe_converting_name): Remove now-unnecessary abort.
+
+2022-01-30  Colin Watson  <cjwatson@debian.org>
+
+	docs: Move COPYING and COPYING.LIB to top level
+
+	I think people are more likely to expect to find them here - I recently
+	even found myself confused by their previous placement.
+
+	* docs/COPYING, docs/COPYING.LIB: Move to ...
+	* COPYING, COPYING.LIB: ... here, respectively.
+	* lib/README: Update references.
+
+2022-01-30  Colin Watson  <cjwatson@debian.org>
+
+	man: Don't modify MANSECT environment variable
+
+	Reported and diagnosed by Rob Hoelz.  Fixes Savannah bug #58896.
+
+	* src/man.c (get_section_list): Copy colon_sep_section_list before
+	passing it to strtok.
+	* NEWS.md: Document this.
+
+2022-01-30  Colin Watson  <cjwatson@debian.org>
+
+	libdb: Pacify gcc -Wempty-body
+
+	* libdb/mydbm.h (MYDBM_REORG) [NDBM, BTREE]: Change no-op macro
+	definition to avoid "suggest braces around empty body" warning in mandb.
+
+2022-01-30  Alejandro Cendejas Tena  <alex.cendejas@gmail.com>
+
+	Update Spanish manual page translation
+
+	* man/po4a/po/es.po: Update from Translation Project.
+
+2022-01-30  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Don't modify DB without changing its mtime
+
+	In d9ebedad15 (man-db 2.7.0), mandb started relying on the modification
+	times of database files themselves rather than using a special row, in
+	order to make databases reproducible between otherwise-identical
+	installations (subject to predictable behaviour from the underlying
+	database).
+
+	There was a difficulty with this change.  Because purging deleted pages
+	from the database opened and closed the database in a separate phase
+	before the main phase of looking for updated manual pages, and because
+	the main phase relies on comparing against the mtime of the database to
+	find changed files, I had to arrange to restore the original mtime at
+	the end of the purge phase in order to avoid confusing the main phase
+	into being a no-op.  However, in some cases (perhaps due to other bugs,
+	but nevertheless), it's possible for the purge phase to find work to do
+	without the main phase ever finding any modified directories, which
+	meant that the net effect of mandb would be to modify its database
+	without changing its mtime.  This is bad form, and confused some backup
+	systems into believing that the filesystem had been corrupted, since
+	files having their contents changed without updating their mtime is
+	indeed a likely symptom of filesystem corruption.
+
+	To avoid this, restructure our database-handling code so that a given
+	mandb run opens any given database at most once.  This means that we no
+	longer need to modify mtimes manually, so the usual filesystem rules
+	apply.
+
+	Fixes Debian bug #1004355 and Ubuntu bug #1411633.
+
+	* bootstrap.conf (gnulib_modules): Remove futimens.
+	* libdb/db_btree.c (man_btree_close): Rename to ...
+	(man_btree_free): ... this.  Check whether wrap->file is set.  Free
+	wrap->mtime.
+	(man_btree_new): New function.
+	(man_btree_open): Convert to running on the result of man_btree_new.
+	(man_btree_get_time): Cache return value in wrap->mtime.
+	(man_btree_set_time): Remove.
+	* libdb/db_gdbm.c (man_gdbm_new): New function.
+	(man_gdbm_open_wrapper): Convert to running on the result of
+	man_gdbm_new.
+	(man_gdbm_get_time): Cache return value in wrap->mtime.
+	(man_gdbm_set_time): Remove.
+	(raw_close): Check whether wrap->file is set.
+	(man_gdbm_close): Rename to ...
+	(man_gdbm_free): ... this.
+	* libdb/db_ndbm.c (raw_close): Check whether wrap->file is set.
+	(man_ndbm_close): Rename to ...
+	(man_ndbm_free): ... this.
+	(man_ndbm_new): New function.
+	(man_ndbm_open): Convert to running on the result of man_ndbm_new.
+	(man_ndbm_get_time): Cache return value in wrap->mtime.
+	(man_ndbm_set_time): Remove.
+	* libdb/db_xdbm.c (man_xdbm_close): Rename to ...
+	(man_xdbm_free): ... this.  Update all callers.  Free dbf->mtime.
+	* libdb/db_xdbm.h (man_xdbm_close): Rename to ...
+	(man_xdbm_free): ... this.
+	* libdb/mydbm.h (man_gdbm_wrapper, man_ndbm_wrapper, man_btree_wrapper):
+	Add mtime.
+	(man_gdbm_new, man_ndbm_new, man_btree_new): Add prototypes.
+	(man_gdbm_open_wrapper, man_ndbm_open, man_btree_open): Update
+	prototypes.
+	(man_gdbm_set_time, man_ndbm_set_time, man_btree_set_time): Remove
+	prototypes.
+	(man_gdbm_close, man_ndbm_close, man_btree_close): Rename to ...
+	(man_gdbm_free, man_ndbm_free, man_btree_free): ... these, respectively.
+	(MYDBM_NEW): New macro.
+	(MYDBM_CTRWOPEN, MYDBM_RWOPEN, MYDBM_RDOPEN): Rename file argument to
+	wrap.
+	(MYDBM_CLOSE): Rename to ...
+	(MYDBM_FREE): ... this.
+	(MYDBM_SET_TIME): Remove macro.
+
+	* src/catman.c (parse_for_sec): Take a MYDBM_FILE argument rather than a
+	database path.
+	* src/check_mandirs.c (gripe_rwopen_failed, testmandirs, create_db,
+	update_db, purge_missing): Likewise.
+	* src/mandb.c (update_one_file, update_db_wrapper): Likewise.
+	* src/straycats.c (straycats): Likewise.
+	* src/check_mandirs.h (create_db, update_db, purge_missing): Update
+	prototypes.
+	* src/straycats.h (straycats): Likewise.
+
+	* src/check_mandirs.c (ensure_db_open): New function.
+	(testmandirs): Only open the database if it wasn't already open, and
+	don't close it.
+	(update_db, purge_missing): Likewise.
+	* src/mandb.c (update_one_file): Likewise.
+	* src/straycats.c (straycats): Assert that the database is already open,
+	and don't close it.
+
+	* src/accessdb.c (main): Update database opening code.
+	* src/catman.c (post_fork): Update database closing code.
+	(parse_for_sec): Move database opening and closing code to ...
+	(main): ... here, and update it.
+	* src/man.c (dbdelete_wrapper): Update database opening and closing
+	code.
+	* src/whatis.c (search): Update database opening and closing code.
+
+	* src/check_mandirs.c (purge_missing): Don't reorganize the database.
+	* src/mandb.c (mandb): Create a MYDBM_FILE from the database path, and
+	close and free it before returning.  Rearrange purging so that it runs
+	on the temporary database copy, which we close and remove if
+	purge_missing finds a consistency problem requiring us to rescan from
+	scratch.  Unless purging requires a rescan, all of the purge, main, and
+	stray cats phases now run on the same open database file.  Reorganize
+	the database before closing it if the purge phase did any work.
+	(process_manpath): Rename the temporary database into place if either of
+	the purge or stray cats phases did any work, even if the main phase
+	didn't.
+
+	* src/check_mandirs.c (update_db_time): Remove.
+	(create_db): Don't manually update the database mtime.
+	(update_db, purge_missing): Likewise.
+
+	* src/tests/Makefile.am (ALL_TESTS): Add mandb-purge-updates-timestamp.
+	(check_PROGRAMS): Add get-mtime.
+	(get_mtime_SOURCES, get_mtime_LDADD): Add.
+	* src/tests/get-mtime.c: New file: test helper to get a file's mtime
+	portably.
+	* src/tests/mandb-purge-updates-timestamp: New file.
+	* .gitignore: Add src/tests/get-mtime.
+
+	* NEWS: Document this.
+
+2022-01-29  Colin Watson  <cjwatson@debian.org>
+
+	man: Make dbdelete_wrapper use the correct database
+
+	Even if it has permissions to delete stale entries from the database,
+	dbdelete_wrapper can't assume that the most recently opened database is
+	the one from which it should delete the entry; it needs to use the
+	database to which the candidate in question belongs.
+
+	* src/man.c (database): Remove global variable.
+	(dbdelete_wrapper): Add a manpath argument, and attempt to open the
+	associated database locally.
+	(display_database_check): Pass the candidate's path (i.e. manpath) to
+	dbdelete_wrapper.
+	(try_db): Make the database path a local variable.  Reorganize cleanup
+	paths.
+	(main): Stop freeing database, since it's no longer a global variable.
+
+2022-01-29  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Fix some details of error handling
+
+	* src/check_mandirs.c (testmandirs): Return -1 rather than -errno on
+	failure to create the database.
+	(create_db, update_db): Only call update_db_time if amount > 0, rather
+	than if it is non-zero (since it may be negative to indicate an error,
+	and updating the database time doesn't make sense in that case).
+	(update_db): Return -1 rather than EOF.
+	* src/mandb.c (update_db_wrapper): Check whether amount is non-zero
+	rather than whether it is unequal to EOF.
+
+2022-01-29  Colin Watson  <cjwatson@debian.org>
+
+	libdb: Remove unused MYDBM_CRWOPEN macro
+
+	* libdb/mydbm.h (MYDBM_CRWOPEN): Remove.
+
+2022-01-29  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Call purge_missing and straycats from mandb
+
+	We can simplify some logic by pushing these down a layer.
+
+	* src/check_mandirs.c (purge_missing): Remove will_run_mandb argument,
+	which was always true due to --filename implying --no-purge.
+	* src/check_mandirs.h (purge_missing): Update prototype.
+	* src/mandb.c (process_manpath): Move purge_missing and straycats calls
+	to ...
+	(mandb): ... here.
+
+2022-01-29  Colin Watson  <cjwatson@debian.org>
+
+	mandb: Factor out some duplicate code
+
+	* src/mandb.c (mandb): Move common create/update logic outside the
+	database-type-specific #ifdefs.
+
+2022-01-26  Colin Watson  <cjwatson@debian.org>
+
+	Use bool in more places in mandb
+
+	* src/check_mandirs.c (testmandirs): Change "create" parameter and
+	"created" local variable types to bool.  Update all callers.
+	(check_multi_key): Change "valid" local variable to bool.
+	(purge_missing): Change "will_run_mandb" parameter and "db_exists" local
+	variable types to bool.  Update all callers.
+	* src/check_mandirs.h (purge_missing): Update prototype.
+	* src/mandb.c (struct tried_catdirs_entry): Change "seen" element type
+	to bool.  Update all users.
+	(mandb): Change "should_create" and "cachedir_tag_exists" local variable
+	types to bool.
+	(process_manpath): Change "run_mandb" local variable type to bool.
+	(is_lang_dir): Return bool.
+
+2022-01-26  Yi-Jyun Pan  <pan93412@gmail.com>
+
+	Update Traditional Chinese translation
+
+	* po/zh_TW.po: Update from Translation Project.
+	* man/THANKS: Update translator credit.
+
+2022-01-25  Colin Watson  <cjwatson@debian.org>
+
+	Add Spanish translator credit
+
+	* man/THANKS: Add translator credit.
+
+2022-01-25  Petr Pisar  <petr.pisar@atlas.cz>
+
+	Update Czech translation
+
+	* po/cs.po: Update from Translation Project.
+	* man/THANKS: Add translator credit.
+
+2022-01-24  Mario Blättermann  <mario.blaettermann@gmail.com>
+
+	Update German manual page translation
+
+	* man/po4a/po/de.po: Update from Translation Project.
+
+2022-01-24  Alejandro Cendejas Tena  <alex.cendejas@gmail.com>
+
+	Update Spanish manual page translation
+
+	* man/po4a/po/es.po: Update from Translation Project.
+
+2022-01-24  Alejandro Cendejas Tena  <alex.cendejas@gmail.com>
+
+	Update Spanish manual page translation
+
+	* man/po4a/po/es.po: Update from Translation Project.
+
+2022-01-24  Colin Watson  <cjwatson@debian.org>
+
+	Fix upload/release machinery to handle .tar.xz
+
+	Release man-db 2.10.0-pre1
+
+2022-01-24  Colin Watson  <cjwatson@debian.org>
+
+	Improve documentation of search path handling
+
+	Fixes Savannah bug #61862.
+
+	* man/man5/manpath.man5 (SEARCH PATH): New section.
+	* man/man1/apropos.man1 (ENVIRONMENT): Refer to manpath(5) for details
+	of MANPATH.
+	* man/man1/man.man1 (ENVIRONMENT): Likewise.
+	* man/man1/manpath.man1 (ENVIRONMENT): Likewise.
+	* man/man1/whatis.man1 (ENVIRONMENT): Likewise.
+	* man/man8/catman.man8 (ENVIRONMENT): Likewise.
+
+2022-01-24  Colin Watson  <cjwatson@debian.org>
+
+	Fix typos in descriptions of --systems
+
+	Fixes Savannah bug #61861.
+
+	* man/man1/apropos.man1 (OPTIONS): "system's" → "systems'".
+	* man/man1/man.man1 (Finding manual pages): Likewise.
+	* man/man1/manpath.man1 (OPTIONS): Likewise.
+	* man/man1/whatis.man1 (OPTIONS): Likewise.
+
+2022-01-24  Colin Watson  <cjwatson@chiark.greenend.org.uk>
+
+	Merge branch 'optimize-decompression' into 'main'
+
+	Significantly improve mandb performance
+
+	See merge request cjwatson/man-db!2
+
+2022-01-24  Colin Watson  <cjwatson@debian.org>
+
+	Optimize manconv_inprocess for UTF-8 target encoding
+
+	If the target encoding is UTF-8, then manconv's first stage (trial
+	conversion from UTF-8) can more efficiently be replaced with UTF-8
+	validation, leaving the original decompressed buffer unchanged on
+	success.  Suggested by Steinar H. Gunderson.
+
+	* src/manconfig.h (UNLIKELY): New macro.
+	* src/decompress.c (decompress_inprocess_buf): New function.
+	* src/decompress.h (decompress_inprocess_buf): Add prototype.
+	* src/utf8.c, src/utf8.h: New files, based on glib's UTF-8 validation
+	code.
+	* src/manconv_client.c (manconv_inprocess): Optimize case where
+	source_encoding is not UTF-8 and target_encoding is UTF-8 by returning
+	early if UTF-8 validation passes.
+	* src/Makefile.am (lexgrog_SOURCES, man_SOURCES, man_recode_SOURCES,
+	mandb_SOURCES): Add utf8.c and utf8.h.
+
+2022-01-24  Colin Watson  <cjwatson@debian.org>
+
+	Significantly improve mandb performance
+
+	Forking large numbers of subprocesses is slow.  An ideal fix would
+	involve work in libpipeline (e.g. generator functions or
+	multithreading), but in the meantime we can do much better in the common
+	case of moderately-sized pages compressed using zlib by doing in-process
+	decompression.  On my test system, this takes `mandb -c` from 344
+	seconds (or 152 seconds with `MAN_DISABLE_SECCOMP=1` before 50200d151d,
+	or 78 seconds with `MAN_DISABLE_SECCOMP=1` after 50200d151d) to 10
+	seconds.
+
+	Thanks to Steinar H. Gunderson for a proof of concept, which I reworked
+	extensively.
+
+	Fixes Debian bugs #630799 and #1003089, and Ubuntu bug #1858777.
+
+	* NEWS.md: Document this.  Bump version to 2.10.0.
+	* src/decompress.c (enum decompress_tag): Add DECOMPRESS_INPROCESS.
+	(struct decompress_inprocess): New structure.
+	(struct decompress): Add an inprocess element.
+	(decompress_new_inprocess, decompress_try_zlib, decompress_is_pipeline,
+	decompress_inprocess_len, decompress_inprocess_replace): New functions.
+	(decompress_open): Add flags argument.  Try in-process zlib
+	decompression if requested via DECOMPRESS_ALLOW_INPROCESS.  Update all
+	callers to pass a flags argument (0 unless otherwise stated).
+	(decompress_start, decompress_read, decompress_peek,
+	decompress_peek_skip, decompress_readline, decompress_peekline,
+	decompress_wait, decompress_free): Implement in-process mode.
+	* src/decompress.h (DECOMPRESS_ALLOW_INPROCESS): Define.
+	(decompress_open): Update prototype.
+	(decompress_fdopen): Update comment to indicate that this always uses
+	pipeline-based decompression.
+	(decompress_is_pipeline, decompress_inprocess_len,
+	decompress_inprocess_replace): Add prototypes.
+	(decompress_start, decompress_wait): Update comments to document
+	behaviour for in-process decompressors.
+
+	* src/manconv.c (add_output): Add output buffer argument; append to
+	output buffer if given, otherwise write to stdout as before.
+	(try_iconv): Add and pass output buffer argument.
+	(manconv): Likewise.  Update all callers to pass output buffer argument
+	(NULL unless otherwise stated).
+	* src/manconv.h (struct manconv_outbuf): New structure.
+	(manconv): Update prototype.
+	* src/manconv_client.c (manconv_inprocess): New function.
+	* src/manconv_client.h (manconv_inprocess): Add prototype.
+
+	* src/lexgrog.l (find_name): Request in-process decompression unless
+	operating on a cat page.  Use manconv_inprocess rather than add_manconv
+	in the in-process case.
+	* src/man.c (grep): Request in-process decompression.
+	* src/ult_src.c (ult_src): Likewise.
+	* src/zsoelim.l (try_compressed, zsoelim_open_file): Likewise.
+
+2022-01-24  Colin Watson  <cjwatson@debian.org>
+
+	Avoid a manconv subprocess in more cases
+
+	Suggested by Steinar H. Gunderson.
+
+	* src/manconv_client.c (add_manconv): Return early if the source and
+	target encodings are equal, not just if they're both UTF-8.
+
+2022-01-22  Colin Watson  <cjwatson@debian.org>
+
+	Make manconv error handling less abrupt
+
+	Exiting immediately on errors works OK if manconv is only ever used in a
+	subprocess, but that approach makes it hard to use in an in-process
+	context.
+
+	* src/manconv.c (add_output): New function, factored out of try_iconv
+	and manconv.
+	(tried_iconv): New enumeration.
+	(try_iconv): Use add_output.  Return TRIED_ICONV_FATAL where we would
+	previously have exited the process.
+	(manconv): Use add_output.  Return non-zero if add_output returns
+	non-zero or try_iconv returns TRIED_ICONV_FATAL.
+	* src/manconv.h (manconv): Update prototype.
+	* src/manconv_client.c (manconv_stdin): Exit with FATAL if manconv
+	returns non-zero.
+	* src/manconv_main.c (main): Likewise.
+
+2022-01-22  Colin Watson  <cjwatson@debian.org>
+
+	Clarify argument naming in add_manconv
+
+	Suggested by Steinar H. Gunderson.
+
+	* src/manconv_client.c (add_manconv): Rename source to source_encoding,
+	and target to target_encoding.
+	* src/manconv_client.h (add_manconv): Update prototype.
+
+2022-01-19  Colin Watson  <cjwatson@debian.org>
+
+	Add a layer of abstraction to decompression
+
+	It would be useful to have an optimized version of the common case of
+	zlib decompression that doesn't involve forking subprocesses.  As
+	preparation for this, insert an abstraction layer around code that reads
+	from decompressors.  This abstraction layer looks almost identical to
+	the `libpipeline` API except for name changes, but having it allows us
+	to implement decompression in some other way.
+
+	Code that requires `libpipeline`-based decompression can use
+	`decompress_get_pipeline` to assert that the decompressor uses
+	`libpipeline` and return the underlying `pipeline *`.
+
+	* src/decompress.c (enum decompress_tag, struct decompress,
+	decompress_new_pipeline, decompress_get_pipeline, decompress_start,
+	decompress_read, decompress_peek, decompress_peek_skip,
+	decompress_readline, decompress_peekline, decompress_wait,
+	decompress_free): Add.
+	(decompress_open, decompress_fdopen): Return `decompress *` rather than
+	`pipeline *`.
+	* src/decompress.h (decompress): New typedef.
+	(decompress_open, decompress_fdopen): Update prototypes.
+	(decompress_get_pipeline, decompress_start, decompress_read,
+	decompress_peek, decompress_peek_skip, decompress_readline,
+	decompress_peekline, decompress_wait, decompress_free): Add prototypes.
+
+	* src/lexgrog.l (YY_INPUT, find_name, find_name_decompressed): Use
+	decompression API.
+	* src/man-recode.c (recode): Likewise.
+	* src/man.c (get_preprocessors_from_file, get_preprocessors,
+	make_roff_command, format_display_and_save, format_display,
+	display_catman, display, display_pages, grep): Likewise.
+	* src/manconv.c (check_preprocessor_encoding, try_iconv, manconv):
+	Likewise.
+	* src/manconv_client.c (manconv_stdin): Likewise.
+	* src/manconv_main.c (main): Likewise.
+	* src/straycats.c (check_for_stray): Likewise.
+	* src/ult_src.c (ult_src): Likewise.
+	* src/zsoelim.l (YY_INPUT, <<EOF>>, zsoelim_parse_file, try_compressed,
+	zsoelim_open_file): Likewise.
+
+	* src/lexgrog.h (find_name_decompressed): Update prototype.
+	* src/manconv.h (check_preprocessor_encoding, manconv): Likewise.
+
+2022-01-19  Alejandro Cendejas Tena  <alex.cendejas@gmail.com>
+
+	Update Spanish manual page translation
+
+	* man/po4a/po/es.po: Update from Translation Project.
+
+2022-01-18  Colin Watson  <cjwatson@debian.org>
+
+	Fix missing options when invoking troff
+
+	Broken by 000cda3ec5.
+
+	* configure.ac: Move PROG_TROFF definition after all assignments to
+	$troff.
+
+2022-01-18  Colin Watson  <cjwatson@debian.org>
+
+	Fix override-dir handling
+
+	Broken by 000cda3ec5.
+
+	* m4/man-arg-override-dir.m4 (MAN_ARG_OVERRIDE_DIR): Remove superfluous
+	"$" from AC_DEFINE_UNQUOTED call.
+
+2022-01-17  Colin Watson  <cjwatson@debian.org>
+
+	Remove AM_MAINTAINER_MODE
+
+	I enabled this in fb4afb0b75, saying that timestamps were too fragile
+	for the rebuild rules to work well.  However, I've changed my mind: git
+	is good at making sure that file modification times are updated when
+	checking out a different commit, and tarballs include timestamp
+	information.  Moreover, with `AM_MAINTAINER_MODE` and without passing
+	`--enable-maintainer-mode`, flex output isn't automatically regenerated,
+	which is impossibly annoying and has tripped me up countless times since
+	2010.
+
+	* configure.ac (AM_MAINTAINER_MODE): Remove.
+
+2022-01-17  Colin Watson  <cjwatson@debian.org>
+
+	NEWS.md: Document previous commit
+
+2022-01-17  Colin Watson  <cjwatson@chiark.greenend.org.uk>
+
+	Merge branch 'C0rn3j-main-patch-74046' into 'main'
+
+	man-db.timer: Use RandomizedDelaySec over AccuracySec
+
+	See merge request cjwatson/man-db!1
+
+2022-01-17  Colin Watson  <cjwatson@debian.org>
+
+	Avoid libpipeline linkage in libman
+
+	Since it's only used by one function, and not all of man-db's tools need
+	libpipeline in their own right (e.g. accessdb), it seems worth pushing
+	this up a layer.
+
+	* lib/encodings.c (struct conversion_entry, conversion_table,
+	convert_encoding, check_preprocessor_encoding): Move to ...
+	* src/manconv.c: ... here.
+	* lib/encodings.h (check_preprocessor_encoding): Move to ...
+	* src/manconv.h: ... here.
+	* lib/Makefile.am (libman_la_CPPFLAGS): Remove $(libpipeline_CFLAGS).
+	(libman_la_LDFLAGS): Remove $(libpipeline_LIBS).
+	* src/man-recode.c, src/man.c, src/manconv.c: Include manconv.h.
+
+2022-01-17  Colin Watson  <cjwatson@debian.org>
+
+	Pacify cppcheck in check_preprocessor_encoding
+
+	* lib/encoding.c (check_preprocessor_encoding): Explicitly initialize
+	directive_end and ppsearch.  If directive is non-NULL by the time these
+	are used then they're always initialized, but cppcheck didn't manage to
+	spot that.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Update to Gnulib 20220116
+
+	* bootstrap: Sync to Gnulib 1eae0f7ea3c220d054025f2c9211700665f9f4a0.
+	* bootstrap.conf (GNULIB_REVISION): Set to
+	1eae0f7ea3c220d054025f2c9211700665f9f4a0.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Move some more declarations out of manconfig.h
+
+	Header includes should be in the same translation unit as the code that
+	uses them rather than being ambient across the whole project.
+
+	* include/manconfig.h: Remove obsolete header comment about program
+	paths.
+
+	* include/manconfig.h: Remove includes of "xvasprintf.h", <stddef.h>,
+	"xalloc.h", and "xstrndup.h", as well as "struct pipeline" declaration.
+	Update all files that relied on these to include/declare them directly
+	instead as needed.
+
+	* include/manconfig.h (MAN_DB, mkdbname): Move to ...
+	* libdb/mydbm.h: ... here.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Move appendstr out of manconfig.h
+
+	* include/manconfig.h (appendstr): Move to ...
+	* lib/appendstr.h: ... here (new file).
+	* lib/Makefile.am (libman_la_SOURCES): Add appendstr.h.
+	* lib/README: Update file names.
+	* lib/appendstr.c, libdb/db_delete.c, src/catman.c, src/check_mandirs.c,
+	src/compression.c, src/filenames.c, src/globbing.c, src/man.c,
+	src/manconv_client.c, src/manconv_main.c, src/manp.c, src/straycats.c,
+	src/whatis.c, src/zsoelim.l: Include appendstr.h.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Move debug-related declarations out of manconfig.h
+
+	* include/manconfig.h (debug_level, init_debug, debug, debug_error):
+	Move to ...
+	* lib/debug.h: ... here (new file).
+	* lib/Makefile.am (libman_la_SOURCES): Add debug.h.
+	* lib/README: Update file names.
+	* lib/debug.c, lib/encodings.c, lib/sandbox.c, lib/security.c,
+	lib/util.c, libdb/db_btree.c, libdb/db_delete.c, libdb/db_gdbm.c,
+	libdb/db_lookup.c, libdb/db_store.c, libdb/db_ver.c, src/accessdb.c,
+	src/catman.c, src/check_mandirs.c, src/descriptions.c,
+	src/descriptions_store.c, src/filenames.c, src/globbing.c,
+	src/globbing_test.c, src/lexgrog_test.c, src/man-recode.c, src/man.c,
+	src/manconv.c, src/manconv_main.c, src/mandb.c, src/manp.c,
+	src/manpath.c, src/straycats.c, src/ult_src.c, src/whatis.c,
+	src/zsoelim.l, src/zsoelim_main.c: Include debug.h.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Move create_tempdir out of manconfig.h
+
+	* include/manconfig.h (create_tempdir): Move to ...
+	* lib/tempfile.h: ... here (new file).
+	* lib/Makefile.am (libman_la_SOURCES): Add tempfile.h.
+	* lib/tempfile.c, src/man.c: Include tempfile.h.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Move util.c-related declarations out of manconfig.h
+
+	* include/manconfig.h (is_changed, is_directory, escape_shell,
+	remove_directory, trim_spaces, lang_dir, init_locale): Move to ...
+	* lib/util.h: ... here (new file).
+	* lib/Makefile.am (libman_la_SOURCES): Add util.h.
+	* lib/util.c, src/accessdb.c, src/catman.c, src/check_mandirs.c,
+	src/descriptions.c, src/globbing.c, src/globbing_test.c, src/lexgrog.l,
+	src/lexgrog_test.c, src/man-recode.c, src/man.c, src/manconv_main.c,
+	src/mandb.c, src/manp.c, src/manpath.c, src/straycats.c, src/whatis.c,
+	src/zsoelim_main.c: Include util.h.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Move comp_info and comp_file out of manconfig.h
+
+	* include/manconfig.h (comp_info, comp_file): Move to ...
+	* src/compression.h: ... here (new file).
+	* src/Makefile.am (lexgrog_SOURCES, man_SOURCES, man_recode_SOURCES,
+	mandb_SOURCES): Add compression.h.
+	* src/compression.c, src/filenames.c, src/man-recode.c, src/man.c,
+	src/straycats.c, src/ult_src.c: Include compression.h.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Move straycats out of manconfig.h
+
+	* include/manconfig.h (straycats): Move to ...
+	* src/straycats.h: ... here (new file).
+	* src/Makefile.am (mandb_SOURCES): Add straycats.h.
+	* src/mandb.c, src/straycats.c: Include straycats.h.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Use lexgrog type definitions consistently
+
+	* include/manconfig.h (MANPAGE, CATPAGE): Move to ...
+	* src/lexgrog.h (MANPAGE, CATPAGE): ... here.
+	* src/lexgrog.l (find_name, find_name_decompressed): Compare p_lg->type
+	against CATPAGE rather than testing its truth value.
+	* src/lexgrog_test.c (main): Set type to MANPAGE/CATPAGE rather than
+	0/1.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Update translation files
+
+	* po/man-db.pot, po/*.po: Update.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Fix build system following changes to include/*.h
+
+	* Makefile.am (noinst_HEADERS): Add include/comp_src.h and
+	include/manconfig.h.
+	* lib/Makefile.am (libman_la_CPPFLAGS): Replace
+	-I$(top_builddir)/include with -I$(top_srcdir)/include.
+	* libdb/Makefile.am (libmandb_la_CPPFLAGS): Likewise.
+	* src/Makefile.am (AM_CPPFLAGS): Likewise.
+	* src/tests/Makefile.am (AM_CPPFLAGS): Likewise.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Remove Checker support
+
+	The GNU Checker package was last released in 2005, and its web page
+	(https://www.gnu.org/software/checker/) says that it has been
+	decommissioned in favour of Valgrind.
+
+	* include/manconfig.h (chkr_garbage_detector): Remove.
+	* src/man.c (main): Remove call to chkr_garbage_detector.
+	* src/mandb.c (main): Likewise.
+	* src/whatis.c (search): Likewise.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Remove obsolete include/README
+
+	* include/README: Remove; it claimed that this directory contains files
+	created by configure, which is no longer true, and it said nothing else
+	useful.
+	* Makefile.am (dist_noinst_DATA): Remove include/README.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Stop generating include/*.h from configure
+
+	This was inconvenient when making changes to those central header files.
+	All `configure`-generated preprocessor symbols are now in `config.h`.
+
+	* configure.ac: Define various PROG_* symbols.  Remove AC_SUBST calls
+	for compressors and decompressors.
+	(AC_CONFIG_FILES): Remove include/comp_src.h and include/manconfig.h.
+	* m4/man-arg-override-dir.m4: Define OVERRIDE_DIR symbol.
+	* include/manconfig.h.in: Rename to ...
+	* include/manconfig.h: ... this.  Remove PROG_*, OVERRIDE_DIR, and
+	COMPRESS_EXT definitions.
+	* include/comp_src.h.in: Rename to ...
+	* include/comp_src.h: ... this.
+	* README.md: Update references to include/manconfig.h.
+	* .gitignore: Remove include/*.h.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Rename program preprocessor symbols to PROG_*
+
+	This is mainly in order to avoid potential confusion with `PIC` (defined
+	when building position-independent code), but I renamed all these
+	variables for consistency.
+
+	* include/manconfig.h.in (PAGER, CAT, WEB_BROWSER, TR, GREP, TROFF,
+	NROFF, EQN, NEQN, TBL, COL, VGRIND, REFER, GRAP, PIC, COMPRESSOR,
+	GUNZIP, UNCOMPRESS, BUNZIP2, UNLZMA, UNXZ, LZIP, UNZSTD): Rename to ...
+	(PROG_PAGER, PROG_CAT, PROG_BROWSER, PROG_TR, PROG_GREP, PROG_TROFF,
+	PROG_NROFF, PROG_EQN, PROG_NEQN, PROG_TBL, PROG_COL, PROG_VGRIND,
+	PROG_REFER, PROG_GRAP, PROG_PIC, PROG_COMPRESSOR, PROG_GUNZIP,
+	PROG_UNCOMPRESS, PROG_BUNZIP2, PROG_UNLZMA, PROG_UNXZ, PROG_LZIP,
+	PROG_UNZSTD): ... these (respectively).  Update all references.
+
+2022-01-16  Colin Watson  <cjwatson@debian.org>
+
+	Move lexgrog-related bits out of manconfig.h
+
+	It's generally cleaner for things like this to be in a dedicated header
+	file.
+
+	* include/manconfig.h.in (struct lexgrog, find_name,
+	find_name_decompressed): Move to ...
+	* src/lexgrog.h: ... here (new file).  Simplify declarations slightly.
+	* include/manconfig.h.in (lexgrog filter enum): Move to ...
+	* src/lexgrog.l: ... here.
+	* src/Makefile.am (lexgrog_SOURCES, mandb_SOURCES): Add lexgrog.h.
+	* src/check_mandirs.c, src/lexgrog.l, src/lexgrog_test.c,
+	src/straycats.c: Include lexgrog.h.
+
+2022-01-16  Martin  <spleefer90@gmail.com>
+
+	man-db.timer: Use RandomizedDelaySec Avoids congesting resources, otherwise this runs daily at 12:00 and 00:00 https://www.freedesktop.org/software/systemd/man/systemd.timer.html
+
+2022-01-09  Colin Watson  <cjwatson@debian.org>
+
+	Recognize Arabic and Persian translations of NAME
+
+	* src/lexgrog.l (ar_name, fa_name): Add.
+	(name): Add ar_name and fa_name.
+	* NEWS.md: Document this.
+
+2022-01-09  Colin Watson  <cjwatson@debian.org>
+
+	Note Macedonian support
+
+	* src/lexgrog.l: Note that bg_name also works for mk (Macedonian).
+
+2022-01-09  Colin Watson  <cjwatson@debian.org>
+
+	Downgrade "malformed .lf request" warning to debug
+
+	Fixes Debian bug #998426.
+
+	* src/zsoelim.l (<lfnumber,lfname>.): Downgrade and rephrase message,
+	since *roff arithmetic expressions are valid here and we can't
+	reasonably parse them.
+	* NEWS.md: Document this.
+
+2022-01-09  Colin Watson  <cjwatson@debian.org>
+
+	NEWS.md: Fix rendering with some parsers
+
+2022-01-09  Colin Watson  <cjwatson@debian.org>
+
+	Use MAYBE_UNUSED rather than _GL_UNUSED
+
+	We should be using the public name from Gnulib's `attribute.h`.
+
+	* lib/orderfiles.c (order_files) [!HAVE_LINUX_FIEMAP_H &&
+	!HAVE_POSIX_FADVISE]: Use MAYBE_UNUSED rather than _GL_UNUSED.
+	* lib/sandbox.c (_sandbox_load) [!HAVE_LIBSECCOMP]: Likewise.
+	* lib/security.c (drop_privs): Likewise.
+	* libdb/db_ndbm.c (unsorted_nextkey): Likewise.
+	* src/accessdb.c (help_filter): Likewise.
+	* src/check_mandirs.c (chown_if_possible) [!MAN_OWNER]: Likewise.
+	* src/convert.c (close_conv_to_locale): Likewise.
+	* src/decompress.c (decompress_zlib): Likewise.
+	* src/lexgrog_test.c (help_filter): Likewise.
+	* src/man.c (help_filter, squeeze_blank_lines, disable_hyphenation,
+	disable_justification): Likewise.
+	* src/manconv.c (manconv): Likewise.
+	* src/manp.c (free_config_file): Likewise.
+	* src/tests/fspause.c (main): Likewise.
+	* src/whatis.c (help_filter): Likewise.
+	* src/zsoelim_main.c (parse_opt): Likewise.
+
+2022-01-09  Colin Watson  <cjwatson@debian.org>
+
+	lexgrog: Produce output in the user's locale
+
+	Fixes Debian bug #970482.
+
+	* src/whatis.c (simple_convert): Move to ...
+	* src/convert.c: ... here (new file).  Rename to convert_to_locale, and
+	automatically handle setup/teardown of the iconv descriptor.
+	* src/convert.h: New file.
+
+	* src/whatis.c (display): Use convert_to_locale instead of
+	simple_convert.
+	(main): Remove setup/teardown of iconv descriptor, now handled
+	automatically by convert_to_locale.
+	* src/lexgrog_test.c (main): Convert name and whatis to the user's
+	locale.
+	* src/Makefile.am (lexgrog_SOURCES, whatis_SOURCES): Add convert.c and
+	convert.h.
+	* NEWS.md: Document this.
+
+2022-01-03  Colin Watson  <cjwatson@debian.org>
+
+	Add man-pages(7) reference to man(1)
+
+	Fixes Debian bug #974174.
+
+	* man/man1/man.man1 (DESCRIPTION): Add man-pages(7) reference to
+	description of section 7.
+	* man/po4a/po/man-db-manpages.pot, man/po4a/po/*.po: Update.
+	* NEWS.md: Document this.
+
+2022-01-03  Colin Watson  <cjwatson@debian.org>
+
+	Document MAN_DISABLE_SECCOMP and PIPELINE_DEBUG
+
+	Fixes Debian bug #941622.
+
+	* man/man1/man.man1 (ENVIRONMENT): Document MAN_DISABLE_SECCOMP and
+	PIPELINE_DEBUG.
+	* man/po4a/po/man-db-manpages.pot, man/po4a/po/*.po: Update.
+	* NEWS: Document this.
+
+2022-01-03  Colin Watson  <cjwatson@debian.org>
+
+	NEWS: Document previous commit
+
+2022-01-03  Colin Watson  <cjwatson@debian.org>
+
+	Reduce overhead of MAN_DISABLE_SECCOMP=1
+
+	If MAN_DISABLE_SECCOMP=1 is set (or if seccomp is otherwise
+	unavailable), then there's no need to call seccomp_init and friends,
+	which can have significant overhead even if we never actually load the
+	resulting filter.
+
+	Pointed out by Steinar H. Gunderson in https://bugs.debian.org/1003089.
+
+	* lib/sandbox.c (make_seccomp_filter): Return NULL early if
+	can_load_seccomp returns false.
+	(_sandbox_load): Return early if the relevant context is NULL.
+	(sandbox_free): Only call seccomp_release if the relevant context is
+	non-NULL.
+
+2022-01-03  Colin Watson  <cjwatson@debian.org>
+
+	Indicate that merge requests are preferred
+
+	* docs/HACKING.md (Sending patches): Describe merge request workflow and
+	indicate that it is preferred.
+
+2022-01-03  Colin Watson  <cjwatson@debian.org>
+
+	Reformat hacking documentation as Markdown
+
+	* docs/HACKING: Move to ...
+	* docs/HACKING.md: ... here.  Reformat as Markdown.
+	* docs/Makefile.am (dist_noinst_DATA): Replace HACKING with HACKING.md.
+
+2022-01-03  Colin Watson  <cjwatson@debian.org>
+
+	Add release automation
+
+	When a tag is pushed to GitLab, upload the bootstrapped source tarball
+	to the package registry, and create a release in GitLab associated with
+	the tag.
+
+	* .gitlab-ci.yml (stages): Remove test, since it had no jobs.  Add
+	upload and release.
+	(build-distcheck:script): Configure with --enable-maintainer-mode, to
+	ensure that flex-generated scanners are fresh.
+	(upload, release): New jobs.
+	* release.sh: Remove.  GitLab CI handles building releases now.
+	* Makefile.am (EXTRA_DIST): Remove release.sh.
+	* docs/HACKING: Update for GitLab-based release process.
+
+2022-01-03  Colin Watson  <cjwatson@debian.org>
+
+	Reformat release notes as Markdown
+
+	* NEWS: Move to ...
+	* NEWS.md: ... here.  Reformat as Markdown.
+	* Makefile.am (dist_noinst_DATA): Remove NEWS; Automake automatically
+	includes this file (or NEWS.md) in the distribution without help.
+	* README.md, docs/HACKING: Refer to NEWS.md instead of NEWS.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Remove superfluous quotes
+
+	* Makefile.am (gen_start_date): Remove superfluous quotes.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Add build-distcheck CI artifact
+
+	This should eventually allow publishing release tarballs built by a CI
+	process rather than on my laptop.
+
+	* .gitlab-ci.yml (variables): Set GIT_DEPTH to 0; we need full history
+	in order to build the ChangeLog file.
+	(bootstrap:before_script): Add wget, needed to fetch Gnulib PO files.
+	(build-distcheck:before_script): Add git, needed by gitlog-to-changelog.
+	(build-distcheck:artifacts): Add bootstrapped/*.tar.xz.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Switch CI image to debian:unstable
+
+	This gives us newer versions of various dependencies such as the
+	autotools.
+
+	* .gitlab-ci.yml (default:image): Switch from gcc to debian:unstable.
+	(pre-commit:before_script, bootstrap:before_script): Explicitly install
+	git.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Pacify gcc -fanalyzer in manconv
+
+	* src/manconv_main.c (main): Assert that from_code is non-NULL; this is
+	guaranteed by the argp state machine, but the compiler can't prove that.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Fix crash in globbing if run with no arguments
+
+	* src/globbing_test.c (parse_opt): Emit a usage message if there are no
+	non-option arguments.
+	(main): Assert that remaining_args is non-NULL; this is now guaranteed
+	by the argp state machine, but the compiler can't prove that.
+	* NEWS: Document this.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Pacify gcc -fanalyzer in catman
+
+	It isn't actually possible for sections to be NULL after argp parsing
+	has finished, but "gcc -fanalyzer" can't easily determine that, and it's
+	easy enough to arrange for it not to matter.
+
+	* src/catman.c (main): Handle case where sections is NULL.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Pacify gcc -fanalyzer in some database functions
+
+	In GCC 11.2.0, -fanalyzer seems to get confused by copies by assignment
+	of "struct datum", and thinks that there are use-after-free or
+	double-free possibilities with multiple loop iterations.  These seem to
+	be false positives, so ignore them for now.
+
+	* libdb/db_lookup.c (dblookup_pattern): Ignore false use-after-free
+	diagnostic.
+	* src/accessdb.c (main): Ignore false double-free diagnostics.
+	* src/catman.c (parse_for_sec): Ignore false use-after-free diagnostics.
+	* src/check_mandirs.c (sanity_check_db): Ignore false double-free
+	diagnostics.
+	(purge_pointers, purge_missing): Ignore false use-after-free
+	diagnostics.
+	* src/whatis.c (do_apropos): Ignore false use-after-free and double-free
+	diagnostics.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Pacify gcc -fanalyzer in dbdelete
+
+	The refs list can't in fact be empty by this point (because we checked
+	earlier that we could look up this_ref in it), but it's hard for "gcc
+	-fanalyzer" to prove that, so help it understand that multi_content can
+	never end up being NULL.
+
+	* libdb/db_delete.c (dbdelete): Initialize multi_content before looping
+	over refs.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Assert that some xasprintf calls return non-NULL
+
+	"gcc -fanalyzer" notices that xasprintf can return NULL in some
+	situations (string length > INT_MAX, invalid format string, or multibyte
+	conversion error), and that we weren't handling this in various cases
+	where we use the return value in contexts that require non-NULL values.
+	The situations seem obscure enough for simple asserts to be appropriate.
+
+	* lib/pathsearch.c (pathsearch): Assert that xasprintf returns non-NULL.
+	* lib/tempfile.c (create_tempdir): Likewise.
+	* lib/util.c (remove_directory): Likewise.
+	* libdb/db_lookup.c (make_multi_key): Likewise.
+	* libdb/db_store.c (make_content, dbstore): Likewise.
+	* src/check_mandirs.c (add_dir_entries, fix_permissions_tree): Likewise.
+	* src/compression.c (comp_file): Likewise.
+	* src/globbing.c (look_for_file): Likewise.
+	* src/man.c (main): Likewise.
+	* src/mandb.c (mandb, purge_catsubdirs): Likewise.
+	* src/manp.c (pathappend): Likewise.
+	* src/ult_src.c (find_include): Likewise.
+	* src/whatis.c (use_grep): Likewise.
+	* src/zsoelim.l (zsoelim_open_file): Likewise.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Fix path searching crash if getcwd fails
+
+	xgetcwd can return NULL if getcwd returns NULL for reasons other than
+	ENOMEM, so we should handle this.  Found by "gcc -fanalyzer".
+
+	* lib/pathsearch.c (pathsearch, directory_on_path): Emit a fatal error
+	if xgetcwd returns NULL.
+	* po/POTFILES.in: Add lib/pathsearch.c.
+	* NEWS: Document this.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Update to Gnulib 20211231
+
+	In line with Gnulib, we now require Autoconf 2.64.
+
+	* bootstrap: Sync to Gnulib 14db2b71b5bd05b94ec6126617fd32cd5f1016cd.
+	* bootstrap.conf (GNULIB_REVISION): Set to
+	14db2b71b5bd05b94ec6126617fd32cd5f1016cd.
+	(buildreq): Bump required autoconf version to 2.64.
+	* configure.ac (AC_PREREQ): Bump to 2.64.
+	(--enable-gcc-warnings): New option, based on code in coreutils.  Use
+	this to enable -fanalyzer only if --enable-gcc-warnings=expensive is
+	used; it's useful but slow.
+	* include/manconfig.h.in (create_tempdir, appendstr): Move NODISCARD to
+	the start of these function declarations, required by draft C2x.
+	* patches/argp-domain.patch: Rebase.
+	* NEWS: Document this.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Fix NULL dereference in get_locale_charset callers
+
+	* lib/encodings.c (get_canonical_charset_name): Declare argument and
+	return value as non-NULL.
+	(get_locale_charset): Declare return value as non-NULL.  Fall back to
+	"ANSI_X3.4-1968" if locale_charset returned NULL or the empty string.
+
+2022-01-02  Colin Watson  <cjwatson@debian.org>
+
+	Trim down direct Gnulib dependencies a little
+
+	* bootstrap.conf (gnulib_modules): Add c99 (already used indirectly, but
+	seems like a good idea to request directly now).  Remove getopt-gnu,
+	lock, and unsetenv, none of which we use directly.  Replace fcntl with
+	fcntl-h and signal with signal-h, since we use the corresponding header
+	files directly but not the corresponding functions.
+	* .gitignore: Remove lib/getopt.h.
+
+2022-01-01  Colin Watson  <cjwatson@debian.org>
+
+	Fix warnings with Autoconf >= 2.70
+
+	* configure.ac (AC_PROG_LEX): Add noyywrap argument (new in Autoconf
+	2.70, but ignored in previous versions).
+	* m4/man-bdb.m4 (MAN_CHECK_BDB): Autoconf 2.70 warns about non-literal
+	arguments to AC_CHECK_HEADERS.  Refactor loops so that the header and
+	library names are visible to m4.
+
+2022-01-01  Colin Watson  <cjwatson@debian.org>
+
+	Add an SC_ALLOW_PERMISSIVE macro
+
+	This plays slightly better with clang-format.
+
+	* lib/sandbox.c (SC_ALLOW_PERMISSIVE): New macro.
+	(make_seccomp_filter): Use SC_ALLOW_PERMISSIVE instead of forms such as
+	"if (permissive) SC_ALLOW (name);".
+
+2022-01-01  Colin Watson  <cjwatson@debian.org>
+
+	Use Gnulib attribute.h properly
+
+	manconfig.h previously used _GL_ATTRIBUTE_FORMAT_PRINTF_SYSTEM without
+	first including "stdio.h", which caused build failures.  We should be
+	using the public names anyway.
+
+	* bootstrap.conf (gnulib_modules): Add attribute.
+
+	* include/manconfig.h.in (create_tempdir, appendstr): Use NODISCARD
+	rather than _GL_ATTRIBUTE_NODISCARD.
+
+	* include/manconfig.h.in (debug, debug_error): Use ATTRIBUTE_FORMAT
+	rather than _GL_ATTRIBUTE_FORMAT_PRINTF_SYSTEM.
+	* lib/debug.c (vdebug): Likewise.
+
+	* include/manconfig.h.in (appendstr): Use ATTRIBUTE_SENTINEL rather than
+	_GL_ATTRIBUTE_SENTINEL.
+
+	* lib/encodings.c (get_page_encoding): Use ATTRIBUTE_MALLOC rather than
+	_GL_ATTRIBUTE_MALLOC.
+	* lib/util.c (trim_spaces): Likewise.
+
+	* lib/encodings.c (is_roff_device, get_output_encoding,
+	get_less_charset, get_jless_charset): Use ATTRIBUTE_PURE rather than
+	_GL_ATTRIBUTE_PURE.
+	* lib/glcontainers.c (string_equals, string_hash): Likewise.
+	* lib/security.c (running_setuid): Likewise.
+	* src/manp.c (canonicalized_path_equals, canonicalized_path_hash):
+	Likewise.
+	* src/whatis.c (match): Likewise.
+
+	* libdb/db_lookup.c (dash_if_unset): Use ATTRIBUTE_CONST rather than
+	_GL_ATTRIBUTE_CONST.
+	* libdb/db_store.c (compare_ids): Likewise.
+
+2022-01-01  Colin Watson  <cjwatson@debian.org>
+
+	Reduce indentation depth using C99
+
+	* src/man.c (parse_opt): Remove an enclosing block and associated
+	indentation level, since C99 allows mixing declarations and code.
+
+2022-01-01  Colin Watson  <cjwatson@debian.org>
+
+	Pacify pre-commit
+
+	* lib/mp.h: Remove trailing whitespace.
+
+2022-01-01  Colin Watson  <cjwatson@debian.org>
+
+	Simplify interface to container iterator macros
+
+	The Gnulib container iterator macros (GL_LIST_FOREACH_* and
+	GL_MAP_FOREACH_*) have to run code both before and after a chunk of
+	user-supplied code.  This previously required a START/END macro pair
+	used something like this:
+
+	    GL_LIST_FOREACH_START (names, name) {
+	        ...
+	    } GL_LIST_FOREACH_END (names);
+
+	This doesn't look natural in C, and so it was easy to get it wrong.
+
+	It's possible to do better, at the cost of some tricky macros.
+	Fortunately, Simon Tatham has already done the hard work in
+	https://www.chiark.greenend.org.uk/~sgtatham/mp/, and the necessary
+	header file is MIT-licensed, so we can incorporate it.  Now these
+	iterator macros are used more like this, which is a much more natural C
+	style:
+
+	    GL_LIST_FOREACH (names, name) {
+	        ...
+	    }
+
+	* lib/mp.h: New file.
+	* lib/Makefile.am (libman_la_SOURCES): Add mp.h.
+	* lib/README: Add mp.h.  Rephrase introductory text about licensing to
+	account for an MIT-licensed file.
+	* lib/glcontainers.h (GL_LIST_FOREACH_START, GL_LIST_FOREACH_END):
+	Rewrite as ...
+	(GL_LIST_FOREACH): ... this.  Update all callers.
+	(GL_MAP_FOREACH_START, GL_MAP_FOREACH_END): Rewrite as ...
+	(GL_MAP_FOREACH): ... this.  Update all callers.
+	* NEWS, README.md, docs/HACKING: Document C99 compiler requirement.
+
+2022-01-01  Colin Watson  <cjwatson@debian.org>
+
+	Simplify some GCC attribute handling
+
+	* include/manconfig.h.in (ATTRIBUTE_FORMAT_PRINTF,
+	ATTRIBUTE_WARN_UNUSED_RESULT, ATTRIBUTE_SENTINEL): Remove in favour of
+	Gnulib-provided macros.
+	(create_tempdir, appendstr): Use _GL_ATTRIBUTE_NODISCARD rather than
+	ATTRIBUTE_WARN_UNUSED_RESULT.
+	(debug, debug_error): Use _GL_ATTRIBUTE_FORMAT_PRINTF_SYSTEM rather than
+	ATTRIBUTE_FORMAT_PRINTF.
+	(appendstr): Use _GL_ATTRIBUTE_SENTINEL rather than ATTRIBUTE_SENTINEL.
+	* lib/debug.c (vdebug): Use _GL_ATTRIBUTE_FORMAT_PRINTF_SYSTEM rather
+	than ATTRIBUTE_FORMAT_PRINTF.
+
+2022-01-01  Colin Watson  <cjwatson@debian.org>
+
+	Introduce pre-commit
+
+	* .pre-commit-config.yaml: New file.
+	* .gitlab-ci.yml (stages): Add bootstrap.
+	(pre-commit): New job.
+	(bootstrap): Move to bootstrap stage.
+
+	Remove trailing whitespace from all files.
+
+2022-01-01  Colin Watson  <cjwatson@debian.org>
+
+	Update licence texts
+
+	There are no substantive licensing changes here, only formatting
+	adjustments and referring to the "GNU Lesser General Public License"
+	rather than the "GNU Library General Public License".
+
+	* docs/COPYING: Update from current contents of
+	https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
+	* docs/COPYING.LIB: Update from current contents of
+	https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt.
+
+2021-12-31  Colin Watson  <cjwatson@debian.org>
+
+	Document migration to GitLab
+
+	* README.md: Add link to GitLab repository.
+	(Contacting the maintainer): Add GitLab issues link.
+	* docs/HACKING (Revision control): Update for GitLab.
+	* man/man1/apropos.man1 (BUGS): Add GitLab issues link.
+	* man/man1/lexgrog.man1 (BUGS): Likewise.
+	* man/man1/man-recode.man1 (BUGS): Likewise.
+	* man/man1/man.man1 (BUGS): Likewise.
+	* man/man1/manconv.man1 (BUGS): Likewise.
+	* man/man1/manpath.man1 (BUGS): Likewise.
+	* man/man1/whatis.man1 (BUGS): Likewise.
+	* man/man1/zsoelim.man1 (BUGS): Likewise.
+	* man/man5/manpath.man5 (BUGS): Likewise.
+	* man/man8/accessdb.man8 (BUGS): Likewise.
+	* man/man8/catman.man8 (BUGS): Likewise.
+	* man/man8/mandb.man8 (BUGS): Likewise.
+	* NEWS: Document this.
+
+2021-11-17  Colin Watson  <cjwatson@debian.org>
+
+	Reformat README
+
+	* README: Move to ...
+	* README.md: ... here.  Reformat as Markdown.
+	* Makefile.am (dist_noinst_DATA): Replace README with README.md.
+	* docs/INSTALL.quick: Likewise.
+
+2021-11-16  Colin Watson  <cjwatson@debian.org>
+
+	Add .gitlab-ci.yml
+
+2021-09-19  Colin Watson  <cjwatson@debian.org>
+
+	Update some obsolete Autoconf macros
+
+	* configure.ac: Replace AC_GNU_SOURCE and AC_ISC_POSIX with
+	AC_USE_SYSTEM_EXTENSIONS.  Replace AC_CONFIG_HEADER with
+	AC_CONFIG_HEADERS.  Remove an obsolete comment.
+
+2021-09-19  Colin Watson  <cjwatson@debian.org>
+
+	Stop using obsolete AC_TRY_LINK
+
+	This has been obsolete since Autoconf 2.55.  Use its AC_LINK_IFELSE
+	expansion instead.
+
+	* m4/man-bdb.m4 (MAN_CHECK_BDB): Expand AC_TRY_LINK call using
+	AC_LINK_IFELSE.
+
+2021-09-18  Mario Blättermann  <mario.blaettermann@gmail.com>
+
+	Update German manual page translation
+
+	* man/po4a/po/de.po: Update from Translation Project.
+
+2021-09-18  Mario Blättermann  <mario.blaettermann@gmail.com>
+
+	Update German manual page translation
+
+	* man/po4a/po/de.po: Update from Translation Project.
+
+2021-07-11  Colin Watson  <cjwatson@debian.org>
+
+	Fix mishandling of suffix matches in manpath
+
+	Fixes Savannah bug #60906.
+
+	* src/manp.c (pathappend): strstr might return matches that are not at
+	the start of a manpath element, resulting in incorrect truncation.  Skip
+	any such matches.
+
 2021-02-08  Colin Watson  <cjwatson@debian.org>
 
 	Release man-db 2.9.4
@@ -89,7 +3734,7 @@
 	* man/man8/mandb.man8 (DATABASE CACHES): Remove "Type" column from
 	table.
 
-2020-07-03  Colin Watson  <cjwatson@debian.org>
+2020-07-02  Colin Watson  <cjwatson@debian.org>
 
 	Recognise Romanian translations of NAME
 
@@ -231,7 +3876,7 @@
 
 	NEWS: Remove superfluous ")"
 
-2020-04-04  Boyuan Yang  <073plan@gmail.com>
+2020-04-03  Boyuan Yang  <073plan@gmail.com>
 
 	Update Simplified Chinese manual page translation
 
@@ -368,7 +4013,7 @@
 
 	* man/po4a/po/es.po: Update from Translation Project.
 
-2019-10-11  Mario Blättermann  <mario.blaettermann@gmail.com>
+2019-10-10  Mario Blättermann  <mario.blaettermann@gmail.com>
 
 	Update German manual page translation
 
@@ -861,7 +4506,7 @@
 	* man/man1/man.man1 (DEFAULTS): Remove two stray words from the
 	description of how the pager is specified.
 
-2019-09-06  Colin Watson  <cjwatson@debian.org>
+2019-09-05  Colin Watson  <cjwatson@debian.org>
 
 	Adjust encoding declarations when recoding
 
@@ -947,7 +4592,7 @@
 	* src/man.c (get_preprocessors_from_file): Likewise.
 	* src/zsoelim.l (zsoelim_parse_file): Likewise.
 
-2019-09-01  Colin Watson  <cjwatson@debian.org>
+2019-08-31  Colin Watson  <cjwatson@debian.org>
 
 	Remove ability to undefine COMP_SRC
 
@@ -1131,7 +4776,7 @@
 	* lib/linelength.c: Include "linelength.h".
 	* lib/orderfiles.c: Include "orderfiles.h".
 
-2019-08-24  Colin Watson  <cjwatson@debian.org>
+2019-08-23  Colin Watson  <cjwatson@debian.org>
 
 	Simplify some GCC attribute handling
 
@@ -1154,7 +4799,7 @@
 	shorter _GL_UNUSED.
 	(ATTRIBUTE_MALLOC): Remove; it was unused.
 
-2019-08-24  Colin Watson  <cjwatson@debian.org>
+2019-08-23  Colin Watson  <cjwatson@debian.org>
 
 	Use C11/Gnulib's _Noreturn
 
@@ -1163,7 +4808,7 @@
 	ATTRIBUTE_NORETURN.
 	* include/manconfig.h.in (ATTRIBUTE_NORETURN): Remove.
 
-2019-08-24  Colin Watson  <cjwatson@debian.org>
+2019-08-23  Colin Watson  <cjwatson@debian.org>
 
 	Update to Gnulib 20190821
 
@@ -2707,14 +6352,14 @@
 	* src/check_mandirs.c (testmandirs, update_db): Likewise.
 	* src/man.c (maybe_update_file): Likewise.
 
-2018-04-05  Colin Watson  <cjwatson@debian.org>
+2018-04-04  Colin Watson  <cjwatson@debian.org>
 
 	Fix broken test
 
 	* src/tests/man-8: Fix expected output to account for recent change to
 	locale_macros.
 
-2018-04-05  Colin Watson  <cjwatson@debian.org>
+2018-04-04  Colin Watson  <cjwatson@debian.org>
 
 	man: Only change directory in child processes
 
@@ -3290,7 +6935,7 @@
 
 	* docs/INSTALL.quick: Bump minimum libpipeline version to 1.4.0.
 
-2017-07-18  Colin Watson  <cjwatson@debian.org>
+2017-07-17  Colin Watson  <cjwatson@debian.org>
 
 	Fix formatting error in Turkish translation
 
@@ -4342,23 +7987,23 @@
 	* configure.ac: Require libpipeline >= 1.4.0.
 	* NEWS: Document this.
 
-2014-10-23  Colin Watson  <cjwatson@debian.org>
+2014-10-22  Colin Watson  <cjwatson@debian.org>
 
 	NEWS: Document recent Solaris portability changes
 
-2014-10-23  Colin Watson  <cjwatson@debian.org>
+2014-10-22  Colin Watson  <cjwatson@debian.org>
 
 	Fix linking of fspause on Solaris
 
 	* src/tests/fspause.c (main): Set program_name.  Patch by Peter Bray.
 
-2014-10-23  Colin Watson  <cjwatson@debian.org>
+2014-10-22  Colin Watson  <cjwatson@debian.org>
 
 	autogen.sh: Avoid "export VARIABLE=value" syntax
 
 	Older Solaris shells do not support this.  Patch by Peter Bray.
 
-2014-10-23  Colin Watson  <cjwatson@debian.org>
+2014-10-22  Colin Watson  <cjwatson@debian.org>
 
 	gnulib: Import strcasestr module.
 
@@ -4368,11 +8013,11 @@
 
 	* man/po4a/po/da.po: Update from Translation Project.
 
-2014-09-28  Colin Watson  <cjwatson@debian.org>
+2014-09-27  Colin Watson  <cjwatson@debian.org>
 
 	* Version: 2.7.0.2.
 
-2014-09-28  Colin Watson  <cjwatson@debian.org>
+2014-09-27  Colin Watson  <cjwatson@debian.org>
 
 	Work around lack of UTIME_* on GNU/Hurd
 
@@ -4402,7 +8047,7 @@
 
 	* Makefile.am (EXTRA_DIST): Add gnulib/m4/sockpfaf.m4.
 
-2014-09-24  Colin Watson  <cjwatson@debian.org>
+2014-09-23  Colin Watson  <cjwatson@debian.org>
 
 	Fix tests when build fs does not support high-precision timestamps
 
@@ -4589,7 +8234,7 @@
 
 	* NEWS: Document a couple more changes since 2.6.7.1.
 
-2014-09-16  Colin Watson  <cjwatson@debian.org>
+2014-09-15  Colin Watson  <cjwatson@debian.org>
 
 	Merge convert_name into man.c
 
@@ -4603,11 +8248,11 @@
 	* po/POTFILES.in: Remove src/convert_name.c.
 	* po/man-db.pot, po/*.po: Update.
 
-2014-09-16  Colin Watson  <cjwatson@debian.org>
+2014-09-15  Colin Watson  <cjwatson@debian.org>
 
 	* tools/README: Update heading to reflect moves to build-aux.
 
-2014-09-16  Colin Watson  <cjwatson@debian.org>
+2014-09-15  Colin Watson  <cjwatson@debian.org>
 
 	Make a few libdb functions static
 
@@ -4617,7 +8262,7 @@
 	* libdb/db_storage.h (split_data, make_content, copy_if_set): Remove
 	prototypes.
 
-2014-09-16  Colin Watson  <cjwatson@debian.org>
+2014-09-15  Colin Watson  <cjwatson@debian.org>
 
 	Make various functions static
 
@@ -4629,14 +8274,14 @@
 	purge_catsubdirs, purge_catdirs): Likewise.
 	* src/zsoelim.l (try_compressed): Likewise.
 
-2014-09-16  Colin Watson  <cjwatson@debian.org>
+2014-09-15  Colin Watson  <cjwatson@debian.org>
 
 	Remove unused code in lexgrog
 
 	* src/lexgrog.l (rule_profile): Remove unused function and
 	associated global declarations.
 
-2014-09-16  Colin Watson  <cjwatson@debian.org>
+2014-09-15  Colin Watson  <cjwatson@debian.org>
 
 	Reorder functions in man to remove need for header file
 
@@ -4669,7 +8314,7 @@
 
 	* build-aux/config.sub: Upgrade to 2014-09-11.
 
-2014-09-13  Colin Watson  <cjwatson@debian.org>
+2014-09-12  Colin Watson  <cjwatson@debian.org>
 
 	Simplify <dirent.h> handling using Gnulib
 
@@ -4680,7 +8325,7 @@
 	* src/straycats.c: Likewise.
 	* src/ult_src.c: Likewise.
 
-2014-09-13  Colin Watson  <cjwatson@debian.org>
+2014-09-12  Colin Watson  <cjwatson@debian.org>
 
 	Remove old and broken FAST_BTREE code
 
@@ -4825,11 +8470,11 @@
 
 	* src/catman.c (parse_for_sec): Execute MAN rather than "man".
 
-2014-09-09  Colin Watson  <cjwatson@debian.org>
+2014-09-08  Colin Watson  <cjwatson@debian.org>
 
 	* man/po4a/po/da.po: Fix po4a syntax error.
 
-2014-09-09  Colin Watson  <cjwatson@debian.org>
+2014-09-08  Colin Watson  <cjwatson@debian.org>
 
 	Various autotools upgrades
 

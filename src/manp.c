@@ -39,7 +39,7 @@
  * Wed May  4 15:44:47 BST 1994 Wilf. (G.Wilford@ee.surrey.ac.uk): changes
  * to get_dirlist() and manpath().
  *
- * This whole code segment is unfriendly and could do with a complete 
+ * This whole code segment is unfriendly and could do with a complete
  * overhaul.
  */
 
@@ -60,11 +60,15 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "attribute.h"
 #include "canonicalize.h"
+#include "error.h"
 #include "gl_array_list.h"
 #include "gl_linkedhash_list.h"
 #include "gl_xlist.h"
+#include "xalloc.h"
 #include "xgetcwd.h"
+#include "xstrndup.h"
 #include "xvasprintf.h"
 
 #include "gettext.h"
@@ -72,10 +76,13 @@
 
 #include "manconfig.h"
 
-#include "error.h"
+#include "appendstr.h"
 #include "cleanup.h"
+#include "debug.h"
+#include "fatal.h"
 #include "glcontainers.h"
 #include "security.h"
+#include "util.h"
 
 #include "manp.h"
 #include "globbing.h"
@@ -131,17 +138,17 @@ static void add_config (const char *key, const char *cont,
 	gl_list_add_last (config, item);
 }
 
-static const char *get_config (const char *key, enum config_flag flag)
+static const char * ATTRIBUTE_PURE get_config (const char *key,
+					       enum config_flag flag)
 {
 	const struct config_item *item;
 	char *cont = NULL;
 
-	GL_LIST_FOREACH_START (config, item)
+	GL_LIST_FOREACH (config, item)
 		if (flag == item->flag && STREQ (key, item->key)) {
 			cont = item->cont;
 			break;
 		}
-	GL_LIST_FOREACH_END (config);
 
 	return cont;
 }
@@ -151,7 +158,7 @@ static const char *get_config (const char *key, enum config_flag flag)
  *
  * If not setuid, this is identical to get_def_user.
  */
-const char *get_def (const char *thing, const char *def)
+const char * ATTRIBUTE_PURE get_def (const char *thing, const char *def)
 {
 	const char *config_def;
 
@@ -162,7 +169,7 @@ const char *get_def (const char *thing, const char *def)
 	return config_def ? config_def : def;
 }
 
-const char *get_def_user (const char *thing, const char *def)
+const char * ATTRIBUTE_PURE get_def_user (const char *thing, const char *def)
 {
 	const char *config_def = get_config (thing, DEFINE_USER);
 	if (!config_def)
@@ -170,7 +177,7 @@ const char *get_def_user (const char *thing, const char *def)
 	return config_def ? config_def : def;
 }
 
-static void add_sections (char *sections, int user)
+static void add_sections (char *sections, bool user)
 {
 	char *section_list = xstrdup (sections);
 	char *sect;
@@ -196,25 +203,24 @@ gl_list_t get_sections (void)
 	gl_list_t sections;
 	enum config_flag flag;
 
-	GL_LIST_FOREACH_START (config, item) {
+	GL_LIST_FOREACH (config, item) {
 		if (item->flag == SECTION_USER)
 			length_user++;
 		else if (item->flag == SECTION)
 			length++;
-	} GL_LIST_FOREACH_END (config);
+	}
 	sections = new_string_list (GL_ARRAY_LIST, true);
 	if (length_user)
 		flag = SECTION_USER;
 	else
 		flag = SECTION;
-	GL_LIST_FOREACH_START (config, item)
+	GL_LIST_FOREACH (config, item)
 		if (item->flag == flag)
 			gl_list_add_last (sections, xstrdup (item->key));
-	GL_LIST_FOREACH_END (config);
 	return sections;
 }
 
-static void add_def (const char *thing, const char *config_def, int user)
+static void add_def (const char *thing, const char *config_def, bool user)
 {
 	add_config (thing, config_def, user ? DEFINE_USER : DEFINE);
 
@@ -231,7 +237,7 @@ static void add_manpath_map (const char *path, const char *mandir)
 	debug ("  Path `%s' mapped to mandir `%s'.\n", path, mandir);
 }
 
-static void add_mandb_map (const char *mandir, const char *catdir, int user)
+static void add_mandb_map (const char *mandir, const char *catdir, bool user)
 {
 	char *tmpcatdir;
 
@@ -281,7 +287,10 @@ static char *pathappend (char *oldpath, const char *appendage)
 			search = strstr (app_dedup, tok);
 			while (search) {
 				char *terminator = search + strlen (tok);
-				if (!*terminator) {
+				if (search > app_dedup && search[-1] != ':')
+					/* Ignore suffix matches. */
+					;
+				else if (!*terminator) {
 					/* End of the string, so chop here. */
 					*search = 0;
 					while (search > app_dedup &&
@@ -293,6 +302,7 @@ static char *pathappend (char *oldpath, const char *appendage)
 					*search = 0;
 					newapp = xasprintf ("%s%s", app_dedup,
 							    terminator + 1);
+					assert (newapp);
 					free (app_dedup);
 					app_dedup = newapp;
 				}
@@ -331,7 +341,7 @@ static void gripe_not_directory (const char *dir)
 		error (0, 0, _("warning: %s isn't a directory"), dir);
 }
 
-/* accept a manpath list, separated with ':', return the associated 
+/* accept a manpath list, separated with ':', return the associated
    catpath list */
 char *cat_manpath (char *manp)
 {
@@ -342,12 +352,12 @@ char *cat_manpath (char *manp)
 		catdir = get_config (path, MANDB_MAP_USER);
 		if (!catdir)
 			catdir = get_config (path, MANDB_MAP);
-		catp = catdir ? pathappend (catp, catdir) 
+		catp = catdir ? pathappend (catp, catdir)
 			      : pathappend (catp, path);
 	}
 
 	return catp;
-}		
+}
 
 /* Unpack a glibc-style locale into its component parts.
  *
@@ -667,12 +677,12 @@ static char *guess_manpath (const char *systems)
 			/* Things aren't going to work well here either... */
 			if (!quiet)
 				error (0, 0, _("warning: empty $PATH"));
-			
+
 			return add_system_manpath (systems,
 						   def_path (MANDATORY));
 		}
 
-		manpathlist = get_manpath_from_path (path, 1);
+		manpathlist = get_manpath_from_path (path, true);
 	}
 	manpath = add_system_manpath (systems, manpathlist);
 	free (manpathlist);
@@ -743,7 +753,7 @@ char *get_manpath (const char *systems)
 }
 
 /* Parse the manpath.config file, extracting appropriate information. */
-static void add_to_dirlist (FILE *config_file, int user)
+static void add_to_dirlist (FILE *config_file, bool user)
 {
 	char *bp;
 	char *buf = NULL;
@@ -771,12 +781,12 @@ static void add_to_dirlist (FILE *config_file, int user)
 		else if (sscanf (bp, "MANBIN %*s") == 1)
 			goto next;
 		else if (sscanf (bp, "MANDATORY_MANPATH %511s", key) == 1)
-			add_mandatory (key);	
+			add_mandatory (key);
 		else if (sscanf (bp, "MANPATH_MAP %511s %511s",
-			 key, cont) == 2) 
+			 key, cont) == 2)
 			add_manpath_map (key, cont);
 		else if ((c = sscanf (bp, "MANDB_MAP %511s %511s",
-				      key, cont)) > 0) 
+				      key, cont)) > 0)
 			add_mandb_map (key, c == 2 ? cont : key, user);
 		else if ((c = sscanf (bp, "DEFINE %511s %511[^\n]",
 				      key, cont)) > 0)
@@ -805,14 +815,14 @@ next:
 	free (buf);
 }
 
-static void free_config_file (void *unused _GL_UNUSED)
+static void free_config_file (void *unused MAYBE_UNUSED)
 {
 	gl_list_free (config);
 }
 
 void read_config_file (bool optional)
 {
-	static int done = 0;
+	static bool done = false;
 	char *dotmanpath = NULL;
 	FILE *config_file;
 
@@ -834,7 +844,7 @@ void read_config_file (bool optional)
 		config_file = fopen (dotmanpath, "r");
 		if (config_file != NULL) {
 			debug ("From the config file %s:\n", dotmanpath);
-			add_to_dirlist (config_file, 1);
+			add_to_dirlist (config_file, true);
 			fclose (config_file);
 		}
 		free (dotmanpath);
@@ -854,12 +864,12 @@ void read_config_file (bool optional)
 		} else {
 			debug ("From the config file %s:\n", CONFIG_FILE);
 
-			add_to_dirlist (config_file, 0);
+			add_to_dirlist (config_file, false);
 			fclose (config_file);
 		}
 	}
 
-	done = 1;
+	done = true;
 }
 
 
@@ -872,13 +882,13 @@ static char *def_path (enum config_flag flag)
 	char *manpath = NULL;
 	const struct config_item *item;
 
-	GL_LIST_FOREACH_START (config, item)
+	GL_LIST_FOREACH (config, item)
 		if (item->flag == flag) {
 			gl_list_t expanded_dirs;
 			const char *expanded_dir;
 
 			expanded_dirs = expand_path (item->key);
-			GL_LIST_FOREACH_START (expanded_dirs, expanded_dir) {
+			GL_LIST_FOREACH (expanded_dirs, expanded_dir) {
 				int status = is_directory (expanded_dir);
 
 				if (status < 0)
@@ -891,33 +901,15 @@ static char *def_path (enum config_flag flag)
 				else if (status == 1)
 					manpath = pathappend (manpath,
 							      expanded_dir);
-			} GL_LIST_FOREACH_END (expanded_dirs);
+			}
 			gl_list_free (expanded_dirs);
 		}
-	GL_LIST_FOREACH_END (config);
 
 	/* If we have complete config file failure... */
 	if (!manpath)
 		return xstrdup ("/usr/man");
 
 	return manpath;
-}
-
-/*
- * If specified with configure, append OVERRIDE_DIR to dir param and add it
- * to list.
- */
-static void insert_override_dir (gl_list_t list, const char *dir)
-{
-	char *override_dir = NULL;
-
-	if (!strlen (OVERRIDE_DIR))
-		return;
-
-	if ((override_dir = xasprintf ("%s/%s", dir, OVERRIDE_DIR))) {
-		add_dir_to_list (list, override_dir);
-		free (override_dir);
-	}
 }
 
 /*
@@ -931,7 +923,7 @@ static void insert_override_dir (gl_list_t list, const char *dir)
  * $HOME/man exists -- the directory $HOME/man will be added
  * to the manpath.
  */
-char *get_manpath_from_path (const char *path, int mandatory)
+char *get_manpath_from_path (const char *path, bool mandatory)
 {
 	gl_list_t tmplist;
 	const struct config_item *config_item;
@@ -961,18 +953,17 @@ char *get_manpath_from_path (const char *path, int mandatory)
 		/* If the directory we're working on has MANPATH_MAP entries
 		 * in the config file, add them to the list.
 		 */
-		GL_LIST_FOREACH_START (config, config_item) {
+		GL_LIST_FOREACH (config, config_item) {
 			if (MANPATH_MAP != config_item->flag ||
 			    !STREQ (p, config_item->key))
 				continue;
 			if (!manpath_map_found)
 				debug ("is in the config file\n");
 			manpath_map_found = true;
-			insert_override_dir (tmplist, config_item->cont);
 			add_dir_to_list (tmplist, config_item->cont);
-		} GL_LIST_FOREACH_END (config);
+		}
 
-		 /* The directory we're working on isn't in the config file.  
+		 /* The directory we're working on isn't in the config file.
 		    See if it has ../man, man, ../share/man, or share/man
 		    subdirectories.  If so, and they haven't been added to
 		    the list, do. */
@@ -988,19 +979,15 @@ char *get_manpath_from_path (const char *path, int mandatory)
 	if (mandatory) {
 		debug ("adding mandatory man directories\n");
 
-		GL_LIST_FOREACH_START (config, config_item) {
-			if (config_item->flag == MANDATORY) {
-				insert_override_dir (tmplist,
-						     config_item->key);
+		GL_LIST_FOREACH (config, config_item) {
+			if (config_item->flag == MANDATORY)
 				add_dir_to_list (tmplist, config_item->key);
-			}
-		} GL_LIST_FOREACH_END (config);
+		}
 	}
 
 	len = 0;
-	GL_LIST_FOREACH_START (tmplist, item)
+	GL_LIST_FOREACH (tmplist, item)
 		len += strlen (item) + 1;
-	GL_LIST_FOREACH_END (tmplist);
 
 	if (!len)
 		/* No path elements in configuration file or with
@@ -1012,12 +999,12 @@ char *get_manpath_from_path (const char *path, int mandatory)
 	*manpathlist = '\0';
 
 	p = manpathlist;
-	GL_LIST_FOREACH_START (tmplist, item) {
+	GL_LIST_FOREACH (tmplist, item) {
 		len = strlen (item);
 		memcpy (p, item, len);
 		p += len;
 		*p++ = ':';
-	} GL_LIST_FOREACH_END (tmplist);
+	}
 
 	p[-1] = '\0';
 
@@ -1058,9 +1045,8 @@ static void add_dir_to_list (gl_list_t list, const char *dir)
 	const char *expanded_dir;
 
 	expanded_dirs = expand_path (dir);
-	GL_LIST_FOREACH_START (expanded_dirs, expanded_dir)
+	GL_LIST_FOREACH (expanded_dirs, expanded_dir)
 		add_expanded_dir_to_list (list, expanded_dir);
-	GL_LIST_FOREACH_END (expanded_dirs);
 	gl_list_free (expanded_dirs);
 }
 
@@ -1070,43 +1056,50 @@ static void add_dir_to_list (gl_list_t list, const char *dir)
 static void add_man_subdirs (gl_list_t list, const char *path)
 {
 	char *newpath;
+        char *trimmed_path = xstrdup (path);
 
-	/* don't assume anything about path, especially that it ends in 
+	/* don't assume anything about path, especially that it ends in
 	   "bin" or even has a '/' in it! */
-	   
-	char *subdir = strrchr (path, '/');
+
+	char *subdir = strrchr (trimmed_path, '/');
+
+	/* Trailing slash or root directory. Remove the trailing slash and
+	   try again. If root directory, subdir will be null, so we don't
+	   cause a segfault. If a path element is '/', we will correctly add
+	   /man and /share/man manpaths. */
+	if (subdir && strncmp (subdir, "/", 2) == 0) {
+		subdir[0] = '\0';
+		subdir = strrchr (trimmed_path, '/');
+	}
 	if (subdir) {
-		newpath = xasprintf ("%.*s/man", (int) (subdir - path), path);
-		if (is_directory (newpath) == 1) {
-			insert_override_dir (list, newpath);
+		newpath = xasprintf ("%.*s/man",
+				     (int) (subdir - trimmed_path),
+				     trimmed_path);
+		if (is_directory (newpath) == 1)
 			add_dir_to_list (list, newpath);
-		}
 		free (newpath);
 	}
 
-	newpath = xasprintf ("%s/man", path);
-	if (is_directory (newpath) == 1) {
-		insert_override_dir (list, newpath);
+	newpath = xasprintf ("%s/man", trimmed_path);
+	if (is_directory (newpath) == 1)
 		add_dir_to_list (list, newpath);
-	}
 	free (newpath);
 
 	if (subdir) {
 		newpath = xasprintf ("%.*s/share/man",
-				     (int) (subdir - path), path);
-		if (is_directory (newpath) == 1) {
-			insert_override_dir (list, newpath);
+				     (int) (subdir - trimmed_path),
+				     trimmed_path);
+		if (is_directory (newpath) == 1)
 			add_dir_to_list (list, newpath);
-		}
 		free (newpath);
 	}
 
-	newpath = xasprintf ("%s/share/man", path);
-	if (is_directory (newpath) == 1) {
-		insert_override_dir (list, newpath);
+	newpath = xasprintf ("%s/share/man", trimmed_path);
+	if (is_directory (newpath) == 1)
 		add_dir_to_list (list, newpath);
-	}
 	free (newpath);
+
+        free (trimmed_path);
 }
 
 struct canonicalized_path {
@@ -1128,14 +1121,14 @@ static struct canonicalized_path *canonicalized_path_new (const char *path)
 	return cp;
 }
 
-static bool _GL_ATTRIBUTE_PURE canonicalized_path_equals (const void *elt1,
-							  const void *elt2)
+static bool ATTRIBUTE_PURE canonicalized_path_equals (const void *elt1,
+						      const void *elt2)
 {
 	const struct canonicalized_path *cp1 = elt1, *cp2 = elt2;
 	return string_equals (cp1->canon_path, cp2->canon_path);
 }
 
-static size_t _GL_ATTRIBUTE_PURE canonicalized_path_hash (const void *elt)
+static size_t ATTRIBUTE_PURE canonicalized_path_hash (const void *elt)
 {
 	const struct canonicalized_path *cp = elt;
 	return string_hash (cp->canon_path);
@@ -1158,7 +1151,7 @@ static void add_dir_to_path_list (gl_list_t list, const char *p)
 	char *expanded_dir;
 
 	expanded_dirs = expand_path (p);
-	GL_LIST_FOREACH_START (expanded_dirs, expanded_dir) {
+	GL_LIST_FOREACH (expanded_dirs, expanded_dir) {
 		int status = is_directory (expanded_dir);
 
 		if (status < 0)
@@ -1173,8 +1166,8 @@ static void add_dir_to_path_list (gl_list_t list, const char *p)
 			if (*expanded_dir != '/') {
 				char *cwd = xgetcwd ();
 				if (!cwd)
-					error (FATAL, errno,
-							_("can't determine current directory"));
+					fatal (errno,
+					       _("can't determine current directory"));
 				path = appendstr (cwd, "/", expanded_dir,
 						  (void *) 0);
 			} else
@@ -1188,7 +1181,7 @@ static void add_dir_to_path_list (gl_list_t list, const char *p)
 				canonicalized_path_free (cp);
 			free (path);
 		}
-	} GL_LIST_FOREACH_END (expanded_dirs);
+	}
 	gl_list_free (expanded_dirs);
 }
 
@@ -1202,36 +1195,45 @@ gl_list_t create_pathlist (const char *manp)
 	 * pairs for easier handling.  add_dir_to_path_list only adds items
 	 * if they do not have the same canonicalized path as an existing
 	 * item, thereby eliminating duplicates due to symlinks.
+	 * For each entry, add corresponding OVERRIDE_DIR if configured.
 	 */
 
 	canonicalized_list = gl_list_create_empty
 		(GL_LINKEDHASH_LIST, canonicalized_path_equals,
 		 canonicalized_path_hash, canonicalized_path_free, false);
 	for (p = manp;; p = end + 1) {
+		char *element;
+
 		end = strchr (p, ':');
-		if (end) {
-			char *element = xstrndup (p, end - p);
-			add_dir_to_path_list (canonicalized_list, element);
-			free (element);
-		} else {
-			add_dir_to_path_list (canonicalized_list, p);
-			break;
+		element = end ? xstrndup (p, end - p) : xstrdup (p);
+
+		if (*OVERRIDE_DIR) {
+			char *element_override = xasprintf
+				("%s/%s", element, OVERRIDE_DIR);
+			add_dir_to_path_list
+				(canonicalized_list, element_override);
+			free (element_override);
 		}
+
+		add_dir_to_path_list (canonicalized_list, element);
+		free (element);
+
+		if (!end)
+			break;
 	}
 
 	list = new_string_list (GL_ARRAY_LIST, false);
-	GL_LIST_FOREACH_START (canonicalized_list, cp)
+	GL_LIST_FOREACH (canonicalized_list, cp)
 		gl_list_add_last (list, xstrdup (cp->path));
-	GL_LIST_FOREACH_END (canonicalized_list);
 
 	if (debug_level) {
 		debug ("final search path = ");
-		GL_LIST_FOREACH_START (list, p) {
+		GL_LIST_FOREACH (list, p) {
 			if (!gl_list_previous_node (list, list_node))
 				debug ("%s", p);
 			else
 				debug (":%s", p);
-		} GL_LIST_FOREACH_END (list);
+		}
 		debug ("\n");
 	}
 
@@ -1250,10 +1252,9 @@ char *get_mandb_manpath (void)
 	char *manpath = NULL;
 	const struct config_item *item;
 
-	GL_LIST_FOREACH_START (config, item)
+	GL_LIST_FOREACH (config, item)
 		if (item->flag == MANDB_MAP || item->flag == MANDB_MAP_USER)
 			manpath = pathappend (manpath, item->key);
-	GL_LIST_FOREACH_END (config);
 
 	return manpath;
 }
@@ -1263,8 +1264,8 @@ char *get_mandb_manpath (void)
  * Return catdir mapping or NULL if it isn't a global/user mandir (as
  * appropriate).
  *
- * This routine would seem to work correctly for nls subdirs and would 
- * specify the (correct) consistent catpath even if not defined in the 
+ * This routine would seem to work correctly for nls subdirs and would
+ * specify the (correct) consistent catpath even if not defined in the
  * config file.
  *
  * Do not return user catpaths when cattype == 0! This is used to decide
@@ -1276,7 +1277,7 @@ char *get_catpath (const char *name, int cattype)
 	const struct config_item *item;
 	char *ret = NULL;
 
-	GL_LIST_FOREACH_START (config, item)
+	GL_LIST_FOREACH (config, item)
 		if (((cattype & SYSTEM_CAT) && item->flag == MANDB_MAP) ||
 		    ((cattype & USER_CAT)   && item->flag == MANDB_MAP_USER)) {
 			size_t manlen = strlen (item->key);
@@ -1321,7 +1322,6 @@ char *get_catpath (const char *name, int cattype)
 				break;
 			}
 		}
-	GL_LIST_FOREACH_END (config);
 
 	return ret;
 }
@@ -1329,30 +1329,29 @@ char *get_catpath (const char *name, int cattype)
 /* Check to see if the supplied man directory is a system-wide mandir.
  * Obviously, user directories must not be included here.
  */
-bool is_global_mandir (const char *dir)
+bool ATTRIBUTE_PURE is_global_mandir (const char *dir)
 {
 	const struct config_item *item;
 	bool ret = false;
 
-	GL_LIST_FOREACH_START (config, item)
+	GL_LIST_FOREACH (config, item)
 		if (item->flag == MANDB_MAP &&
 		    STRNEQ (dir, item->key, strlen (item->key))) {
 		    	ret = true;
 			break;
 		}
-	GL_LIST_FOREACH_END (config);
 
 	return ret;
 }
 
-/* Accept a manpath (not a full pathname to a file) and return an FSSTND 
+/* Accept a manpath (not a full pathname to a file) and return an FSSTND
    equivalent catpath */
 static char *fsstnd (const char *path)
 {
 	char *manpath;
 	char *catpath;
 	char *element;
-	
+
 	if (strncmp (path, MAN_ROOT, sizeof MAN_ROOT - 1) != 0) {
 		if (!quiet)
 			error (0, 0, _("warning: %s does not begin with %s"),
@@ -1364,19 +1363,19 @@ static char *fsstnd (const char *path)
 	manpath = xstrdup (path);
 	catpath = xmalloc (strlen (path) + sizeof CAT_ROOT - 3);
 
-	/* start with CAT_ROOT */ 
+	/* start with CAT_ROOT */
 	(void) strcpy (catpath, CAT_ROOT);
 
 	/* split up path into elements and deal with accordingly */
 	for (element = strtok (manpath, "/"); element;
 	     element = strtok (NULL, "/")) {
 		if (strncmp (element, "man", 3) == 0) {
-			if (*(element + 3)) { 
+			if (*(element + 3)) {
 				*element = 'c';
 				*(element + 2) = 't';
 			} else
 				continue;
-		} 
+		}
 		(void) strcat (catpath, "/");
 		(void) strcat (catpath, element);
 	}

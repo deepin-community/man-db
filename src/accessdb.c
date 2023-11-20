@@ -20,7 +20,7 @@
  * along with man-db; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * Tue Apr 26 12:56:44 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk) 
+ * Tue Apr 26 12:56:44 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
  */
 
 #ifdef HAVE_CONFIG_H
@@ -32,10 +32,11 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "argp.h"
+#include "attribute.h"
 #include "progname.h"
+#include "xalloc.h"
 #include "xvasprintf.h"
 
 #include "gettext.h"
@@ -44,7 +45,9 @@
 
 #include "manconfig.h"
 
-#include "error.h"
+#include "debug.h"
+#include "fatal.h"
+#include "util.h"
 
 #include "mydbm.h"
 
@@ -60,9 +63,9 @@ static const char args_doc[] = N_("[MAN DATABASE]");
 static const char doc[] = "\v" N_("The man database defaults to %s%s.");
 
 static struct argp_option options[] = {
-	{ "debug",	'd',	0,	0,	N_("emit debugging messages") },
-	{ 0, 'h', 0, OPTION_HIDDEN, 0 }, /* compatibility for --help */
-	{ 0 }
+	OPT ("debug", 'd', 0, N_ ("emit debugging messages")),
+	OPT_HELP_COMPAT,
+	{0}
 };
 
 static error_t parse_opt (int key, char *arg, struct argp_state *state)
@@ -90,7 +93,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-nonliteral"
-static char *help_filter (int key, const char *text, void *input _GL_UNUSED)
+static char *help_filter (int key, const char *text, void *input MAYBE_UNUSED)
 {
 	switch (key) {
 		case ARGP_KEY_HELP_PRE_DOC:
@@ -128,14 +131,13 @@ int main (int argc, char *argv[])
 	if (argp_parse (&argp, argc, argv, 0, 0, 0))
 		exit (FAIL);
 
-	dbf = MYDBM_RDOPEN (database);
-	if (dbf && dbver_rd (dbf)) {
-		MYDBM_CLOSE (dbf);
+	dbf = MYDBM_NEW (database);
+	if (!MYDBM_RDOPEN (dbf) || dbver_rd (dbf)) {
+		MYDBM_FREE (dbf);
 		dbf = NULL;
 	}
 	if (!dbf)
-		error (FATAL, errno, _("can't open %s for reading"), database);
-	assert (dbf);  /* help the compiler prove that later accesses are OK */
+		fatal (errno, _("can't open %s for reading"), database);
 
 	key = MYDBM_FIRSTKEY (dbf);
 
@@ -155,14 +157,19 @@ int main (int argc, char *argv[])
 		while ( (t = strchr (MYDBM_DPTR (content), '\t')) )
 			*t = ' ';
 		printf ("%s -> \"%s\"\n", nicekey, MYDBM_DPTR (content));
-		free (nicekey); 
+		free (nicekey);
+#pragma GCC diagnostic push
+#if GNUC_PREREQ(10,0)
+#  pragma GCC diagnostic ignored "-Wanalyzer-double-free"
+#endif
 		MYDBM_FREE_DPTR (content);
 next:
 		nextkey = MYDBM_NEXTKEY (dbf, key);
 		MYDBM_FREE_DPTR (key);
+#pragma GCC diagnostic pop
 		key = nextkey;
 	}
 
-	MYDBM_CLOSE (dbf);
+	MYDBM_FREE (dbf);
 	exit (ret);
 }

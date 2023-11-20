@@ -26,15 +26,15 @@ endif
 
 SUBDIRS = docs gl/lib $(GNULIB_PO) init lib libdb src man manual po tools
 
-dist_noinst_DATA = FAQ NEWS README include/README
+dist_noinst_DATA = FAQ README.md
+noinst_HEADERS = include/manconfig.h
 
 EXTRA_DIST = \
 	.gitignore \
 	ChangeLog-2013 \
 	bootstrap \
 	bootstrap.conf \
-	patches/argp-domain.patch \
-	release.sh
+	patches/argp-domain.patch
 
 # These macro files are imported by gnulib-tool, but at present not used. We
 # include them in the distribution anyway for maximum consistency.
@@ -76,7 +76,7 @@ ACLOCAL_AMFLAGS = -I gl/m4 -I m4
 
 dist-hook: gen-ChangeLog
 
-gen_start_date = '2013-12-09 00:52'
+gen_start_date = 2013-12-09 00:52
 .PHONY: gen-ChangeLog
 gen-ChangeLog:
 	$(AM_V_GEN)if test -d .git; then \
@@ -86,3 +86,7 @@ gen-ChangeLog:
 		rm -f $(distdir)/ChangeLog; \
 		mv $(distdir)/cl-t $(distdir)/ChangeLog; \
 	fi
+
+update-po:
+	$(MAKE) -C po update-po
+	$(MAKE) -C man/po4a update-po

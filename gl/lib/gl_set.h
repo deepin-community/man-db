@@ -1,10 +1,10 @@
 /* Abstract set data type.
-   Copyright (C) 2006-2007, 2009-2020 Free Software Foundation, Inc.
+   Copyright (C) 2006-2007, 2009-2023 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2018.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -18,12 +18,14 @@
 #ifndef _GL_SET_H
 #define _GL_SET_H
 
-#include <stdbool.h>
-#include <stddef.h>
-
-#ifndef _GL_INLINE_HEADER_BEGIN
+/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE,
+   _GL_ATTRIBUTE_NODISCARD.  */
+#if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
+
+#include <stddef.h>
+
 _GL_INLINE_HEADER_BEGIN
 #ifndef GL_SET_INLINE
 # define GL_SET_INLINE _GL_INLINE
@@ -106,12 +108,15 @@ typedef const struct gl_set_implementation * gl_set_implementation_t;
 extern gl_set_t gl_set_create_empty (gl_set_implementation_t implementation,
                                      gl_setelement_equals_fn equals_fn,
                                      gl_setelement_hashcode_fn hashcode_fn,
-                                     gl_setelement_dispose_fn dispose_fn);
+                                     gl_setelement_dispose_fn dispose_fn)
+  /*_GL_ATTRIBUTE_DEALLOC (gl_set_free, 1)*/
+  _GL_ATTRIBUTE_RETURNS_NONNULL;
 /* Likewise.  Returns NULL upon out-of-memory.  */
 extern gl_set_t gl_set_nx_create_empty (gl_set_implementation_t implementation,
                                         gl_setelement_equals_fn equals_fn,
                                         gl_setelement_hashcode_fn hashcode_fn,
-                                        gl_setelement_dispose_fn dispose_fn);
+                                        gl_setelement_dispose_fn dispose_fn)
+  /*_GL_ATTRIBUTE_DEALLOC (gl_set_free, 1)*/;
 
 /* Returns the current number of elements in a set.  */
 extern size_t gl_set_size (gl_set_t set);
@@ -124,9 +129,10 @@ extern bool gl_set_search (gl_set_t set, const void *elt);
    Returns true if it was not already in the set and added, false otherwise.  */
 /* declared in gl_xset.h */
 extern bool gl_set_add (gl_set_t set, const void *elt);
+
 /* Likewise.  Returns -1 upon out-of-memory.  */
-extern int gl_set_nx_add (gl_set_t set, const void *elt)
-  _GL_ATTRIBUTE_NODISCARD;
+_GL_ATTRIBUTE_NODISCARD
+extern int gl_set_nx_add (gl_set_t set, const void *elt);
 
 /* Removes an element from a set.
    Returns true if it was found and removed.  */
@@ -208,7 +214,9 @@ struct gl_set_impl_base
 /* Define all functions of this file as accesses to the
    struct gl_set_implementation.  */
 
-GL_SET_INLINE gl_set_t
+GL_SET_INLINE
+/*_GL_ATTRIBUTE_DEALLOC (gl_set_free, 1)*/
+gl_set_t
 gl_set_nx_create_empty (gl_set_implementation_t implementation,
                         gl_setelement_equals_fn equals_fn,
                         gl_setelement_hashcode_fn hashcode_fn,
@@ -230,7 +238,7 @@ gl_set_search (gl_set_t set, const void *elt)
   return ((const struct gl_set_impl_base *) set)->vtable->search (set, elt);
 }
 
-GL_SET_INLINE _GL_ATTRIBUTE_NODISCARD int
+_GL_ATTRIBUTE_NODISCARD GL_SET_INLINE int
 gl_set_nx_add (gl_set_t set, const void *elt)
 {
   return ((const struct gl_set_impl_base *) set)->vtable->nx_add (set, elt);

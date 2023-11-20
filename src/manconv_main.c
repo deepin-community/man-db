@@ -24,15 +24,18 @@
 #  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 #include "argp.h"
+#include "error.h"
 #include "gl_array_list.h"
 #include "gl_xlist.h"
 #include "progname.h"
+#include "xalloc.h"
 
 #include "gettext.h"
 #define _(String) gettext (String)
@@ -40,14 +43,16 @@
 
 #include "manconfig.h"
 
+#include "appendstr.h"
 #include "cleanup.h"
+#include "debug.h"
 #include "encodings.h"
-#include "error.h"
 #include "pipeline.h"
-#include "decompress.h"
 #include "glcontainers.h"
 #include "sandbox.h"
+#include "util.h"
 
+#include "decompress.h"
 #include "manconv.h"
 
 int quiet = 0;
@@ -89,12 +94,12 @@ error_t argp_err_exit_status = FAIL;
 static const char args_doc[] = N_("[-f CODE[:...]] -t CODE [FILENAME]");
 
 static struct argp_option options[] = {
-	{ "from-code",	'f',	N_("CODE[:...]"),
-						0,	N_("possible encodings of original text") },
-	{ "to-code",	't',	N_("CODE"),	0,	N_("encoding for output") },
-	{ "debug",	'd',	0,		0,	N_("emit debugging messages") },
-	{ "quiet",	'q',	0,		0,	N_("produce fewer warnings") },
-	{ 0, 'h', 0, OPTION_HIDDEN, 0 }, /* compatibility for --help */
+	OPT ("from-code", 'f', N_("CODE[:...]"),
+	     N_("possible encodings of original text")),
+	OPT ("to-code", 't', N_("CODE"), N_("encoding for output")),
+	OPT ("debug", 'd', 0, N_("emit debugging messages")),
+	OPT ("quiet", 'q', 0, N_("produce fewer warnings")),
+	OPT_HELP_COMPAT,
 	{ 0 }
 };
 
@@ -140,7 +145,7 @@ static struct argp argp = { options, parse_opt, args_doc };
 
 int main (int argc, char *argv[])
 {
-	pipeline *p;
+	decompress *decomp;
 
 	set_program_name (argv[0]);
 
@@ -151,14 +156,15 @@ int main (int argc, char *argv[])
 
 	if (argp_parse (&argp, argc, argv, 0, 0, 0))
 		exit (FAIL);
+	assert (from_code);
 
 	if (filename) {
-		p = decompress_open (filename);
-		if (!p)
+		decomp = decompress_open (filename, 0);
+		if (!decomp)
 			error (FAIL, 0, _("can't open %s"), filename);
 	} else
-		p = decompress_fdopen (dup (STDIN_FILENO));
-	pipeline_start (p);
+		decomp = decompress_fdopen (dup (STDIN_FILENO));
+	decompress_start (decomp);
 
 	if (!gl_list_size (from_code)) {
 		char *lang, *page_encoding;
@@ -186,12 +192,16 @@ int main (int argc, char *argv[])
 		free (lang);
 	}
 
-	manconv (p, from_code, to_code);
+	if (manconv (decomp, from_code, to_code, NULL) != 0)
+		/* manconv already wrote an error message to stderr.  Just
+		 * exit non-zero.
+		 */
+		exit (FATAL);
 
 	free (to_code);
 	gl_list_free (from_code);
 
-	pipeline_wait (p);
+	decompress_wait (decomp);
 
 	sandbox_free (sandbox);
 

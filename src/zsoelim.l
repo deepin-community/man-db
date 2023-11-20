@@ -19,7 +19,7 @@
 
 /*
  * zsoelim.l: eliminate .so includes within *roff source
- *  
+ *
  * Copyright (C) 1994, 1995 Graeme W. Wilford. (Wilf.)
  * Copyright (C) 1997 Fabrizio Polacco.
  * Copyright (C) 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2010, 2011
@@ -46,7 +46,7 @@
  * 100% of compressed source files correctly. A replacement tmac.andoc was
  * considered, but would not have been portable to all systems.
  *
- * Wed Oct 12 18:46:11 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk) 
+ * Wed Oct 12 18:46:11 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
  *
  * Tue, 14 Oct 1997 Fabrizio Polacco <fpolacco@debian.org>
  * - added changes that were done to .c instead of -l source
@@ -57,6 +57,8 @@
 #define MAX_SO_DEPTH 	10		/* max .so recursion depth */
 #undef ACCEPT_QUOTES			/* accept quoted roff requests */
 
+#include <assert.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -70,8 +72,10 @@
 #define PIPE	so_pipe[so_stack_ptr]
 
 #include "dirname.h"
+#include "error.h"
 #include "gl_linkedhash_list.h"
 #include "gl_xlist.h"
+#include "xalloc.h"
 #include "xgetcwd.h"
 #include "xvasprintf.h"
 
@@ -79,11 +83,13 @@
 #include <locale.h>
 #define _(String) gettext (String)
 
-#include "error.h"
+#include "appendstr.h"
+#include "compression.h"
+#include "debug.h"
+#include "fatal.h"
 #include "glcontainers.h"
-#include "pipeline.h"
-#include "decompress.h"
 
+#include "decompress.h"
 #include "globbing.h"
 #include "zsoelim.h"
 
@@ -97,9 +103,9 @@ static void zap_quotes (void);
 static YY_BUFFER_STATE so_stack[MAX_SO_DEPTH];
 static char *so_name[MAX_SO_DEPTH];
 static int so_line[MAX_SO_DEPTH];
-static pipeline *so_pipe[MAX_SO_DEPTH];
+static decompress *so_pipe[MAX_SO_DEPTH];
 static int so_stack_ptr;
-static int no_newline;
+static bool no_newline;
 static gl_list_t so_manpathlist;
 static const char *so_parent_path;
 
@@ -110,11 +116,11 @@ struct zsoelim_stdin_data {
 
 /* The flex documentation says that yyin is only used by YY_INPUT, so we
  * should safely be able to abuse it as a handy way to keep track of the
- * current 'pipeline *' rather than the usual 'FILE *'.
+ * current 'decompress *' rather than the usual 'FILE *'.
  */
 #define YY_INPUT(buf,result,max_size) { \
 	size_t size = max_size; \
-	const char *block = pipeline_read ((pipeline *) yyin, &size); \
+	const char *block = decompress_read ((decompress *) yyin, &size); \
 	if (block && size != 0) { \
 		memcpy (buf, block, size); \
 		buf[size] = '\0'; \
@@ -139,19 +145,19 @@ W	[ \t]
 
 %%
 
-^\.de{W}*.+	{	
-			no_newline = 1;
+^\.de{W}*.+	{
+			no_newline = true;
 			ECHO;
 			BEGIN (de);	/* Now we're inside of a macro definition: ends with a comment */
 		}
 
-^\.so{W}*	{	
-			no_newline = 1;
+^\.so{W}*	{
+			no_newline = true;
 			BEGIN (so);	/* Now we're in the .so environment */
 		}
 
 ^\.lf{W}*	{
-			no_newline = 1;
+			no_newline = true;
 			ECHO;		/* Now we're in the .lf environment */
 			BEGIN (lfnumber);
 		}
@@ -163,20 +169,20 @@ W	[ \t]
 ^\.s			|
 ^\.l			|
 .			{
-				no_newline = 1;
+				no_newline = true;
 				ECHO;
 			}
 
 \n		{
-			no_newline = 0;
+			no_newline = false;
 			putchar ('\n');
 			LINE++;
 		}
-		
+
 
 <so>\"?[^ \t\n\"]+\"?	{ 	/* file names including whitespace ?  */
-			if (so_stack_ptr == MAX_SO_DEPTH - 1) 
-				error (FATAL, 0, 
+			if (so_stack_ptr == MAX_SO_DEPTH - 1)
+				fatal (0,
 				       _("%s:%d: .so requests nested too "
 				         "deeply or are recursive"),
 				       NAME, LINE);
@@ -185,13 +191,13 @@ W	[ \t]
 			so_stack[so_stack_ptr++] = YY_CURRENT_BUFFER;
 			LINE = 1;
 
-			no_newline = 0;
+			no_newline = false;
 
 			if (zsoelim_open_file (yytext, so_manpathlist,
 					       so_parent_path)) {
 				--so_stack_ptr;
 #ifndef __alpha
-				error (OK, 0, 
+				error (OK, 0,
 				       _("%s:%d: warning: failed .so request"),
 				       NAME, LINE);
 				printf (".so %s\n", yytext);
@@ -207,12 +213,12 @@ W	[ \t]
 		}
 
 <end_request>{W}*\n	{
-			no_newline = 0;
+			no_newline = false;
 			BEGIN (INITIAL);
 		}
-		
+
 <so>\n		{
-			no_newline = 0;
+			no_newline = false;
 			error (OK, 0,
 			       _("%s:%d: warning: newline in .so request, "
 			         "ignoring"),
@@ -223,25 +229,25 @@ W	[ \t]
 		}
 
 <de>^\.\..*	{
-			no_newline = 1;
+			no_newline = true;
 			ECHO;
 			BEGIN (INITIAL);
 		}
 
 <de>.*		{
-			no_newline = 1;
+			no_newline = true;
 			ECHO;
 		}
 
 <de>\n		{
-			no_newline = 0;
+			no_newline = false;
 			putchar ('\n');
 			LINE++;
 		}
 
 
 <lfnumber>\"?[0-9]+\"?	{
-			no_newline = 1;
+			no_newline = true;
 			ECHO;
 			ZAP_QUOTES;
 			LINE = atoi (yytext);
@@ -249,40 +255,40 @@ W	[ \t]
 		}
 
 <lfname>\"?[^ \t\n\"]+\"?	{	/* file names including whitespace ?? */
-			no_newline = 1;
+			no_newline = true;
 			ECHO;
 			putchar ('\n');
 			ZAP_QUOTES;
 			if (NAME)
 				free (NAME);
 			NAME = xstrdup (yytext);
-			BEGIN (end_request); 
+			BEGIN (end_request);
 		}
 
 <lfname>{W}+	{
-			no_newline = 1;
+			no_newline = true;
 			ECHO;
 		}
 
 <lfname>\n	{
-			no_newline = 0;
+			no_newline = false;
 			putchar ('\n');
 			LINE++;
 			BEGIN (INITIAL);
 		}
 
 <lfnumber,lfname>.	{
-			no_newline = 1;
-			error (OK, 0,
-			       _("%s:%d: warning: malformed .lf request, "
-			         "ignoring"),
+			no_newline = true;
+			debug (
+			       "%s:%d: warning: unhandled .lf request; "
+			       "line numbers may be wrong\n",
 			       NAME, LINE);
 			putchar (*yytext);
 			BEGIN (INITIAL);
 		}
 
 <lfnumber>\n	{
-			no_newline = 0;
+			no_newline = false;
 			error (OK, 0,
 			       _("%s:%d: warning: newline in .lf request, "
 			         "ignoring"),
@@ -293,8 +299,8 @@ W	[ \t]
 		}
 
 <<EOF>>	{
-		pipeline_wait (PIPE);
-		pipeline_free (PIPE);
+		decompress_wait (PIPE);
+		decompress_free (PIPE);
 		PIPE = NULL;
 		free (NAME);
 		NAME = NULL;
@@ -309,7 +315,7 @@ W	[ \t]
 			yy_switch_to_buffer (so_stack[so_stack_ptr]);
 			printf (".lf %d %s\n", LINE += 1, NAME);
 		}
-		no_newline = 0;
+		no_newline = false;
 		BEGIN (end_request);
 	}
 %%
@@ -343,11 +349,11 @@ void zsoelim_parse_file (gl_list_t manpathlist, const char *parent_path)
 	/* Skip over the first line if it's something that manconv might
 	 * need to know about.
 	 */
-	line = pipeline_peekline ((pipeline *) yyin);
+	line = decompress_peekline ((decompress *) yyin);
 	if (line &&
 	    (STRNEQ (line, PP_COOKIE, 4) || STRNEQ (line, ".\\\" ", 4))) {
 		fputs (line, stdout);
-		pipeline_peek_skip ((pipeline *) yyin, strlen (line));
+		decompress_peek_skip ((decompress *) yyin, strlen (line));
 		++linenum;
 	}
 
@@ -356,16 +362,16 @@ void zsoelim_parse_file (gl_list_t manpathlist, const char *parent_path)
 	yylex ();
 }
 
-static pipeline *try_compressed (char **filename)
+static decompress *try_compressed (char **filename)
 {
 	struct compression *comp;
 	size_t len = strlen (*filename);
-	pipeline *decomp;
+	decompress *decomp;
 
 	/* Try the uncompressed name first. */
 	(*filename)[len - 1] = '\0';
 	debug ("trying %s\n", *filename);
-	decomp = decompress_open (*filename);
+	decomp = decompress_open (*filename, DECOMPRESS_ALLOW_INPROCESS);
 	if (decomp)
 		return decomp;
 	(*filename)[len - 1] = '.';
@@ -373,7 +379,8 @@ static pipeline *try_compressed (char **filename)
 	for (comp = comp_list; comp->ext; ++comp) {
 		*filename = appendstr (*filename, comp->ext, NULL);
 		debug ("trying %s\n", *filename);
-		decomp = decompress_open (*filename);
+		decomp = decompress_open (*filename,
+					  DECOMPRESS_ALLOW_INPROCESS);
 		if (decomp)
 			return decomp;
 		(*filename)[len] = '\0';
@@ -384,10 +391,10 @@ static pipeline *try_compressed (char **filename)
 
 /* This routine is used to open the specified file or uncompress a compressed
    version and open that instead */
-int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
-		       const char *parent_path)
+bool zsoelim_open_file (const char *filename, gl_list_t manpathlist,
+			const char *parent_path)
 {
-	pipeline *decomp;
+	decompress *decomp = NULL;
 
 	if (parent_path)
 		debug ("opening %s (parent path: %s)\n",
@@ -405,6 +412,7 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 		/* If there is no parent path, try opening directly first. */
 		if (!parent_path) {
 			compfile = xasprintf ("%s.", filename);
+			assert (compfile);
 
 			decomp = try_compressed (&compfile);
 			if (decomp) {
@@ -421,6 +429,7 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 			if (parent_path) {
 				compfile = xasprintf ("%s/%s.", parent_path,
 						      filename);
+				assert (compfile);
 
 				decomp = try_compressed (&compfile);
 				if (decomp) {
@@ -431,11 +440,12 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 				free (compfile);
 			}
 
-			GL_LIST_FOREACH_START (manpathlist, mp) {
+			GL_LIST_FOREACH (manpathlist, mp) {
 				if (parent_path && STREQ (mp, parent_path))
 					continue;
 
 				compfile = xasprintf ("%s/%s.", mp, filename);
+				assert (compfile);
 
 				decomp = try_compressed (&compfile);
 				if (decomp) {
@@ -444,7 +454,7 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 				}
 
 				free (compfile);
-			} GL_LIST_FOREACH_END (manpathlist);
+			}
 		} else {
 			/* File name with no directory part.  Try searching
 			 * the manpath.
@@ -467,35 +477,39 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 
 			if (parent_path) {
 				names = look_for_file (parent_path, sec, name,
-						       0, LFF_MATCHCASE);
-				GL_LIST_FOREACH_START (names, found_name) {
-					decomp = decompress_open (found_name);
+						       false, LFF_MATCHCASE);
+				GL_LIST_FOREACH (names, found_name) {
+					decomp = decompress_open
+						(found_name,
+						 DECOMPRESS_ALLOW_INPROCESS);
 					if (decomp) {
 						NAME = xstrdup (found_name);
 						gl_list_free (names);
 						goto out;
 					}
-				} GL_LIST_FOREACH_END (names);
+				}
 				gl_list_free (names);
 			}
 
-			GL_LIST_FOREACH_START (manpathlist, mp) {
+			GL_LIST_FOREACH (manpathlist, mp) {
 				if (parent_path && STREQ (mp, parent_path))
 					continue;
 
 				names = look_for_file (mp, sec, name,
-						       0, LFF_MATCHCASE);
-				GL_LIST_FOREACH_START (names, found_name) {
-					decomp = decompress_open (found_name);
+						       false, LFF_MATCHCASE);
+				GL_LIST_FOREACH (names, found_name) {
+					decomp = decompress_open
+						(found_name,
+						 DECOMPRESS_ALLOW_INPROCESS);
 					if (decomp) {
 						NAME = xstrdup (found_name);
 						gl_list_free (names);
 						free (name);
 						goto out;
 					}
-				} GL_LIST_FOREACH_END (names);
+				}
 				gl_list_free (names);
-			} GL_LIST_FOREACH_END (manpathlist);
+			}
 
 			free (name);
 		}
@@ -503,6 +517,7 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 		/* If there is a parent path, try opening directly last. */
 		if (parent_path) {
 			compfile = xasprintf ("%s.", filename);
+			assert (compfile);
 
 			decomp = try_compressed (&compfile);
 			if (decomp) {
@@ -515,18 +530,18 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 out:
 		if (!decomp) {
 			error (0, errno, _("can't open %s"), filename);
-			return 1;
+			return true;
 		}
 	}
 
 	debug ("opened %s\n", NAME);
 
-	pipeline_start (decomp);
+	decompress_start (decomp);
 	PIPE = decomp;
-	/* only used by YY_INPUT, which casts it back to 'pipeline *' */
+	/* only used by YY_INPUT, which casts it back to 'decompress *' */
 	yyin = (FILE *) decomp;
 
-	return 0;
+	return false;
 }
 
 void zsoelim_stdin (void *data)

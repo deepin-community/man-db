@@ -22,7 +22,9 @@ TESTS_ENVIRONMENT = PATH=$(abs_builddir)/..:$$PATH; export PATH; \
 		    DBTYPE=$(DBTYPE); export DBTYPE; \
 		    MANDIR_LAYOUT=$(MANDIR_LAYOUT); export MANDIR_LAYOUT; \
 		    abs_top_builddir=$(abs_top_builddir); export abs_top_builddir; \
-		    OVERRIDE_DIR="$(override_dir)"; export OVERRIDE_DIR;
+		    OVERRIDE_DIR="$(override_dir)"; export OVERRIDE_DIR; \
+		    troff_is_groff=$(troff_is_groff); export troff_is_groff; \
+		    HAVE_ICONV=$(HAVE_ICONV); export HAVE_ICONV;
 # Each test must use the configure-detected shell, not necessarily /bin/sh.
 AM_LOG_FLAGS = $(SHELL)
 ALL_TESTS = \
@@ -50,9 +52,12 @@ ALL_TESTS = \
 	mandb-bogus-symlink \
 	mandb-cachedir-tag \
 	mandb-empty-page \
+	mandb-purge-updates-timestamp \
 	mandb-regular-file-symlink-changes \
 	mandb-symlink-beats-whatis-ref \
+	mandb-symlink-target-timestamp \
 	mandb-whatis-broken-link-changes \
+	manpath-slash \
 	whatis-path-to-executable \
 	zsoelim-so-includes
 if !CROSS_COMPILING
@@ -60,14 +65,18 @@ TESTS = $(ALL_TESTS)
 endif
 
 AM_CPPFLAGS = \
-	-I$(top_builddir)/include \
+	-I$(top_srcdir)/include \
 	-I$(top_builddir)/gl/lib \
-	-I$(top_srcdir)/gl/lib
+	-I$(top_srcdir)/gl/lib \
+	-I$(top_srcdir)/lib
 AM_CFLAGS = $(WARN_CFLAGS)
-check_PROGRAMS = fspause
+check_PROGRAMS = fspause get-mtime
+
 fspause_SOURCES = fspause.c
 fspause_LDADD = \
 	$(top_builddir)/gl/lib/libgnu.la \
-	$(LIB_NANOSLEEP)
+	$(NANOSLEEP_LIB)
+get_mtime_SOURCES = get-mtime.c
+get_mtime_LDADD = $(top_builddir)/lib/libman.la
 
 dist_check_SCRIPTS = testlib.sh $(ALL_TESTS)

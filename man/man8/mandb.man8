@@ -5,7 +5,7 @@
 .\" Copyright (C) 2001-2019 Colin Watson.
 .\"
 .\" You may distribute under the terms of the GNU General Public
-.\" License as specified in the file COPYING that comes with the
+.\" License as specified in the file docs/COPYING.GPLv2 that comes with the
 .\" man-db distribution.
 .\"
 .\" Tue Apr 26 12:56:44 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
@@ -125,7 +125,7 @@ and
 .TP
 .BI \-C\  file \fR,\ \fB\-\-config\-file= file
 Use this user configuration file rather than the default of
-.IR ~/.manpath .
+.IR \(ti/.manpath .
 .TP
 .if !'po4a'hide' .BR \-? ", " \-\-help
 Show the usage message, then exit.
@@ -221,4 +221,6 @@ section formerly in this manual page is now part of
 .if !'po4a'hide' Colin Watson (cjwatson@debian.org).
 .fi
 .SH BUGS
+.if !'po4a'hide' https://gitlab.com/man-db/man-db/-/issues
+.br
 .if !'po4a'hide' https://savannah.nongnu.org/bugs/?group=man-db

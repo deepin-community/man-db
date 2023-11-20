@@ -1,9 +1,9 @@
 ## DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2020 Free Software Foundation, Inc.
+# Copyright (C) 2002-2023 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License, or
+# the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
 # This file is distributed in the hope that it will be useful,
@@ -25,8 +25,6 @@
 gl/lib/_Noreturn.h
 gl/lib/alloca.c
 gl/lib/alloca.in.h
-gl/lib/areadlink-with-size.c
-gl/lib/areadlink.h
 gl/lib/arg-nonnull.h
 gl/lib/argp-ba.c
 gl/lib/argp-eexst.c
@@ -43,16 +41,19 @@ gl/lib/argp-xinl.c
 gl/lib/argp.h
 gl/lib/asnprintf.c
 gl/lib/asprintf.c
+gl/lib/assert.in.h
 gl/lib/assure.h
 gl/lib/at-func.c
 gl/lib/at-func2.c
 gl/lib/attribute.h
 gl/lib/basename-lgpl.c
+gl/lib/basename-lgpl.h
 gl/lib/basename.c
 gl/lib/bitrotate.c
 gl/lib/bitrotate.h
 gl/lib/btowc.c
 gl/lib/c++defs.h
+gl/lib/calloc.c
 gl/lib/canonicalize-lgpl.c
 gl/lib/canonicalize.c
 gl/lib/canonicalize.h
@@ -75,9 +76,11 @@ gl/lib/dup-safer-flag.c
 gl/lib/dup-safer.c
 gl/lib/dup.c
 gl/lib/dup2.c
+gl/lib/dynarray.h
+gl/lib/eloop-threshold.h
 gl/lib/errno.in.h
 gl/lib/error.c
-gl/lib/error.h
+gl/lib/error.in.h
 gl/lib/exitfail.c
 gl/lib/exitfail.h
 gl/lib/fchdir.c
@@ -102,9 +105,9 @@ gl/lib/flock.c
 gl/lib/fnmatch.c
 gl/lib/fnmatch.in.h
 gl/lib/fnmatch_loop.c
+gl/lib/free.c
 gl/lib/fstat.c
 gl/lib/fstatat.c
-gl/lib/futimens.c
 gl/lib/getcwd-lgpl.c
 gl/lib/getcwd.c
 gl/lib/getdelim.c
@@ -122,6 +125,7 @@ gl/lib/getopt1.c
 gl/lib/getopt_int.h
 gl/lib/getprogname.c
 gl/lib/getprogname.h
+gl/lib/getrandom.c
 gl/lib/gettext.h
 gl/lib/gettime.c
 gl/lib/gettimeofday.c
@@ -171,13 +175,17 @@ gl/lib/hash-pjw-bare.c
 gl/lib/hash-pjw-bare.h
 gl/lib/hash-pjw.c
 gl/lib/hash-pjw.h
-gl/lib/hash-triple.c
+gl/lib/hash-triple-simple.c
 gl/lib/hash-triple.h
 gl/lib/hash.c
 gl/lib/hash.h
+gl/lib/ialloc.c
+gl/lib/ialloc.h
 gl/lib/idpriv-drop.c
 gl/lib/idpriv-droptemp.c
 gl/lib/idpriv.h
+gl/lib/idx.h
+gl/lib/intprops-internal.h
 gl/lib/intprops.h
 gl/lib/inttypes.in.h
 gl/lib/ioctl.c
@@ -193,10 +201,15 @@ gl/lib/localcharset.c
 gl/lib/localcharset.h
 gl/lib/locale.in.h
 gl/lib/localeconv.c
-gl/lib/localtime-buffer.c
-gl/lib/localtime-buffer.h
 gl/lib/lstat.c
 gl/lib/malloc.c
+gl/lib/malloc/dynarray-skeleton.c
+gl/lib/malloc/dynarray.h
+gl/lib/malloc/dynarray_at_failure.c
+gl/lib/malloc/dynarray_emplace_enlarge.c
+gl/lib/malloc/dynarray_finalize.c
+gl/lib/malloc/dynarray_resize.c
+gl/lib/malloc/dynarray_resize_clear.c
 gl/lib/malloc/scratch_buffer.h
 gl/lib/malloc/scratch_buffer_grow.c
 gl/lib/malloc/scratch_buffer_grow_preserve.c
@@ -228,6 +241,7 @@ gl/lib/msvc-inval.h
 gl/lib/msvc-nothrow.c
 gl/lib/msvc-nothrow.h
 gl/lib/nanosleep.c
+gl/lib/nl_langinfo-lock.c
 gl/lib/nl_langinfo.c
 gl/lib/nonblocking.c
 gl/lib/nonblocking.h
@@ -240,18 +254,23 @@ gl/lib/openat.h
 gl/lib/opendir.c
 gl/lib/pathmax.h
 gl/lib/pipe-safer.c
+gl/lib/pipe.c
 gl/lib/printf-args.c
 gl/lib/printf-args.h
 gl/lib/printf-parse.c
 gl/lib/printf-parse.h
 gl/lib/progname.c
 gl/lib/progname.h
+gl/lib/pselect.c
+gl/lib/pthread_sigmask.c
 gl/lib/raise.c
 gl/lib/rawmemchr.c
 gl/lib/rawmemchr.valgrind
 gl/lib/readdir.c
 gl/lib/readlink.c
+gl/lib/readlinkat.c
 gl/lib/realloc.c
+gl/lib/reallocarray.c
 gl/lib/regcomp.c
 gl/lib/regex.c
 gl/lib/regex.h
@@ -265,8 +284,6 @@ gl/lib/renameatu.h
 gl/lib/rewinddir.c
 gl/lib/rmdir.c
 gl/lib/same-inode.h
-gl/lib/same.c
-gl/lib/same.h
 gl/lib/save-cwd.c
 gl/lib/save-cwd.h
 gl/lib/scratch_buffer.h
@@ -289,10 +306,8 @@ gl/lib/stat-time.h
 gl/lib/stat-w32.c
 gl/lib/stat-w32.h
 gl/lib/stat.c
-gl/lib/statat.c
-gl/lib/stdalign.in.h
 gl/lib/stdarg.in.h
-gl/lib/stdbool.in.h
+gl/lib/stdckdint.in.h
 gl/lib/stddef.in.h
 gl/lib/stdint.in.h
 gl/lib/stdio-read.c
@@ -301,6 +316,7 @@ gl/lib/stdio.in.h
 gl/lib/stdlib.in.h
 gl/lib/stdopen.c
 gl/lib/stdopen.h
+gl/lib/stpcpy.c
 gl/lib/str-two-way.h
 gl/lib/strcasecmp.c
 gl/lib/strcasestr.c
@@ -322,6 +338,7 @@ gl/lib/strnlen1.h
 gl/lib/strsep.c
 gl/lib/sys_file.in.h
 gl/lib/sys_ioctl.in.h
+gl/lib/sys_random.in.h
 gl/lib/sys_select.in.h
 gl/lib/sys_socket.c
 gl/lib/sys_socket.in.h
@@ -332,6 +349,7 @@ gl/lib/sys_uio.in.h
 gl/lib/sysexits.in.h
 gl/lib/tempname.c
 gl/lib/tempname.h
+gl/lib/termios.in.h
 gl/lib/time.in.h
 gl/lib/timespec.c
 gl/lib/timespec.h
@@ -341,7 +359,6 @@ gl/lib/unistd.c
 gl/lib/unistd.in.h
 gl/lib/unlink.c
 gl/lib/unlinkat.c
-gl/lib/unsetenv.c
 gl/lib/utime.c
 gl/lib/utime.in.h
 gl/lib/utimens.c
@@ -350,6 +367,8 @@ gl/lib/vasnprintf.c
 gl/lib/vasnprintf.h
 gl/lib/vasprintf.c
 gl/lib/verify.h
+gl/lib/verror.c
+gl/lib/verror.h
 gl/lib/vsnprintf.c
 gl/lib/w32sock.h
 gl/lib/warn-on-use.h

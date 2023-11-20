@@ -1,6 +1,6 @@
 /*
  * lexgrog_test.c: test whatis extraction from man/cat pages
- *  
+ *
  * Copyright (C) 1994, 1995 Graeme W. Wilford. (Wilf.)
  * Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
  *               2011 Colin Watson.
@@ -34,9 +34,11 @@
 #include <sys/stat.h>
 
 #include "argp.h"
+#include "attribute.h"
 #include "error.h"
 #include "gl_list.h"
 #include "progname.h"
+#include "xalloc.h"
 
 #include "gettext.h"
 #define _(String) gettext (String)
@@ -45,12 +47,16 @@
 #include "manconfig.h"
 
 #include "cleanup.h"
+#include "debug.h"
 #include "glcontainers.h"
 #include "pipeline.h"
 #include "sandbox.h"
 #include "security.h"
+#include "util.h"
 
+#include "convert.h"
 #include "descriptions.h"
+#include "lexgrog.h"
 #include "ult_src.h"
 
 int quiet = 1;
@@ -70,13 +76,15 @@ static const char args_doc[] = N_("FILE...");
 static const char doc[] = "\v" N_("The defaults are --man and --whatis.");
 
 static struct argp_option options[] = {
-	{ "debug",	'd',	0,		0,	N_("emit debugging messages") },
-	{ "man",	'm',	0,		0,	N_("parse as man page"),				1 },
-	{ "cat",	'c',	0,		0,	N_("parse as cat page") },
-	{ "whatis",	'w',	0,		0,	N_("show whatis information"),				2 },
-	{ "filters",	'f',	0,		0,	N_("show guessed series of preprocessing filters") },
-	{ "encoding",	'E',	N_("ENCODING"),	0,	N_("use selected output encoding"),			3 },
-	{ 0, 'h', 0, OPTION_HIDDEN, 0 }, /* compatibility for --help */
+	OPT ("debug", 'd', 0, N_("emit debugging messages")),
+	OPT ("man", 'm', 0, N_("parse as man page"), 1),
+	OPT ("cat", 'c', 0, N_("parse as cat page")),
+	OPT ("whatis", 'w', 0, N_("show whatis information"), 2),
+	OPT ("filters", 'f', 0,
+	     N_("show guessed series of preprocessing filters")),
+	OPT ("encoding", 'E', N_("ENCODING"),
+	     N_("use selected output encoding"), 3),
+	OPT_HELP_COMPAT,
 	{ 0 }
 };
 
@@ -131,7 +139,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
 	return ARGP_ERR_UNKNOWN;
 }
 
-static char *help_filter (int key, const char *text, void *input _GL_UNUSED)
+static char *help_filter (int key, const char *text, void *input MAYBE_UNUSED)
 {
 	switch (key) {
 		case ARGP_KEY_HELP_PRE_DOC:
@@ -149,7 +157,7 @@ static struct argp argp = { options, parse_opt, args_doc, doc, 0,
 
 int main (int argc, char **argv)
 {
-	int type = 0;
+	int type = MANPAGE;
 	int i;
 	bool some_failed = false;
 
@@ -169,13 +177,13 @@ int main (int argc, char **argv)
 	init_security ();
 
 	if (parse_man)
-		type = 0;
+		type = MANPAGE;
 	else
-		type = 1;
+		type = CATPAGE;
 
 	for (i = 0; i < num_files; ++i) {
 		lexgrog lg;
-		const char *file;
+		const char *file = NULL;
 		bool found = false;
 
 		lg.type = type;
@@ -185,6 +193,7 @@ int main (int argc, char **argv)
 		else {
 			char *path, *pathend;
 			struct stat statbuf;
+			const struct ult_value *ult;
 
 			path = xstrdup (files[i]);
 			pathend = strrchr (path, '/');
@@ -202,26 +211,35 @@ int main (int argc, char **argv)
 				path = NULL;
 			}
 
-			file = ult_src (files[i], path ? path : ".",
-					&statbuf, SO_LINK, NULL);
+			ult = ult_src (files[i], path ? path : ".",
+				       &statbuf, SO_LINK);
+			if (ult)
+				file = ult->path;
 			free (path);
 		}
 
 		if (file && find_name (file, "-", &lg, encoding)) {
 			gl_list_t descs = parse_descriptions (NULL, lg.whatis);
 			const struct page_description *desc;
-			GL_LIST_FOREACH_START (descs, desc) {
+			GL_LIST_FOREACH (descs, desc) {
 				if (!desc->name || !desc->whatis)
 					continue;
 				found = true;
 				printf ("%s", files[i]);
 				if (show_filters)
 					printf (" (%s)", lg.filters);
-				if (show_whatis)
+				if (show_whatis) {
+					char *name_conv = convert_to_locale
+						(desc->name);
+					char *whatis_conv = convert_to_locale
+						(desc->whatis);
 					printf (": \"%s - %s\"",
-						desc->name, desc->whatis);
+						name_conv, whatis_conv);
+					free (whatis_conv);
+					free (name_conv);
+				}
 				printf ("\n");
-			} GL_LIST_FOREACH_END (descs);
+			}
 			gl_list_free (descs);
 			free (lg.filters);
 			free (lg.whatis);

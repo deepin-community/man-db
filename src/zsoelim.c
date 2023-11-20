@@ -776,7 +776,7 @@ char *yytext;
 
 /*
  * zsoelim.l: eliminate .so includes within *roff source
- *  
+ *
  * Copyright (C) 1994, 1995 Graeme W. Wilford. (Wilf.)
  * Copyright (C) 1997 Fabrizio Polacco.
  * Copyright (C) 2001, 2002, 2003, 2004, 2006, 2007, 2008, 2009, 2010, 2011
@@ -803,7 +803,7 @@ char *yytext;
  * 100% of compressed source files correctly. A replacement tmac.andoc was
  * considered, but would not have been portable to all systems.
  *
- * Wed Oct 12 18:46:11 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk) 
+ * Wed Oct 12 18:46:11 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
  *
  * Tue, 14 Oct 1997 Fabrizio Polacco <fpolacco@debian.org>
  * - added changes that were done to .c instead of -l source
@@ -814,6 +814,8 @@ char *yytext;
 #define MAX_SO_DEPTH 	10		/* max .so recursion depth */
 #undef ACCEPT_QUOTES			/* accept quoted roff requests */
 
+#include <assert.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -827,8 +829,10 @@ char *yytext;
 #define PIPE	so_pipe[so_stack_ptr]
 
 #include "dirname.h"
+#include "error.h"
 #include "gl_linkedhash_list.h"
 #include "gl_xlist.h"
+#include "xalloc.h"
 #include "xgetcwd.h"
 #include "xvasprintf.h"
 
@@ -836,11 +840,13 @@ char *yytext;
 #include <locale.h>
 #define _(String) gettext (String)
 
-#include "error.h"
+#include "appendstr.h"
+#include "compression.h"
+#include "debug.h"
+#include "fatal.h"
 #include "glcontainers.h"
-#include "pipeline.h"
-#include "decompress.h"
 
+#include "decompress.h"
 #include "globbing.h"
 #include "zsoelim.h"
 
@@ -854,9 +860,9 @@ static void zap_quotes (void);
 static YY_BUFFER_STATE so_stack[MAX_SO_DEPTH];
 static char *so_name[MAX_SO_DEPTH];
 static int so_line[MAX_SO_DEPTH];
-static pipeline *so_pipe[MAX_SO_DEPTH];
+static decompress *so_pipe[MAX_SO_DEPTH];
 static int so_stack_ptr;
-static int no_newline;
+static bool no_newline;
 static gl_list_t so_manpathlist;
 static const char *so_parent_path;
 
@@ -867,11 +873,11 @@ struct zsoelim_stdin_data {
 
 /* The flex documentation says that yyin is only used by YY_INPUT, so we
  * should safely be able to abuse it as a handy way to keep track of the
- * current 'pipeline *' rather than the usual 'FILE *'.
+ * current 'decompress *' rather than the usual 'FILE *'.
  */
 #define YY_INPUT(buf,result,max_size) { \
 	size_t size = max_size; \
-	const char *block = pipeline_read ((pipeline *) yyin, &size); \
+	const char *block = decompress_read ((decompress *) yyin, &size); \
 	if (block && size != 0) { \
 		memcpy (buf, block, size); \
 		buf[size] = '\0'; \
@@ -880,9 +886,9 @@ struct zsoelim_stdin_data {
 		result = YY_NULL; \
 }
 #define YY_NO_INPUT
-#line 884 "zsoelim.c"
+#line 890 "zsoelim.c"
 
-#line 886 "zsoelim.c"
+#line 892 "zsoelim.c"
 
 #define INITIAL 0
 #define so 1
@@ -1105,10 +1111,10 @@ YY_DECL
 		}
 
 	{
-#line 140 "zsoelim.l"
+#line 146 "zsoelim.l"
 
 
-#line 1112 "zsoelim.c"
+#line 1118 "zsoelim.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1156,72 +1162,72 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 142 "zsoelim.l"
-{	
-			no_newline = 1;
+#line 148 "zsoelim.l"
+{
+			no_newline = true;
 			ECHO;
 			BEGIN (de);	/* Now we're inside of a macro definition: ends with a comment */
 		}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 148 "zsoelim.l"
-{	
-			no_newline = 1;
+#line 154 "zsoelim.l"
+{
+			no_newline = true;
 			BEGIN (so);	/* Now we're in the .so environment */
 		}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 153 "zsoelim.l"
+#line 159 "zsoelim.l"
 {
-			no_newline = 1;
+			no_newline = true;
 			ECHO;		/* Now we're in the .lf environment */
 			BEGIN (lfnumber);
 		}
 	YY_BREAK
 case 4:
-#line 160 "zsoelim.l"
+#line 166 "zsoelim.l"
 case 5:
 /* rule 5 can match eol */
-#line 161 "zsoelim.l"
+#line 167 "zsoelim.l"
 case 6:
 /* rule 6 can match eol */
-#line 162 "zsoelim.l"
+#line 168 "zsoelim.l"
 case 7:
 /* rule 7 can match eol */
-#line 163 "zsoelim.l"
+#line 169 "zsoelim.l"
 case 8:
 /* rule 8 can match eol */
-#line 164 "zsoelim.l"
+#line 170 "zsoelim.l"
 case 9:
 /* rule 9 can match eol */
-#line 165 "zsoelim.l"
+#line 171 "zsoelim.l"
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 165 "zsoelim.l"
+#line 171 "zsoelim.l"
 {
-				no_newline = 1;
+				no_newline = true;
 				ECHO;
 			}
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 170 "zsoelim.l"
+#line 176 "zsoelim.l"
 {
-			no_newline = 0;
+			no_newline = false;
 			putchar ('\n');
 			LINE++;
 		}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 177 "zsoelim.l"
+#line 183 "zsoelim.l"
 { 	/* file names including whitespace ?  */
-			if (so_stack_ptr == MAX_SO_DEPTH - 1) 
-				error (FATAL, 0, 
+			if (so_stack_ptr == MAX_SO_DEPTH - 1)
+				fatal (0,
 				       _("%s:%d: .so requests nested too "
 				         "deeply or are recursive"),
 				       NAME, LINE);
@@ -1230,13 +1236,13 @@ YY_RULE_SETUP
 			so_stack[so_stack_ptr++] = YY_CURRENT_BUFFER;
 			LINE = 1;
 
-			no_newline = 0;
+			no_newline = false;
 
 			if (zsoelim_open_file (yytext, so_manpathlist,
 					       so_parent_path)) {
 				--so_stack_ptr;
 #ifndef __alpha
-				error (OK, 0, 
+				error (OK, 0,
 				       _("%s:%d: warning: failed .so request"),
 				       NAME, LINE);
 				printf (".so %s\n", yytext);
@@ -1254,18 +1260,18 @@ YY_RULE_SETUP
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
-#line 209 "zsoelim.l"
+#line 215 "zsoelim.l"
 {
-			no_newline = 0;
+			no_newline = false;
 			BEGIN (INITIAL);
 		}
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 214 "zsoelim.l"
+#line 220 "zsoelim.l"
 {
-			no_newline = 0;
+			no_newline = false;
 			error (OK, 0,
 			       _("%s:%d: warning: newline in .so request, "
 			         "ignoring"),
@@ -1277,36 +1283,36 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 225 "zsoelim.l"
+#line 231 "zsoelim.l"
 {
-			no_newline = 1;
+			no_newline = true;
 			ECHO;
 			BEGIN (INITIAL);
 		}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 231 "zsoelim.l"
+#line 237 "zsoelim.l"
 {
-			no_newline = 1;
+			no_newline = true;
 			ECHO;
 		}
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 236 "zsoelim.l"
+#line 242 "zsoelim.l"
 {
-			no_newline = 0;
+			no_newline = false;
 			putchar ('\n');
 			LINE++;
 		}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 243 "zsoelim.l"
+#line 249 "zsoelim.l"
 {
-			no_newline = 1;
+			no_newline = true;
 			ECHO;
 			ZAP_QUOTES;
 			LINE = atoi (yytext);
@@ -1315,32 +1321,32 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 251 "zsoelim.l"
+#line 257 "zsoelim.l"
 {	/* file names including whitespace ?? */
-			no_newline = 1;
+			no_newline = true;
 			ECHO;
 			putchar ('\n');
 			ZAP_QUOTES;
 			if (NAME)
 				free (NAME);
 			NAME = xstrdup (yytext);
-			BEGIN (end_request); 
+			BEGIN (end_request);
 		}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 262 "zsoelim.l"
+#line 268 "zsoelim.l"
 {
-			no_newline = 1;
+			no_newline = true;
 			ECHO;
 		}
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 267 "zsoelim.l"
+#line 273 "zsoelim.l"
 {
-			no_newline = 0;
+			no_newline = false;
 			putchar ('\n');
 			LINE++;
 			BEGIN (INITIAL);
@@ -1348,12 +1354,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 274 "zsoelim.l"
+#line 280 "zsoelim.l"
 {
-			no_newline = 1;
-			error (OK, 0,
-			       _("%s:%d: warning: malformed .lf request, "
-			         "ignoring"),
+			no_newline = true;
+			debug (
+			       "%s:%d: warning: unhandled .lf request; "
+			       "line numbers may be wrong\n",
 			       NAME, LINE);
 			putchar (*yytext);
 			BEGIN (INITIAL);
@@ -1362,9 +1368,9 @@ YY_RULE_SETUP
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 284 "zsoelim.l"
+#line 290 "zsoelim.l"
 {
-			no_newline = 0;
+			no_newline = false;
 			error (OK, 0,
 			       _("%s:%d: warning: newline in .lf request, "
 			         "ignoring"),
@@ -1380,10 +1386,10 @@ case YY_STATE_EOF(de):
 case YY_STATE_EOF(end_request):
 case YY_STATE_EOF(lfnumber):
 case YY_STATE_EOF(lfname):
-#line 295 "zsoelim.l"
+#line 301 "zsoelim.l"
 {
-		pipeline_wait (PIPE);
-		pipeline_free (PIPE);
+		decompress_wait (PIPE);
+		decompress_free (PIPE);
 		PIPE = NULL;
 		free (NAME);
 		NAME = NULL;
@@ -1398,16 +1404,16 @@ case YY_STATE_EOF(lfname):
 			yy_switch_to_buffer (so_stack[so_stack_ptr]);
 			printf (".lf %d %s\n", LINE += 1, NAME);
 		}
-		no_newline = 0;
+		no_newline = false;
 		BEGIN (end_request);
 	}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 315 "zsoelim.l"
+#line 321 "zsoelim.l"
 ECHO;
 	YY_BREAK
-#line 1411 "zsoelim.c"
+#line 1417 "zsoelim.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2366,7 +2372,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 315 "zsoelim.l"
+#line 321 "zsoelim.l"
 
 
 #ifdef ACCEPT_QUOTES
@@ -2398,11 +2404,11 @@ void zsoelim_parse_file (gl_list_t manpathlist, const char *parent_path)
 	/* Skip over the first line if it's something that manconv might
 	 * need to know about.
 	 */
-	line = pipeline_peekline ((pipeline *) yyin);
+	line = decompress_peekline ((decompress *) yyin);
 	if (line &&
 	    (STRNEQ (line, PP_COOKIE, 4) || STRNEQ (line, ".\\\" ", 4))) {
 		fputs (line, stdout);
-		pipeline_peek_skip ((pipeline *) yyin, strlen (line));
+		decompress_peek_skip ((decompress *) yyin, strlen (line));
 		++linenum;
 	}
 
@@ -2411,16 +2417,16 @@ void zsoelim_parse_file (gl_list_t manpathlist, const char *parent_path)
 	yylex ();
 }
 
-static pipeline *try_compressed (char **filename)
+static decompress *try_compressed (char **filename)
 {
 	struct compression *comp;
 	size_t len = strlen (*filename);
-	pipeline *decomp;
+	decompress *decomp;
 
 	/* Try the uncompressed name first. */
 	(*filename)[len - 1] = '\0';
 	debug ("trying %s\n", *filename);
-	decomp = decompress_open (*filename);
+	decomp = decompress_open (*filename, DECOMPRESS_ALLOW_INPROCESS);
 	if (decomp)
 		return decomp;
 	(*filename)[len - 1] = '.';
@@ -2428,7 +2434,8 @@ static pipeline *try_compressed (char **filename)
 	for (comp = comp_list; comp->ext; ++comp) {
 		*filename = appendstr (*filename, comp->ext, NULL);
 		debug ("trying %s\n", *filename);
-		decomp = decompress_open (*filename);
+		decomp = decompress_open (*filename,
+					  DECOMPRESS_ALLOW_INPROCESS);
 		if (decomp)
 			return decomp;
 		(*filename)[len] = '\0';
@@ -2439,10 +2446,10 @@ static pipeline *try_compressed (char **filename)
 
 /* This routine is used to open the specified file or uncompress a compressed
    version and open that instead */
-int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
-		       const char *parent_path)
+bool zsoelim_open_file (const char *filename, gl_list_t manpathlist,
+			const char *parent_path)
 {
-	pipeline *decomp;
+	decompress *decomp = NULL;
 
 	if (parent_path)
 		debug ("opening %s (parent path: %s)\n",
@@ -2460,6 +2467,7 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 		/* If there is no parent path, try opening directly first. */
 		if (!parent_path) {
 			compfile = xasprintf ("%s.", filename);
+			assert (compfile);
 
 			decomp = try_compressed (&compfile);
 			if (decomp) {
@@ -2476,6 +2484,7 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 			if (parent_path) {
 				compfile = xasprintf ("%s/%s.", parent_path,
 						      filename);
+				assert (compfile);
 
 				decomp = try_compressed (&compfile);
 				if (decomp) {
@@ -2486,11 +2495,12 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 				free (compfile);
 			}
 
-			GL_LIST_FOREACH_START (manpathlist, mp) {
+			GL_LIST_FOREACH (manpathlist, mp) {
 				if (parent_path && STREQ (mp, parent_path))
 					continue;
 
 				compfile = xasprintf ("%s/%s.", mp, filename);
+				assert (compfile);
 
 				decomp = try_compressed (&compfile);
 				if (decomp) {
@@ -2499,7 +2509,7 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 				}
 
 				free (compfile);
-			} GL_LIST_FOREACH_END (manpathlist);
+			}
 		} else {
 			/* File name with no directory part.  Try searching
 			 * the manpath.
@@ -2522,35 +2532,39 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 
 			if (parent_path) {
 				names = look_for_file (parent_path, sec, name,
-						       0, LFF_MATCHCASE);
-				GL_LIST_FOREACH_START (names, found_name) {
-					decomp = decompress_open (found_name);
+						       false, LFF_MATCHCASE);
+				GL_LIST_FOREACH (names, found_name) {
+					decomp = decompress_open
+						(found_name,
+						 DECOMPRESS_ALLOW_INPROCESS);
 					if (decomp) {
 						NAME = xstrdup (found_name);
 						gl_list_free (names);
 						goto out;
 					}
-				} GL_LIST_FOREACH_END (names);
+				}
 				gl_list_free (names);
 			}
 
-			GL_LIST_FOREACH_START (manpathlist, mp) {
+			GL_LIST_FOREACH (manpathlist, mp) {
 				if (parent_path && STREQ (mp, parent_path))
 					continue;
 
 				names = look_for_file (mp, sec, name,
-						       0, LFF_MATCHCASE);
-				GL_LIST_FOREACH_START (names, found_name) {
-					decomp = decompress_open (found_name);
+						       false, LFF_MATCHCASE);
+				GL_LIST_FOREACH (names, found_name) {
+					decomp = decompress_open
+						(found_name,
+						 DECOMPRESS_ALLOW_INPROCESS);
 					if (decomp) {
 						NAME = xstrdup (found_name);
 						gl_list_free (names);
 						free (name);
 						goto out;
 					}
-				} GL_LIST_FOREACH_END (names);
+				}
 				gl_list_free (names);
-			} GL_LIST_FOREACH_END (manpathlist);
+			}
 
 			free (name);
 		}
@@ -2558,6 +2572,7 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 		/* If there is a parent path, try opening directly last. */
 		if (parent_path) {
 			compfile = xasprintf ("%s.", filename);
+			assert (compfile);
 
 			decomp = try_compressed (&compfile);
 			if (decomp) {
@@ -2570,18 +2585,18 @@ int zsoelim_open_file (const char *filename, gl_list_t manpathlist,
 out:
 		if (!decomp) {
 			error (0, errno, _("can't open %s"), filename);
-			return 1;
+			return true;
 		}
 	}
 
 	debug ("opened %s\n", NAME);
 
-	pipeline_start (decomp);
+	decompress_start (decomp);
 	PIPE = decomp;
-	/* only used by YY_INPUT, which casts it back to 'pipeline *' */
+	/* only used by YY_INPUT, which casts it back to 'decompress *' */
 	yyin = (FILE *) decomp;
 
-	return 0;
+	return false;
 }
 
 void zsoelim_stdin (void *data)

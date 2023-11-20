@@ -1,5 +1,6 @@
 /*
  * debug.c: debugging messages
+ *
  * Copyright (C) 2007 Colin Watson.
  *
  * This file is part of man-db.
@@ -30,7 +31,11 @@
 #include <string.h>
 #include <errno.h>
 
+#include "attribute.h"
+
 #include "manconfig.h"
+
+#include "debug.h"
 
 bool debug_level = false;
 
@@ -41,8 +46,8 @@ void init_debug (void)
 		debug_level = true;
 }
 
-static void ATTRIBUTE_FORMAT_PRINTF (1, 0) vdebug (const char *message,
-						   va_list args)
+static void ATTRIBUTE_FORMAT ((__printf__, 1, 0)) vdebug (const char *message,
+							  va_list args)
 {
 	if (debug_level)
 		vfprintf (stderr, message, args);

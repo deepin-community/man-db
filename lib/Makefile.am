@@ -25,24 +25,32 @@ dist_noinst_DATA = README
 AM_CFLAGS = $(WARN_CFLAGS)
 
 libman_la_CPPFLAGS = \
-	-I$(top_builddir)/include \
+	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/gl/lib \
 	-I$(top_builddir)/gl/lib \
 	-DLOCALEDIR=\"$(localedir)\" \
-	$(libpipeline_CFLAGS) \
 	$(libseccomp_CFLAGS)
 
 libman_la_SOURCES = \
 	appendstr.c \
+	appendstr.h \
 	cleanup.c \
 	cleanup.h \
+	compression.c \
+	compression.h \
 	debug.c \
+	debug.h \
 	encodings.c \
 	encodings.h \
+	fatal.c \
+	fatal.h \
+	filenames.c \
+	filenames.h \
 	glcontainers.c \
 	glcontainers.h \
 	linelength.c \
 	linelength.h \
+	mp.h \
 	orderfiles.c \
 	orderfiles.h \
 	pathsearch.c \
@@ -52,7 +60,9 @@ libman_la_SOURCES = \
 	security.c \
 	security.h \
 	tempfile.c \
+	tempfile.h \
 	util.c \
+	util.h \
 	wordfnmatch.c \
 	wordfnmatch.h \
 	xregcomp.c \
@@ -64,5 +74,5 @@ libman_la_LIBADD = ../gl/lib/libgnu.la $(LTLIBOBJS) \
 libman_la_LDFLAGS = \
 	-avoid-version -release $(VERSION) -rpath $(pkglibdir) \
 	-no-undefined \
-	$(libpipeline_LIBS) \
+	$(LIBMAN_EXPORT_LDFLAGS) \
 	$(libseccomp_LIBS)

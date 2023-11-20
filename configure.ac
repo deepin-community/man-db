@@ -2,21 +2,20 @@ dnl Process this file with autoconf to produce a configure script.
 m4_pattern_forbid([^MAN_])
 
 # Initialise and check we're in the correct directory.
-AC_INIT([man-db], [2.9.4], [cjwatson@debian.org])
+AC_INIT([man-db], [2.12.0], [cjwatson@debian.org])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([1.11 -Wall -Wno-override -Werror foreign dist-xz no-dist-gzip parallel-tests])
-AM_MAINTAINER_MODE
+AM_INIT_AUTOMAKE([1.14 -Wall -Wno-override -Werror foreign dist-xz no-dist-gzip parallel-tests])
 AM_SILENT_RULES([yes])
-AC_PREREQ([2.63])
+AC_PREREQ([2.64])
 AC_CONFIG_SRCDIR([src/man.c])
-AC_GNU_SOURCE
+AC_USE_SYSTEM_EXTENSIONS
 MAN_TAR_SORT_NAME
 
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_HOST
 
 # Define below date and version information to be put into man pages etc.
-date=2021-02-08
+date=2023-09-23
 AC_SUBST([date])dnl
 roff_version=`echo AC_PACKAGE_VERSION | sed 's/-/\\-/g'`
 AC_SUBST([roff_version])dnl
@@ -44,6 +43,7 @@ MAN_ARG_SYSTEMDTMPFILESDIR
 MAN_ARG_SYSTEMDSYSTEMUNITDIR
 MAN_ARG_MANDIRS
 MAN_ARG_MANUAL
+MAN_ARG_SNAPDIR
 
 # Check $PATH for the following programs and append suitable options.
 AC_PROG_CC
@@ -62,30 +62,64 @@ case $host_os in
 		;;
 esac
 
-# Enable all reasonable GCC warnings.
-gl_MANYWARN_ALL_GCC([warnings])
-nw=
-nw="$nw -Wsystem-headers"
-nw="$nw -Wmissing-field-initializers"
-nw="$nw -Winline"
-gl_MANYWARN_COMPLEMENT([warnings], [$warnings], [$nw])
-for w in $warnings; do
-	gl_WARN_ADD([$w])
-done
-gl_WARN_ADD([-Wno-missing-field-initializers])
-# Disable use of VLAs by Gnulib to avoid tripping over -Wvla.
-AC_DEFINE([GNULIB_NO_VLA], [1], [Define to 1 to disable use of VLAs.])
+AC_ARG_ENABLE([gcc-warnings],
+  [AS_HELP_STRING([--enable-gcc-warnings=TYPE],
+    [control generation of GCC warnings.  The TYPE 'no' disables
+     warnings; 'yes' generates cheap warnings if available (default);
+     'expensive' in addition generates expensive-to-compute warnings
+     if available])],
+  [case $enableval in
+     no|yes|expensive) ;;
+     *) AC_MSG_ERROR([bad value $enableval for gcc-warnings option]) ;;
+   esac
+   man_gcc_warnings=$enableval],
+  [man_gcc_warnings=yes]
+)
+if test "$man_gcc_warnings" != no; then
+	# Enable all reasonable GCC warnings.
+	gl_MANYWARN_ALL_GCC([warnings])
+	nw=
+	nw="$nw -Wsystem-headers"
+	nw="$nw -Wmissing-field-initializers"
+	nw="$nw -Winline"
+	if test "$man_gcc_warnings" != expensive; then
+		nw="$nw -fanalyzer"
+	fi
+	gl_MANYWARN_COMPLEMENT([warnings], [$warnings], [$nw])
+	for w in $warnings; do
+		gl_WARN_ADD([$w])
+	done
+	gl_WARN_ADD([-Wno-missing-field-initializers])
+	# Disable use of VLAs by Gnulib to avoid tripping over -Wvla.
+	AC_DEFINE([GNULIB_NO_VLA], [1], [Define to 1 to disable use of VLAs.])
+fi
 
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AM_PROG_AR
 LT_INIT([disable-static])
+
+libman_export_ldflags=
+if test "$with_gnu_ld" = yes; then
+	case $host_os in
+		cygwin*|mingw*|pw32*|cegcc*)
+			libman_export_ldflags='-Wl,--export-all-symbols'
+			;;
+	esac
+fi
+AC_SUBST([LIBMAN_EXPORT_LDFLAGS], [$libman_export_ldflags])
+
 AC_CHECK_PROGS([cat], [cat])
+AC_DEFINE_UNQUOTED([PROG_CAT], ["$cat"], [Program to use as cat.])
 MAN_CHECK_PROGS([browser], [BROWSER], [use BROWSER as default web browser], [www-browser lynx elinks w3m])
 test -n "$browser" && browser="exec $browser"
+AC_DEFINE_UNQUOTED([PROG_BROWSER], ["$browser"], [Program to use as browser.])
 AC_CHECK_PROGS([tr], [tr])
+AC_DEFINE_UNQUOTED([PROG_TR], ["$tr"], [Program to use as tr.])
 AC_CHECK_PROGS([grep], [grep])
+AC_DEFINE_UNQUOTED([PROG_GREP], ["$grep"], [Program to use as grep.])
 MAN_CHECK_PROGS([pager], [PAGER], [use PAGER as default pager], [pager less more])
+AC_DEFINE_UNQUOTED([PROG_PAGER], ["$pager"], [Program to use as pager.])
 
 # Define below (in list of preference) *roff macros to check for.
 macros="andoc an doc"
@@ -100,13 +134,13 @@ then
 	then
 		MAN_PROG_HEIRLOOM_NROFF([$nroff])
 	fi
-	if test -n "$nroff_device" 
+	if test -n "$nroff_device"
 	then
 		AC_MSG_CHECKING([that nroff works with argument$nroff_device])
 		# We cannot cache this result as it can change between runs
 		# of configure.
 		if $nroff $nroff_device </dev/null >/dev/null 2>&1 3>&1
-		then 
+		then
 			AC_MSG_RESULT([yes])
 		else
 			AC_MSG_RESULT([no])
@@ -115,7 +149,7 @@ then
 	fi
 	AC_MSG_CHECKING([for appropriate nroff macro])
 	AC_CACHE_VAL([man_cv_prog_nroff_macro], [
-	
+
 	for macro in $macros
 	do
 		if $nroff -m$macro $nroff_device </dev/null >/dev/null 2>&1 3>&1
@@ -124,7 +158,7 @@ then
 			break
 		fi
 	done])
-	
+
 	if test -n "$man_cv_prog_nroff_macro"
 	then
 		if test "$man_cv_prog_heirloom_nroff" = "yes"
@@ -140,13 +174,14 @@ dnl		nroff="$nroff ${man_cv_prog_nroff_macro}${nroff_device}"
 		AC_MSG_RESULT([$man_cv_prog_nroff_macro])
 	else
 		AC_MSG_RESULT([ambiguous])
-		AC_MSG_WARN([please edit include/manconfig.h and add nroff definition])
+		AC_MSG_WARN([please edit config.h and add nroff definition])
 	fi
 else
 	AC_MSG_WARN([Cannot find an nroff-like program, formatting of manual page source will not be supported.])
 	nroff="(nroff not installed)"
 	AC_DEFINE([NROFF_MISSING], [1], [Define if you don't have nroff.])
 fi
+AC_DEFINE_UNQUOTED([PROG_NROFF], ["$nroff"], [Program to use as nroff.])
 
 dnl It would be nice to use MAN_CHECK_PROGS here, but how do we determine
 dnl TROFF_IS_GROFF?
@@ -161,6 +196,7 @@ else
 	AC_CHECK_PROGS([troff], [troff gtroff])
 	TROFF=troff
 fi
+AC_SUBST([troff_is_groff])
 AC_SUBST([TROFF])
 if test -n "$troff"
 then
@@ -193,11 +229,12 @@ then
 		AC_MSG_RESULT([$man_cv_prog_troff_options])
 	else
 		AC_MSG_RESULT([ambiguous])
-		AC_MSG_WARN([please edit include/manconfig.h and add troff definition])
+		AC_MSG_WARN([please edit config.h and add troff definition])
 	fi
 else
 	troff="(troff not installed)"
 fi
+AC_DEFINE_UNQUOTED([PROG_TROFF], ["$troff"], [Program to use as troff.])
 dnl We want to end up with "-" written as "\-" in manual pages.  This
 dnl requires additional \-escaping corresponding to the following quote
 dnl removal steps:
@@ -252,16 +289,19 @@ then
 fi
 
 MAN_CHECK_PROGS([eqn], [EQN], [use EQN to preprocess equations], [eqn geqn])
+AC_DEFINE_UNQUOTED([PROG_EQN], ["$eqn"], [Program to use as eqn.])
 MAN_CHECK_PROGS([neqn], [NEQN], [use NEQN to preprocess equations for character devices], [neqn gneqn])
 # If we fail to find an neqn, use eqn and try to force it to output for an
 # ascii device. As this is only relevant for equations (?), not using latin1
 # should be acceptable. -Tlatin1 is ignored by some eqn implementations.
 if test -z "$neqn"
 then
-	test -n "$eqn" && 
+	test -n "$eqn" &&
 	(test -n "$nroff_device" && neqn="$eqn -T$nroff_device" || neqn="$eqn -Tascii")
 fi
+AC_DEFINE_UNQUOTED([PROG_NEQN], ["$neqn"], [Program to use as neqn.])
 MAN_CHECK_PROGS([tbl], [TBL], [use TBL to preprocess tables], [tbl gtbl])
+AC_DEFINE_UNQUOTED([PROG_TBL], ["$tbl"], [Program to use as tbl.])
 TBL_X_FORMAT=
 if test -n "$tbl"
 then
@@ -281,11 +321,16 @@ then
 fi
 AC_SUBST([TBL_X_FORMAT])
 MAN_CHECK_PROGS([col], [COL], [use COL to filter formatting characters from output], [col gcol])
+AC_DEFINE_UNQUOTED([PROG_COL], ["$col"], [Program to use as col.])
 MAN_CHECK_PROGS([vgrind], [VGRIND], [use VGRIND to preprocess program sources], [vgrind gvgrind])
+AC_DEFINE_UNQUOTED([PROG_VGRIND], ["$vgrind"], [Program to use as vgrind.])
 MAN_CHECK_PROGS([refer], [REFER], [use REFER to preprocess bibliographic references], [refer grefer])
+AC_DEFINE_UNQUOTED([PROG_REFER], ["$refer"], [Program to use as refer.])
 MAN_CHECK_PROGS([grap], [GRAP], [use GRAP to preprocess graphs], [grap])
+AC_DEFINE_UNQUOTED([PROG_GRAP], ["$grap"], [Program to use as grap.])
 MAN_CHECK_PROGS([pic], [PIC], [use PIC to preprocess pictures], [pic gpic])
 test -n "$pic" && pic="$pic -S"
+AC_DEFINE_UNQUOTED([PROG_PIC], ["$pic"], [Program to use as pic.])
 
 MAN_CHECK_PROGS([gzip], [GZIP], [use GZIP as GNU compression utility], [gzip])
 if test -n "$gzip"
@@ -336,22 +381,32 @@ if test -n "$compressor"
 then
 	AC_DEFINE([COMP_CAT], [1], [Define if you have compressors and want to support compressed cat files.])
 fi
+dnl Compressors are used for compressing cat pages.
 AC_SUBST([compressor])
-AC_SUBST([compress_ext])
-AC_SUBST([gunzip])
-AC_SUBST([uncompress])
-AC_SUBST([bunzip2])
-AC_SUBST([unlzma])
-AC_SUBST([unxz])
-AC_SUBST([unlzip])
-AC_SUBST([unzstd])
+AC_DEFINE_UNQUOTED(
+	[PROG_COMPRESSOR], ["$compressor"],
+	[Default compressor, used for compressing cat pages.])
+AC_DEFINE_UNQUOTED(
+	[COMPRESS_EXT], ["$compress_ext"],
+	[Default compression extension, used for compressing cat pages.])
+dnl Decompressors are used for decompressing cat pages and nroff source.
+dnl To add further decompressors, you will also need to edit
+dnl lib/compression.c.
+AC_DEFINE_UNQUOTED([PROG_GUNZIP], ["$gunzip"], [Program to use as gunzip.])
+AC_DEFINE_UNQUOTED(
+	[PROG_UNCOMPRESS], ["$uncompress"], [Program to use as uncompress.])
+AC_DEFINE_UNQUOTED([PROG_BUNZIP2], ["$bunzip2"], [Program to use as bunzip2.])
+AC_DEFINE_UNQUOTED([PROG_UNLZMA], ["$unlzma"], [Program to use as unlzma.])
+AC_DEFINE_UNQUOTED([PROG_UNXZ], ["$unxz"], [Program to use as unxz.])
+AC_DEFINE_UNQUOTED([PROG_UNLZIP], ["$unlzip"], [Program to use as unlzip.])
+AC_DEFINE_UNQUOTED([PROG_UNZSTD], ["$unzstd"], [Program to use as unzstd.])
 MAN_COMPRESS_LIB([z], [gzopen])
 dnl To add more decompressors just follow the scheme above.
 
 # Check for various header files and associated libraries.
-AC_ISC_POSIX
-dnl AC_PROG_LEX calls AC_TRY_LINK: must come after above 3
-AC_PROG_LEX
+dnl The "noyywrap" argument is new in Autoconf 2.70, but this also works
+dnl fine with older versions that ignore the argument.
+AC_PROG_LEX([noyywrap])
 if test "$LEX" = ":" && (test ! -e src/lexgrog.c || test ! -e src/zsoelim.c)
 then
 	AC_MSG_ERROR([flex is required when building from revision control])
@@ -365,6 +420,7 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18.3])
 AC_SUBST([LINGUAS])
 AM_ICONV
+AC_SUBST([HAVE_ICONV], [$am_func_iconv])
 MAN_PO4A
 MAN_LINGUAS
 
@@ -387,11 +443,11 @@ then
     for lib in gdbm c dbm
     do
       AC_CHECK_LIB([$lib], [gdbm_fetch],
-		   test "$lib" = "c" || DBLIBS="-l$lib" 
+		   test "$lib" = "c" || DBLIBS="-l$lib"
 		   [AC_DEFINE([GDBM], [1], [Define if you have, and want to use, gdbm interface routines.])
 		    AC_SUBST([DBTYPE], [gdbm])]
 		   db=yes, db=no)
-      if test "$db" = "yes" 
+      if test "$db" = "yes"
       then
         man_save_LIBS="$LIBS"
         LIBS="$LIBS $DBLIBS"
@@ -438,10 +494,10 @@ then
 	test "$db" = "yes" && break
       done], db=no)
   fi
-fi 
+fi
 
 if test "$db" != "yes"
-then 
+then
     if test "$db" = "no"
     then
       AC_MSG_ERROR([Fatal: no supported database library/header found])
@@ -501,6 +557,7 @@ AC_CONFIG_FILES([Makefile
 	man/id/Makefile
 	man/it/Makefile
 	man/ja/Makefile
+	man/ko/Makefile
 	man/nl/Makefile
 	man/pl/Makefile
 	man/pt/Makefile
@@ -515,8 +572,6 @@ AC_CONFIG_FILES([Makefile
 	libdb/Makefile
 	docs/Makefile
 	tools/Makefile
-	include/comp_src.h
-	include/manconfig.h
 	po/Makefile.in])
 if test -f "$srcdir/gl/po/Makefile.in.in"; then
 	AC_CONFIG_FILES([gl/po/Makefile.in])

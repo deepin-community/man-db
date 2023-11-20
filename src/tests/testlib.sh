@@ -1,3 +1,5 @@
+# shellcheck shell=sh
+
 failures=0
 
 # Save tests the trouble of exporting variables they set when executing 'run'.
@@ -25,6 +27,7 @@ init () {
 }
 
 run () {
+	# shellcheck disable=SC2154
 	"$abs_top_builddir/libtool" --mode=execute \
 		-dlopen "$abs_top_builddir/lib/.libs/libman.la" \
 		-dlopen "$abs_top_builddir/libdb/.libs/libmandb.la" \
@@ -47,7 +50,7 @@ db_ext () {
 # Arguments: name section path encoding compression_extension preprocessor_line name_line
 write_page () {
 	mkdir -p "${3%/*}"
-	>"$3.tmp1"
+	: >"$3.tmp1"
 	if [ "$6" ]; then
 		echo "'\\\" $6" >>"$3.tmp1"
 	fi
@@ -75,19 +78,27 @@ accessdb_filter () {
 		sed 's/\(-> "[^ ][^ ]* [^ ][^ ]* [^ ][^ ]* \)[^ ][^ ]* [^ ][^ ]* /\1MTIME /'
 }
 
-expect_pass () {
-	ret=0
-	eval "$2" || ret=$?
-	if [ "$ret" = 0 ]; then
+report () {
+	if [ "$2" = 0 ]; then
 		echo "  PASS: $1"
 	else
-		failures="$(($failures + 1))"
+		failures="$((failures + 1))"
 		echo "  FAIL: $1"
 	fi
 }
 
-skip () {
+expect_files_equal () {
+	ret=0
+	diff -u "$2" "$3" || ret=$?
+	report "$1" "$ret"
+}
+
+report_skip () {
 	echo "  SKIP: $1"
+}
+
+skip () {
+	report_skip "$1"
 	rm -rf "$abstmpdir"
 	exit 77
 }

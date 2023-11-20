@@ -6,10 +6,11 @@
 # File /usr/share/i18n/SUPPORTED must be missing for this test to be effective.
 #
 
-: ${srcdir=.}
+: "${srcdir=.}"
+# shellcheck source-path=SCRIPTDIR
 . "$srcdir/testlib.sh"
 
-: ${MAN=man}
+: "${MAN=man}"
 
 init
 fake_config /usr/share/man
@@ -21,8 +22,6 @@ LANG=
 LC_CTYPE=
 LC_ALL=
 run $MAN -C "$tmpdir/manpath.config" -E UTF-8 test > /dev/null
-# $? is deliberately expanded here.
-expect_pass 'missing locales' "test $? -eq 0"
+report 'missing locales' "$?"
 
 finish
-

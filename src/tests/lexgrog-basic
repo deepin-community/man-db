@@ -2,10 +2,11 @@
 
 # Basic lexgrog tests.
 
-: ${srcdir=.}
+: "${srcdir=.}"
+# shellcheck source-path=SCRIPTDIR
 . "$srcdir/testlib.sh"
 
-: ${LEXGROG=lexgrog}
+: "${LEXGROG=lexgrog}"
 
 init
 
@@ -13,6 +14,6 @@ write_page lextest 1 "$tmpdir/usr/share/man/man1/lextest.1.gz" UTF-8 gz '' \
 	'lextest \- simple lexgrog test'
 echo "$tmpdir/usr/share/man/man1/lextest.1.gz: \"lextest - simple lexgrog test\"" >"$tmpdir/1.exp"
 run $LEXGROG "$tmpdir/usr/share/man/man1/lextest.1.gz" >"$tmpdir/1.out"
-expect_pass 'simple lexgrog test' 'diff -u "$tmpdir/1.exp" "$tmpdir/1.out"'
+expect_files_equal 'simple lexgrog test' "$tmpdir/1.exp" "$tmpdir/1.out"
 
 finish

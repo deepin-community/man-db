@@ -9,7 +9,7 @@ top_builddir = ..
 
 # These options get passed to xgettext.
 XGETTEXT_OPTIONS = --keyword=_ --keyword=N_ \
-          \
+            \
  --flag=_:1:pass-c-format\
  --flag=N_:1:pass-c-format\
  --flag=error:3:c-format --flag=error_at_line:5:c-format\
@@ -17,6 +17,7 @@ XGETTEXT_OPTIONS = --keyword=_ --keyword=N_ \
  --from-code=UTF-8\
  --flag=debug:1:c-format\
  --flag=debug_error:1:c-format\
+ --flag=fatal:2:c-format\
  $${end_of_xgettext_options+}
 
 # This is the copyright holder that gets inserted into the header of the

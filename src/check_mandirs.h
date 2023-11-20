@@ -20,16 +20,17 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "db_storage.h"
+#include <stdbool.h>
+
+#include "mydbm.h"
 
 /* check_mandirs.c */
 extern void test_manfile (MYDBM_FILE dbf, const char *file, const char *path);
 extern void chown_if_possible (const char *path);
-extern int create_db (const char *database,
+extern int create_db (MYDBM_FILE dbf,
 		      const char *manpath, const char *catpath);
-extern int update_db (const char *database,
+extern int update_db (MYDBM_FILE dbf,
 		      const char *manpath, const char *catpath);
 extern void purge_pointers (MYDBM_FILE dbf, const char *name);
-extern int purge_missing (const char *database,
-			  const char *manpath, const char *catpath,
-			  int will_run_mandb);
+extern int purge_missing (MYDBM_FILE dbf,
+			  const char *manpath, const char *catpath);

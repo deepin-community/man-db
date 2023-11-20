@@ -1,23 +1,28 @@
 /* Hierarchical argument parsing, layered over getopt.
-   Copyright (C) 1995-2020 Free Software Foundation, Inc.
+   Copyright (C) 1995-2023 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Written by Miles Bader <miles@gnu.ai.mit.edu>.
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
-   (at your option) any later version.
+   This file is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as
+   published by the Free Software Foundation, either version 3 of the
+   License, or (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
+   This file is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   GNU Lesser General Public License for more details.
 
-   You should have received a copy of the GNU General Public License
+   You should have received a copy of the GNU Lesser General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 #ifndef _ARGP_H
 #define _ARGP_H
+
+/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE, _GL_ATTRIBUTE_FORMAT.  */
+#if !_LIBC && !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
 
 #include <stdio.h>
 #include <ctype.h>
@@ -39,7 +44,8 @@
    Other compilers use __restrict, __restrict__, and _Restrict, and
    'configure' might #define 'restrict' to those words.  */
 #ifndef __restrict
-# if ! (2 < __GNUC__ || (2 == __GNUC__ && 95 <= __GNUC_MINOR__))
+# if ! (2 < __GNUC__ || (2 == __GNUC__ && 95 <= __GNUC_MINOR__) \
+        || __clang_major__ >= 3)
 #  if 199901L <= __STDC_VERSION__
 #   define __restrict restrict
 #  else
@@ -401,7 +407,7 @@ struct argp_state
    unknown option is present, ARGP_ERR_UNKNOWN is returned; if some parser
    routine returned a non-zero value, it is returned; otherwise 0 is
    returned.  This function may also call exit unless the ARGP_NO_HELP flag
-   is set.  INPUT is a pointer to a value to be passed in to the parser.  */
+   is set.  INPUT is a pointer to a value to be passed to the parser.  */
 extern error_t argp_parse (const struct argp *__restrict __argp,
                            int /*argc*/, char **__restrict /*argv*/,
                            unsigned __flags, int *__restrict __arg_index,
@@ -520,10 +526,20 @@ extern void __argp_usage (const struct argp_state *__state);
    message, then exit (1).  */
 extern void argp_error (const struct argp_state *__restrict __state,
                         const char *__restrict __fmt, ...)
-     _GL_ATTRIBUTE_FORMAT ((__printf__, 2, 3));
+#if GNULIB_VFPRINTF_POSIX
+     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 2, 3))
+#else
+     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM, 2, 3))
+#endif
+     ;
 extern void __argp_error (const struct argp_state *__restrict __state,
                           const char *__restrict __fmt, ...)
-     _GL_ATTRIBUTE_FORMAT ((__printf__, 2, 3));
+#if GNULIB_VFPRINTF_POSIX
+     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 2, 3))
+#else
+     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM, 2, 3))
+#endif
+     ;
 
 /* Similar to the standard gnu error-reporting function error(), but will
    respect the ARGP_NO_EXIT and ARGP_NO_ERRS flags in STATE, and will print
@@ -536,11 +552,21 @@ extern void __argp_error (const struct argp_state *__restrict __state,
 extern void argp_failure (const struct argp_state *__restrict __state,
                           int __status, int __errnum,
                           const char *__restrict __fmt, ...)
-     _GL_ATTRIBUTE_FORMAT ((__printf__, 4, 5));
+#if GNULIB_VFPRINTF_POSIX
+     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 4, 5))
+#else
+     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM, 4, 5))
+#endif
+     ;
 extern void __argp_failure (const struct argp_state *__restrict __state,
                             int __status, int __errnum,
                             const char *__restrict __fmt, ...)
-     _GL_ATTRIBUTE_FORMAT ((__printf__, 4, 5));
+#if GNULIB_VFPRINTF_POSIX
+     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 4, 5))
+#else
+     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM, 4, 5))
+#endif
+     ;
 
 #if _LIBC
 /* Returns true if the option OPT is a valid short option.  */
@@ -569,9 +595,6 @@ extern void *__argp_input (const struct argp *__restrict __argp,
 #  define __argp_state_help argp_state_help
 #  define __option_is_short _option_is_short
 #  define __option_is_end _option_is_end
-#ifndef _GL_INLINE_HEADER_BEGIN
- #error "Please include config.h first."
-#endif
 _GL_INLINE_HEADER_BEGIN
 #  ifndef ARGP_EI
 #   define ARGP_EI _GL_INLINE
