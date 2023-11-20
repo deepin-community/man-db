@@ -35,10 +35,13 @@
 
 #include "argp.h"
 #include "dirname.h"
+#include "error.h"
 #include "gl_array_list.h"
 #include "gl_xlist.h"
 #include "progname.h"
 #include "tempname.h"
+#include "xalloc.h"
+#include "xvasprintf.h"
 
 #include "gettext.h"
 #define _(String) gettext (String)
@@ -49,12 +52,16 @@
 #include "pipeline.h"
 
 #include "cleanup.h"
+#include "compression.h"
+#include "debug.h"
 #include "encodings.h"
-#include "error.h"
+#include "fatal.h"
 #include "glcontainers.h"
 #include "sandbox.h"
+#include "util.h"
 
 #include "decompress.h"
+#include "manconv.h"
 #include "manconv_client.h"
 
 int quiet = 0;
@@ -103,14 +110,14 @@ static const char args_doc[] =
 	N_("-t CODE {--suffix SUFFIX | --in-place} FILENAME...");
 
 static struct argp_option options[] = {
-	{ "to-code",	't',	N_("CODE"),	0,	N_("encoding for output") },
-	{ "suffix",	OPT_SUFFIX,
-				N_("SUFFIX"),	0,	N_("suffix to append to output file name") },
-	{ "in-place",	OPT_IN_PLACE,
-				0,		0,	N_("overwrite input files in place") },
-	{ "debug",	'd',	0,		0,	N_("emit debugging messages") },
-	{ "quiet",	'q',	0,		0,	N_("produce fewer warnings") },
-	{ 0, 'h', 0, OPTION_HIDDEN, 0 }, /* compatibility for --help */
+	OPT ("to-code", 't', N_("CODE"), N_("encoding for output")),
+	OPT ("suffix", OPT_SUFFIX, N_("SUFFIX"),
+	     N_("suffix to append to output file name")),
+	OPT ("in-place", OPT_IN_PLACE, 0,
+	     N_("overwrite input files in place")),
+	OPT ("debug", 'd', 0, N_("emit debugging messages")),
+	OPT ("quiet", 'q', 0, N_("produce fewer warnings")),
+	OPT_HELP_COMPAT,
 	{ 0 }
 };
 
@@ -164,20 +171,21 @@ static struct argp argp = { options, parse_opt, args_doc };
 
 static void recode (const char *filename)
 {
-	pipeline *decomp, *convert;
+	decompress *decomp;
+	pipeline *convert, *decomp_p;
 	struct compression *comp;
 	int dir_fd = -1;
 	char *dirname, *basename, *stem, *outfilename;
 	char *page_encoding;
 	int status;
 
-	decomp = decompress_open (filename);
+	decomp = decompress_open (filename, 0);
 	if (!decomp)
 		error (FAIL, 0, _("can't open %s"), filename);
 
 	dirname = dir_name (filename);
 	basename = base_name (filename);
-	comp = comp_info (basename, 1);
+	comp = comp_info (basename, true);
 	if (comp)
 		stem = comp->stem;	/* steal memory */
 	else
@@ -198,22 +206,21 @@ static void recode (const char *filename)
 #endif
 		dir_fd = open (dirname, dir_fd_open_flags);
 		if (dir_fd < 0)
-			error (FATAL, errno, _("can't open %s"), dirname);
+			fatal (errno, _("can't open %s"), dirname);
 
 		outfilename = xasprintf ("%s.XXXXXX", stem);
 		/* For error messages. */
 		template_path = xasprintf ("%s/%s", dirname, outfilename);
 		outfd = mkstempat (dir_fd, outfilename);
-		if (outfd == -1) {
-			error (FATAL, errno,
+		if (outfd == -1)
+			fatal (errno,
 			       _("can't open temporary file %s"),
 			       template_path);
-		}
 		free (template_path);
 		pipeline_want_out (convert, outfd);
 	}
 
-	pipeline_start (decomp);
+	decompress_start (decomp);
 	page_encoding = check_preprocessor_encoding (decomp, NULL, NULL);
 	if (!page_encoding) {
 		char *lang = lang_dir (filename);
@@ -226,9 +233,10 @@ static void recode (const char *filename)
 	if (!pipeline_get_ncommands (convert))
 		pipeline_command (convert, pipecmd_new_passthrough ());
 
-	pipeline_connect (decomp, convert, (void *) 0);
-	pipeline_pump (decomp, convert, (void *) 0);
-	pipeline_wait (decomp);
+	decomp_p = decompress_get_pipeline (decomp);
+	pipeline_connect (decomp_p, convert, (void *) 0);
+	pipeline_pump (decomp_p, convert, (void *) 0);
+	pipeline_wait (decomp_p);
 	status = pipeline_wait (convert);
 	if (status != 0)
 		error (CHILD_FAIL, 0, _("command exited with status %d: %s"),
@@ -240,14 +248,13 @@ static void recode (const char *filename)
 			char *outfilepath = xasprintf
 				("%s/%s", dirname, outfilename);
 			unlink (outfilename);
-			error (FATAL, errno, _("can't rename %s to %s"),
+			fatal (errno, _("can't rename %s to %s"),
 			       outfilepath, filename);
 		}
 		debug ("stem: %s, basename: %s\n", stem, basename);
 		if (!STREQ (stem, basename)) {
 			if (unlinkat (dir_fd, basename, 0) == -1)
-				error (FATAL, errno, _("can't remove %s"),
-				       filename);
+				fatal (errno, _("can't remove %s"), filename);
 		}
 	}
 
@@ -259,7 +266,7 @@ static void recode (const char *filename)
 	if (dir_fd)
 		close (dir_fd);
 	pipeline_free (convert);
-	pipeline_free (decomp);
+	decompress_free (decomp);
 }
 
 int main (int argc, char *argv[])
@@ -277,9 +284,8 @@ int main (int argc, char *argv[])
 	if (argp_parse (&argp, argc, argv, 0, 0, 0))
 		exit (FAIL);
 
-	GL_LIST_FOREACH_START (filenames, filename)
+	GL_LIST_FOREACH (filenames, filename)
 		recode (filename);
-	GL_LIST_FOREACH_END (filenames);
 
 	free (to_code);
 

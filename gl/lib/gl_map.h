@@ -1,10 +1,10 @@
 /* Abstract map data type.
-   Copyright (C) 2006-2007, 2009-2020 Free Software Foundation, Inc.
+   Copyright (C) 2006-2007, 2009-2023 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2018.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -18,12 +18,14 @@
 #ifndef _GL_MAP_H
 #define _GL_MAP_H
 
-#include <stdbool.h>
-#include <stddef.h>
-
-#ifndef _GL_INLINE_HEADER_BEGIN
+/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE,
+   _GL_ATTRIBUTE_NODISCARD.  */
+#if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
+
+#include <stddef.h>
+
 _GL_INLINE_HEADER_BEGIN
 #ifndef GL_MAP_INLINE
 # define GL_MAP_INLINE _GL_INLINE
@@ -117,13 +119,16 @@ extern gl_map_t gl_map_create_empty (gl_map_implementation_t implementation,
                                      gl_mapkey_equals_fn equals_fn,
                                      gl_mapkey_hashcode_fn hashcode_fn,
                                      gl_mapkey_dispose_fn kdispose_fn,
-                                     gl_mapvalue_dispose_fn vdispose_fn);
+                                     gl_mapvalue_dispose_fn vdispose_fn)
+  /*_GL_ATTRIBUTE_DEALLOC (gl_map_free, 1)*/
+  _GL_ATTRIBUTE_RETURNS_NONNULL;
 /* Likewise.  Returns NULL upon out-of-memory.  */
 extern gl_map_t gl_map_nx_create_empty (gl_map_implementation_t implementation,
                                         gl_mapkey_equals_fn equals_fn,
                                         gl_mapkey_hashcode_fn hashcode_fn,
                                         gl_mapkey_dispose_fn kdispose_fn,
-                                        gl_mapvalue_dispose_fn vdispose_fn);
+                                        gl_mapvalue_dispose_fn vdispose_fn)
+  /*_GL_ATTRIBUTE_DEALLOC (gl_map_free, 1)*/;
 
 /* Returns the current number of pairs in a map.  */
 extern size_t gl_map_size (gl_map_t map);
@@ -145,8 +150,8 @@ extern bool gl_map_search (gl_map_t map, const void *key, const void **valuep);
 /* declared in gl_xmap.h */
 extern bool gl_map_put (gl_map_t map, const void *key, const void *value);
 /* Likewise.  Returns -1 upon out-of-memory.  */
-extern int gl_map_nx_put (gl_map_t map, const void *key, const void *value)
-  _GL_ATTRIBUTE_NODISCARD;
+_GL_ATTRIBUTE_NODISCARD
+extern int gl_map_nx_put (gl_map_t map, const void *key, const void *value);
 
 /* Adds a pair to a map and retrieves the previous value.
    Returns true if a pair with the given key was not already in the map and so
@@ -157,9 +162,9 @@ extern int gl_map_nx_put (gl_map_t map, const void *key, const void *value)
 extern bool gl_map_getput (gl_map_t map, const void *key, const void *value,
                            const void **oldvaluep);
 /* Likewise.  Returns -1 upon out-of-memory.  */
+_GL_ATTRIBUTE_NODISCARD
 extern int gl_map_nx_getput (gl_map_t map, const void *key, const void *value,
-                             const void **oldvaluep)
-  _GL_ATTRIBUTE_NODISCARD;
+                             const void **oldvaluep);
 
 /* Removes a pair from a map.
    Returns true if the key was found and its pair removed.
@@ -255,7 +260,9 @@ struct gl_map_impl_base
 /* Define most functions of this file as accesses to the
    struct gl_map_implementation.  */
 
-GL_MAP_INLINE gl_map_t
+GL_MAP_INLINE
+/*_GL_ATTRIBUTE_DEALLOC (gl_map_free, 1)*/
+gl_map_t
 gl_map_nx_create_empty (gl_map_implementation_t implementation,
                         gl_mapkey_equals_fn equals_fn,
                         gl_mapkey_hashcode_fn hashcode_fn,
@@ -280,7 +287,7 @@ gl_map_search (gl_map_t map, const void *key, const void **valuep)
          ->search (map, key, valuep);
 }
 
-GL_MAP_INLINE _GL_ATTRIBUTE_NODISCARD int
+_GL_ATTRIBUTE_NODISCARD GL_MAP_INLINE int
 gl_map_nx_getput (gl_map_t map, const void *key, const void *value,
                    const void **oldvaluep)
 {
@@ -331,7 +338,7 @@ gl_map_get (gl_map_t map, const void *key)
   return value;
 }
 
-GL_MAP_INLINE _GL_ATTRIBUTE_NODISCARD int
+_GL_ATTRIBUTE_NODISCARD GL_MAP_INLINE int
 gl_map_nx_put (gl_map_t map, const void *key, const void *value)
 {
   const void *oldvalue;

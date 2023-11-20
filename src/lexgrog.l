@@ -19,7 +19,7 @@
 
 /*
  * lexgrog.l: extract 'whatis' info from nroff man / formatted cat pages.
- *  
+ *
  * Copyright (C) 1994, 1995 Graeme W. Wilford. (Wilf.)
  * Copyright (C) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
  *               2011, 2012 Colin Watson.
@@ -40,32 +40,49 @@
  * along with man-db; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * Wed Oct 12 18:46:11 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk) 
- * 
+ * Wed Oct 12 18:46:11 BST 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
+ *
  * CJW: Detect grap and vgrind. Understand fill requests. Other improvements
  * in the syntax accepted.
  */
 
 #include <sys/stat.h>
 #include <errno.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "error.h"
+#include "xalloc.h"
+
 #include "gettext.h"
 #define _(String) gettext (String)
 
-#include "error.h"
-#include "pipeline.h"
-#include "decompress.h"
-#include "security.h"
 #include "encodings.h"
+#include "pipeline.h"
 #include "sandbox.h"
+#include "security.h"
+#include "util.h"
 
+#include "decompress.h"
+#include "lexgrog.h"
+#include "manconv.h"
 #include "manconv_client.h"
 
 #define YY_READ_BUF_SIZE	1024
 #define MAX_NAME		8192
+
+/* defines the ordered list of filters detected by lexgrog */
+enum {
+	TBL_FILTER = 0,	/* tbl */
+	EQN_FILTER,	/* eqn */
+	PIC_FILTER,	/* pic */
+	GRAP_FILTER,	/* grap */
+	REF_FILTER,	/* refer */
+	VGRIND_FILTER,	/* vgrind */
+	MAX_FILTERS	/* delimiter */
+};
 
 #define ARRAY_SIZE(array) (sizeof (array) / sizeof ((array)[0]))
 
@@ -227,14 +244,14 @@ static char *p_name;
 static const char *fname;
 static char filters[MAX_FILTERS];
 
-static int fill_mode;
-static int waiting_for_quote;
+static bool fill_mode;
+static bool waiting_for_quote;
 
-static pipeline *decomp;
+static decompress *decomp;
 
 #define YY_INPUT(buf,result,max_size) { \
 	size_t size = max_size; \
-	const char *block = pipeline_read (decomp, &size); \
+	const char *block = decompress_read (decomp, &size); \
 	if (block && size != 0) { \
 		memcpy (buf, block, size); \
 		buf[size] = '\0'; \
@@ -246,7 +263,7 @@ static pipeline *decomp;
 %}
 
 %option ecs meta-ecs
-%option 8bit batch caseful never-interactive 
+%option 8bit batch caseful never-interactive
 %option nostdinit
 %option warn
 %option noyywrap nounput
@@ -293,38 +310,41 @@ comment		['.]\\{dbl_quote}
   * including non-ASCII characters must be written out as (a|b|c|d) rather
   * than [abcd].
   */
-bg_name		ИМЕ
+ar_name		(اﻹسم|الإسم)
+ /* ИМЕ also works for mk */
+bg_name		И(М|м)(Е|е)
 cs_name		(J[Mm](É|é|\\\('[Ee]|E|e)[Nn][Oo]|N(Á|á)[Zz][Ee][Vv])
 da_name		N[Aa][Vv][Nn]
 de_name		B[Ee][Zz][Ee][Ii][Cc][Hh][Nn][Uu][Nn][Gg]
 en_name		N[Aa][Mm][Ee]
 eo_name		N[Oo][Mm][Oo]
 es_name		N[Oo][Mm][Bb][Rr][Ee]
+fa_name		نام
 fi_name		N[Ii][Mm][Ii]
 fr_name		N[Oo][Mm]
-hu_name		N(É|é|E|e)[Vv]
+hu_name		N(É|é|\\\('[Ee]|E|e)[Vv]
 id_name		N[Aa][Mm][Aa]
  /* NOME also works for gl, pt */
 it_name		N[Oo][Mm][Ee]
 ja_name		(名|̾)(前|称)
 ko_name		(이름|명칭)
 latin_name	N[Oo][Mm][Ee][Nn]
-lt_name		PAVADINIMAS
+lt_name		P[Aa][Vv][Aa][Dd][Ii][Nn][Ii][Mm][Aa][Ss]
 nl_name		N[Aa][Aa][Mm]
 pl_name		N[Aa][Zz][Ww][Aa]
 ro_name		N[Uu][Mm][Ee]
-ru_name         (ИМЯ|НАЗВАНИЕ|НАИМЕНОВАНИЕ)
+ru_name         (И(М|м)(Я|я)|Н(А|а)(З|з)(В|в)(А|а)(Н|н)(И|и)(Е|е)|Н(А|а)(И|и)(М|м)(Е|е)(Н|н)(О|о)(В|в)(А|а)(Н|н)(И|и)(Е|е))
 sk_name		M[Ee][Nn][Oo]
-sr_name		(ИМЕ|НАЗИВ)
-srlatin_name	(IME|NAZIV)
+sr_name		(И(М|м)(Е|е)|Н(А|а)(З|з)(И|и)(В|в))
+srlatin_name	(I[Mm][Ee]|N[Aa][Zz][Ii][Vv])
 sv_name		N[Aa][Mm][Nn]
 ta_name		பெய
-tr_name		(İ|i)S(İ|i)M  
-uk_name		НАЗВА
-vi_name		TÊN
+tr_name		(A[Dd]|(İ|i)S(İ|i)M)
+uk_name		Н(А|а)(З|з)(В|в)(А|а)
+vi_name		T(Ê|ê)[Nn]
 zh_CN_name	名{blank}?(称|字){blank}?.*
 zh_TW_name	(名{blank}?(稱|字)|命令名){blank}?.*
-name		({bg_name}|{cs_name}|{da_name}|{de_name}|{en_name}|{eo_name}|{es_name}|{fi_name}|{fr_name}|{hu_name}|{id_name}|{it_name}|{ja_name}|{ko_name}|{latin_name}|{lt_name}|{nl_name}|{pl_name}|{ro_name}|{ru_name}|{sk_name}|{sr_name}|{srlatin_name}|{sv_name}|{ta_name}|{tr_name}|{uk_name}|{vi_name}|{zh_CN_name}|{zh_TW_name})
+name		({ar_name}|{bg_name}|{cs_name}|{da_name}|{de_name}|{en_name}|{eo_name}|{es_name}|{fa_name}|{fi_name}|{fr_name}|{hu_name}|{id_name}|{it_name}|{ja_name}|{ko_name}|{latin_name}|{lt_name}|{nl_name}|{pl_name}|{ro_name}|{ru_name}|{sk_name}|{sr_name}|{srlatin_name}|{sv_name}|{ta_name}|{tr_name}|{uk_name}|{vi_name}|{zh_CN_name}|{zh_TW_name})
 name_sec	{dbl_quote}?{style_change}?{name}{style_change}?({blank}*{dbl_quote})?
 
  /* eptgrv : eqn, pic, tbl, grap, refer, vgrind */
@@ -438,7 +458,7 @@ vgrind_request	\.vS
  /* some include quoting; dealing with this is unpleasant */
 	{bol}{typeface}{blank}+\"	{
 		newline_found ();
-		waiting_for_quote = 1;
+		waiting_for_quote = true;
 	}
 
 	{bol}{typeface}{blank}+		|	/* type face commands */
@@ -462,8 +482,8 @@ vgrind_request	\.vS
 
  /* Toggle fill mode */
 <MAN_NAME,MAN_DESC>{
-	{bol}\.nf.*			fill_mode = 0;
-	{bol}\.fi.*			fill_mode = 1;
+	{bol}\.nf.*			fill_mode = false;
+	{bol}\.fi.*			fill_mode = true;
 }
 
 <CAT_NAME>-{eol}{blank_eol}*		/* strip continuations */
@@ -721,7 +741,7 @@ static void add_str_to_whatis (const char *string, size_t length)
 		(void) strncpy (p_name, string, length);
 		p_name += length;
 	}
-} 
+}
 
 /* append a char to newname if enough room */
 static void add_char_to_whatis (unsigned char c)
@@ -729,7 +749,7 @@ static void add_char_to_whatis (unsigned char c)
 	if (p_name - newname + 1 >= MAX_NAME)
 		too_big ();
 	else if (waiting_for_quote && c == '"')
-		waiting_for_quote = 0;
+		waiting_for_quote = false;
 	else
 		*p_name++ = c;
 }
@@ -827,20 +847,22 @@ static void newline_found (void)
 			BEGIN (MAN_NAME);
 		}
 	}
-	waiting_for_quote = 0;
+	waiting_for_quote = false;
 }
 
 int find_name (const char *file, const char *filename, lexgrog *p_lg,
 	       const char *encoding)
 {
-	int ret;
-	pipeline *p;
+	int ret = 0;
+	decompress *d;
 	char *page_encoding = NULL;
+	bool run_col = p_lg->type == CATPAGE && *PROG_COL != '\0';
 
 	if (strcmp (file, "-") == 0) {
-		p = decompress_fdopen (dup (STDIN_FILENO));
+		d = decompress_fdopen (dup (STDIN_FILENO));
 	} else {
 		struct stat st;
+		int decompress_flags;
 		char *lang;
 
 		if (stat (file, &st)) {
@@ -854,8 +876,15 @@ int find_name (const char *file, const char *filename, lexgrog *p_lg,
 		}
 
 		drop_effective_privs ();
-		p = decompress_open (file);
-		if (!p) {
+		decompress_flags = 0;
+		/* If we're looking at a cat page, then we need to run col
+		 * over it, which doesn't work conveniently with an
+		 * in-process decompressor.
+		 */
+		if (!run_col)
+			decompress_flags |= DECOMPRESS_ALLOW_INPROCESS;
+		d = decompress_open (file, decompress_flags);
+		if (!d) {
 			error (0, errno, _("can't open %s"), file);
 			regain_effective_privs ();
 			return 0;
@@ -870,37 +899,48 @@ int find_name (const char *file, const char *filename, lexgrog *p_lg,
 	}
 	if (!page_encoding && encoding)
 		page_encoding = xstrdup (encoding);
-	if (page_encoding)
-		add_manconv (p, page_encoding, "UTF-8");
-	free (page_encoding);
-	if (p_lg->type && *COL) {
+	if (page_encoding) {
+		if (decompress_is_pipeline (d))
+			add_manconv (decompress_get_pipeline (d),
+				     page_encoding, "UTF-8");
+		else if (manconv_inprocess (d, page_encoding, "UTF-8") != 0)
+			/* manconv should already have written to stderr, so
+			 * just return zero (i.e. no result).
+			 */
+			goto out;
+	}
+	if (run_col) {
 		pipecmd *col_cmd;
-		col_cmd = pipecmd_new_args (COL, "-b", "-p", "-x", (void *) 0);
+		col_cmd = pipecmd_new_args
+			(PROG_COL, "-b", "-p", "-x", (void *) 0);
 		pipecmd_pre_exec (col_cmd, sandbox_load, sandbox_free,
 				  sandbox);
-		pipeline_command (p, col_cmd);
+		pipeline_command (decompress_get_pipeline (d), col_cmd);
 	}
-	pipeline_start (p);
+	decompress_start (d);
 
-	ret = find_name_decompressed (p, filename, p_lg);
-	pipeline_free (p);
+	ret = find_name_decompressed (d, filename, p_lg);
+
+out:
+	free (page_encoding);
+	decompress_free (d);
 	return ret;
 }
 
-int find_name_decompressed (pipeline *p, const char *filename, lexgrog *p_lg)
+int find_name_decompressed (decompress *d, const char *filename, lexgrog *p_lg)
 {
 	int ret;
 
-	decomp = p;
+	decomp = d;
 
 	fname = filename;
 	*(p_name = newname) = '\0';
 	memset (filters, '_', sizeof (filters));
 
-	fill_mode = 1;
-	waiting_for_quote = 0;
+	fill_mode = true;
+	waiting_for_quote = false;
 
-	if (p_lg->type)
+	if (p_lg->type == CATPAGE)
 		BEGIN (CAT_FILE);
 	else
 		BEGIN (MAN_FILE);
@@ -912,7 +952,7 @@ int find_name_decompressed (pipeline *p, const char *filename, lexgrog *p_lg)
 
 	regain_effective_privs ();
 
-	pipeline_wait (decomp);
+	decompress_wait (decomp);
 
 	if (ret)
 		return 0;

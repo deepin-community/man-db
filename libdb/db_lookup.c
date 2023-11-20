@@ -26,6 +26,7 @@
 #  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <errno.h>
@@ -34,11 +35,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "attribute.h"
 #include "error.h"
 #include "fnmatch.h"
 #include "gl_array_list.h"
 #include "gl_xlist.h"
 #include "regex.h"
+#include "xalloc.h"
 #include "xvasprintf.h"
 
 #include "gettext.h"
@@ -46,6 +49,9 @@
 
 #include "manconfig.h"
 
+#include "debug.h"
+#include "fatal.h"
+#include "filenames.h"
 #include "glcontainers.h"
 #include "wordfnmatch.h"
 #include "xregcomp.h"
@@ -77,13 +83,13 @@ void gripe_lock (const char *filename)
 #endif /* NDBM || BTREE */
 
 /* issue fatal message, then exit */
-void gripe_corrupt_data (MYDBM_FILE dbf)
+_Noreturn void gripe_corrupt_data (MYDBM_FILE dbf)
 {
-	error (FATAL, 0, _("index cache %s corrupt"), dbf->name);
+	fatal (0, _("index cache %s corrupt"), dbf->name);
 }
 
 /* deal with situation where we cannot replace a key */
-void gripe_replace_key (MYDBM_FILE dbf, const char *data)
+_Noreturn void gripe_replace_key (MYDBM_FILE dbf, const char *data)
 {
 	error (0, 0, _("cannot replace key %s"), data);
 	gripe_corrupt_data (dbf);
@@ -97,7 +103,7 @@ static char *copy_if_set (const char *str)
 		return xstrdup (str);
 }
 
-const char * _GL_ATTRIBUTE_CONST dash_if_unset (const char *str)
+const char * ATTRIBUTE_CONST dash_if_unset (const char *str)
 {
 	if (str)
 		return str;
@@ -129,31 +135,13 @@ void dbprintf (const struct mandata *info)
 datum make_multi_key (const char *page, const char *ext)
 {
 	datum key;
+	char *value;
 
+	value = xasprintf ("%s\t%s", page, ext);
+	assert (value);
 	memset (&key, 0, sizeof key);
-	MYDBM_SET (key, xasprintf ("%s\t%s", page, ext));
+	MYDBM_SET (key, value);
 	return key;
-}
-
-/* Free allocated elements of a mandata structure, but not the structure
- * itself.
- */
-void free_mandata_elements (struct mandata *pinfo)
-{
-	if (pinfo->addr)
-		/* TODO: this memory appears to be properly owned by the
-		 * caller; why do we free it here?
-		 */
-		free (pinfo->addr);		/* free the 'content' */
-	free (pinfo->name);			/* free the real name */
-}
-
-/* Free a mandata structure and its elements. */
-void free_mandata_struct (struct mandata *pinfo)
-{
-	if (pinfo)
-		free_mandata_elements (pinfo);
-	free (pinfo);
 }
 
 /* Get the key that should be used for a given name. The caller is
@@ -201,31 +189,41 @@ static char **split_data (MYDBM_FILE dbf, char *content, char *start[])
 }
 
 /* Parse the db-returned data and put it into a mandata format */
-void split_content (MYDBM_FILE dbf, char *cont_ptr, struct mandata *pinfo)
+struct mandata *split_content (MYDBM_FILE dbf, char *cont_ptr)
 {
+	struct mandata *info;
 	char *start[FIELDS];
 	char **data;
 
 	data = split_data (dbf, cont_ptr, start);
 
-	pinfo->name = copy_if_set (*(data++));
-	pinfo->ext = *(data++);
-	pinfo->sec = *(data++);
-	pinfo->mtime.tv_sec = (time_t) atol (*(data++));
-	pinfo->mtime.tv_nsec = atol (*(data++));
-	pinfo->id = **(data++);				/* single char id */
-	pinfo->pointer = *(data++);
-	pinfo->filter = *(data++);
-	pinfo->comp = *(data++);
-	pinfo->whatis = *(data);
-
-	pinfo->addr = cont_ptr;
+	info = XZALLOC (struct mandata);
+	info->name = copy_if_set (*(data++));
+	info->ext = xstrdup (*(data++));
+	info->sec = xstrdup (*(data++));
+	info->mtime.tv_sec = (time_t) atol (*(data++));
+	info->mtime.tv_nsec = atol (*(data++));
+	info->id = **(data++);				/* single char id */
+	info->pointer = xstrdup (*(data++));
+	info->filter = xstrdup (*(data++));
+	info->comp = xstrdup (*(data++));
+	info->whatis = xstrdup (*(data));
+	return info;
 }
 
-static bool name_ext_equals (const void *elt1, const void *elt2)
+bool ATTRIBUTE_PURE name_ext_equals (const void *elt1, const void *elt2)
 {
 	const struct name_ext *ref1 = elt1, *ref2 = elt2;
 	return STREQ (ref1->name, ref2->name) && STREQ (ref1->ext, ref2->ext);
+}
+
+int ATTRIBUTE_PURE name_ext_compare (const void *elt1, const void *elt2)
+{
+	const struct name_ext *ref1 = elt1, *ref2 = elt2;
+	int name_cmp = strcmp (ref1->name, ref2->name);
+	if (name_cmp)
+		return name_cmp;
+	return strcmp (ref1->ext, ref2->ext);
 }
 
 /* Extract all of the names/extensions associated with this key. Each case
@@ -252,7 +250,7 @@ gl_list_t list_extensions (char *data)
 		/* Don't copy these; they will point into the given string. */
 		name_ext->name = name;
 		name_ext->ext = ext;
-		gl_list_add_last (list, name_ext);
+		gl_sortedlist_add (list, name_ext_compare, name_ext);
 	}
 
 	debug ("found %zu names/extensions\n", gl_list_size (list));
@@ -295,8 +293,7 @@ static gl_list_t dblookup (MYDBM_FILE dbf, const char *page,
 	else if (*MYDBM_DPTR (cont) != '\t') {	/* Just one entry */
 		bool matches = false;
 
-		info = infoalloc ();
-		split_content (dbf, MYDBM_DPTR (cont), info);
+		info = split_content (dbf, MYDBM_DPTR (cont));
 		if (!info->name)
 			info->name = xstrdup (page);
 		if (!(flags & MATCH_CASE) || STREQ (info->name, page)) {
@@ -327,7 +324,7 @@ static gl_list_t dblookup (MYDBM_FILE dbf, const char *page,
 
 		/* Make the multi keys and look them up */
 
-		GL_LIST_FOREACH_START (refs, ref) {
+		GL_LIST_FOREACH (refs, ref) {
 			datum multi_cont;
 
 			memset (&multi_cont, 0, sizeof multi_cont);
@@ -362,16 +359,15 @@ static gl_list_t dblookup (MYDBM_FILE dbf, const char *page,
 			MYDBM_FREE_DPTR (key);
 
 			/* Allocate info struct and add it to the list. */
-			info = infoalloc ();
-			split_content (dbf, MYDBM_DPTR (multi_cont), info);
+			info = split_content (dbf, MYDBM_DPTR (multi_cont));
 			if (!info->name)
 				info->name = xstrdup (ref->name);
 			gl_list_add_last (infos, info);
-		} GL_LIST_FOREACH_END (refs);
+		}
 
 		gl_list_free (refs);
-		MYDBM_FREE_DPTR (cont);
 	}
+	MYDBM_FREE_DPTR (cont);
 
 	return infos;
 }
@@ -404,7 +400,6 @@ gl_list_t dblookup_pattern (MYDBM_FILE dbf, const char *pattern,
 			    bool pattern_regex, bool try_descriptions)
 {
 	gl_list_t infos;
-	struct mandata *tail = NULL;
 	datum key, cont;
 	regex_t preg;
 
@@ -430,16 +425,14 @@ gl_list_t dblookup_pattern (MYDBM_FILE dbf, const char *pattern,
 	end = man_btree_nextkeydata (dbf, &key, &cont);
 	while (!end) {
 #endif /* !BTREE */
-		struct mandata info;
+		struct mandata *info = NULL;
 		char *tab;
 		bool got_match;
-
-		memset (&info, 0, sizeof (info));
 
 		if (!MYDBM_DPTR (cont))
 		{
 			debug ("key was %s\n", MYDBM_DPTR (key));
-			error (FATAL, 0,
+			fatal (0,
 			       _("Database %s corrupted; rebuild with "
 				 "mandb --create"),
 			       dbf->name);
@@ -448,50 +441,53 @@ gl_list_t dblookup_pattern (MYDBM_FILE dbf, const char *pattern,
 		if (*MYDBM_DPTR (key) == '$')
 			goto nextpage;
 
+#pragma GCC diagnostic push
+#if GNUC_PREREQ(10,0)
+#  pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
+#endif
 		if (*MYDBM_DPTR (cont) == '\t')
 			goto nextpage;
+#pragma GCC diagnostic pop
 
 		/* a real page */
 
-		split_content (dbf, MYDBM_DPTR (cont), &info);
+		info = split_content (dbf, MYDBM_DPTR (cont));
 
 		/* If there's a section given, does it match either the
 		 * section or extension of this page?
 		 */
 		if (section &&
-		    (!STREQ (section, info.sec) && !STREQ (section, info.ext)))
+		    (!STREQ (section, info->sec) &&
+		     !STREQ (section, info->ext)))
 			goto nextpage;
 
 		tab = strrchr (MYDBM_DPTR (key), '\t');
-		if (tab) 
+		if (tab)
 			 *tab = '\0';
 
-		if (!info.name)
-			info.name = xstrdup (MYDBM_DPTR (key));
+		if (!info->name)
+			info->name = xstrdup (MYDBM_DPTR (key));
 
 		if (pattern_regex)
-			got_match = (regexec (&preg, info.name,
+			got_match = (regexec (&preg, info->name,
 					      0, NULL, 0) == 0);
 		else
-			got_match = fnmatch (pattern, info.name,
+			got_match = fnmatch (pattern, info->name,
 					     match_case ? 0
 							: FNM_CASEFOLD) == 0;
-		if (try_descriptions && !got_match && info.whatis) {
+		if (try_descriptions && !got_match && info->whatis) {
 			if (pattern_regex)
-				got_match = (regexec (&preg, info.whatis,
+				got_match = (regexec (&preg, info->whatis,
 						      0, NULL, 0) == 0);
 			else
 				got_match = word_fnmatch (pattern,
-							  info.whatis);
+							  info->whatis);
 		}
 		if (!got_match)
 			goto nextpage_tab;
 
-		tail = infoalloc ();
-		memcpy (tail, &info, sizeof (info));
-		info.name = NULL; /* steal memory */
-		MYDBM_SET_DPTR (cont, NULL); /* == info.addr */
-		gl_list_add_last (infos, tail);
+		gl_list_add_last (infos, info);
+		info = NULL; /* avoid freeing later */
 
 nextpage_tab:
 		if (tab)
@@ -507,8 +503,7 @@ nextpage:
 		MYDBM_FREE_DPTR (key);
 		end = man_btree_nextkeydata (dbf, &key, &cont);
 #endif /* !BTREE */
-		info.addr = NULL;
-		free_mandata_elements (&info);
+		free_mandata_struct (info);
 	}
 
 	if (pattern_regex)

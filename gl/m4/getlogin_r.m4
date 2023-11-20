@@ -1,6 +1,6 @@
-#serial 12
+#serial 15
 
-# Copyright (C) 2005-2007, 2009-2020 Free Software Foundation, Inc.
+# Copyright (C) 2005-2007, 2009-2023 Free Software Foundation, Inc.
 #
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
@@ -25,12 +25,15 @@ AC_DEFUN([gl_FUNC_GETLOGIN_R],
     HAVE_DECL_GETLOGIN_R=0
   fi
 
-  AC_CHECK_FUNCS_ONCE([getlogin_r])
+  gl_CHECK_FUNCS_ANDROID([getlogin_r], [[#include <unistd.h>]])
   if test $ac_cv_func_getlogin_r = no; then
     HAVE_GETLOGIN_R=0
+    case "$gl_cv_onwards_func_getlogin_r" in
+      future*) REPLACE_GETLOGIN_R=1 ;;
+    esac
   else
     HAVE_GETLOGIN_R=1
-    dnl On Mac OS X 10.12 and OSF/1 5.1, getlogin_r returns a truncated result
+    dnl On Mac OS X 10.13 and OSF/1 5.1, getlogin_r returns a truncated result
     dnl if the buffer is not large enough.
     AC_REQUIRE([AC_CANONICAL_HOST])
     AC_CACHE_CHECK([whether getlogin_r works with small buffers],

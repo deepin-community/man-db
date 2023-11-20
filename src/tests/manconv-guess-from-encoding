@@ -3,12 +3,17 @@
 # Test manconv's support for guessing the input encoding if it is not
 # explicitly specified.
 
-: ${srcdir=.}
+: "${srcdir=.}"
+# shellcheck source-path=SCRIPTDIR
 . "$srcdir/testlib.sh"
 
-: ${MANCONV=manconv}
+: "${MANCONV=manconv}"
 
 init
+
+if [ "$HAVE_ICONV" != yes ]; then
+	skip 'encoding conversion requires a working iconv'
+fi
 
 write_page coding-tag 7 \
 	"$tmpdir/usr/share/man/man7/coding-tag.7" \
@@ -18,8 +23,8 @@ iconv -f ISO-8859-1 -t UTF-8 \
 	>"$tmpdir/coding-tag.7.exp"
 run $MANCONV -t UTF-8 "$tmpdir/usr/share/man/man7/coding-tag.7" \
 	>"$tmpdir/coding-tag.7.out"
-expect_pass 'recode from encoding guessed from directory name' \
-	'diff -u "$tmpdir/coding-tag.7.exp" "$tmpdir/coding-tag.7.out"'
+expect_files_equal 'recode from encoding guessed from directory name' \
+	"$tmpdir/coding-tag.7.exp" "$tmpdir/coding-tag.7.out"
 
 write_page lang-dir 7 \
 	"$tmpdir/usr/share/man/fr_FR.ISO-8859-1/man7/lang-dir.7.gz" \
@@ -32,7 +37,7 @@ zcat "$tmpdir/usr/share/man/fr_FR.ISO-8859-1/man7/lang-dir.7.gz" | \
 run $MANCONV -t UTF-8 \
 	"$tmpdir/usr/share/man/fr_FR.ISO-8859-1/man7/lang-dir.7.gz" \
 	>"$tmpdir/lang-dir.7.out"
-expect_pass 'recode from encoding guessed from directory name' \
-	'diff -u "$tmpdir/lang-dir.7.exp" "$tmpdir/lang-dir.7.out"'
+expect_files_equal 'recode from encoding guessed from directory name' \
+	"$tmpdir/lang-dir.7.exp" "$tmpdir/lang-dir.7.out"
 
 finish

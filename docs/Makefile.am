@@ -1,7 +1,8 @@
 dist_noinst_DATA = \
-	HACKING \
+	COPYING.GPLv2 \
+	COPYING.LIB \
+	HACKING.md \
 	TODO \
-	man-db.lsm \
 	manpage.example \
 	manpage.example.mdoc \
 	manpage.example.pod \

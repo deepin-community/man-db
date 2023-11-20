@@ -1,6 +1,6 @@
 /*
  * catman.c: create and/or update cat files
- *  
+ *
  * Copyright (C) 1994, 1995 Graeme W. Wilford. (Wilf.)
  * Copyright (C) 2001, 2002, 2003, 2006, 2007, 2008, 2009, 2010, 2011
  *               Colin Watson.
@@ -21,7 +21,7 @@
  * along with man-db; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * Thu Dec  8 00:03:12 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk) 
+ * Thu Dec  8 00:03:12 GMT 1994  Wilf. (G.Wilford@ee.surrey.ac.uk)
  */
 
 /* MAX_ARGS must be >= 7, 5 for options, 1 for page and 1 for NULL */
@@ -39,7 +39,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <limits.h>  
+#include <limits.h>
 
 #ifndef NAME_MAX
 #  if defined(_POSIX_VERSION) && defined(_POSIX_NAME_MAX)
@@ -62,8 +62,10 @@
 #endif /* !ARG_MAX */
 
 #include "argp.h"
+#include "error.h"
 #include "gl_list.h"
 #include "progname.h"
+#include "xalloc.h"
 
 #include "gettext.h"
 #include <locale.h>
@@ -72,10 +74,14 @@
 
 #include "manconfig.h"
 
+#include "appendstr.h"
 #include "cleanup.h"
-#include "error.h"
+#include "debug.h"
+#include "fatal.h"
+#include "filenames.h"
 #include "glcontainers.h"
 #include "pipeline.h"
+#include "util.h"
 
 #include "mydbm.h"
 #include "db_storage.h"
@@ -97,10 +103,12 @@ error_t argp_err_exit_status = FAIL;
 static const char args_doc[] = N_("[SECTION...]");
 
 static struct argp_option options[] = {
-	{ "debug",		'd',	0,		0,	N_("emit debugging messages") },
-	{ "manpath",		'M',	N_("PATH"),	0,	N_("set search path for manual pages to PATH") },
-	{ "config-file",	'C',	N_("FILE"),	0,	N_("use this user configuration file") },
-	{ 0, 'h', 0, OPTION_HIDDEN, 0 }, /* compatibility for --help */
+	OPT ("debug", 'd', 0, N_("emit debugging messages")),
+	OPT ("manpath", 'M', N_("PATH"),
+	     N_("set search path for manual pages to PATH")),
+	OPT ("config-file", 'C', N_("FILE"),
+	     N_("use this user configuration file")),
+	OPT_HELP_COMPAT,
 	{ 0 }
 };
 
@@ -169,8 +177,7 @@ static gl_list_t manpathlist;
 static void post_fork (void)
 {
 	pop_all_cleanups ();
-	if (dbf_close_post_fork)
-		MYDBM_CLOSE (dbf_close_post_fork);
+	MYDBM_FREE (dbf_close_post_fork);
 }
 
 /* Execute man with the appropriate catman args.  Always frees cmd. */
@@ -221,25 +228,14 @@ static size_t add_arg (pipecmd *cmd, datum key)
 
 /* find all pages that are in the supplied manpath and section and that are
    ultimate source files. */
-static int parse_for_sec (const char *database,
+static int parse_for_sec (MYDBM_FILE dbf,
 			  const char *manpath, const char *section)
 {
-	MYDBM_FILE dbf;
 	pipecmd *basecmd, *cmd;
 	datum key;
 	size_t arg_size, initial_bit;
-	int message = 1, first_arg;
-
-	dbf = MYDBM_RDOPEN (database);
-	if (!dbf) {
-		error (0, errno, _("cannot read database %s"), database);
-		return 1;
-	}
-	if (dbver_rd (dbf)) {
-		MYDBM_CLOSE (dbf);
-		return 1;
-	}
-	dbf_close_post_fork = dbf;
+	bool message = true;
+	int first_arg;
 
 	basecmd = pipecmd_new (MAN);
 	pipecmd_clearenv (basecmd);
@@ -268,32 +264,42 @@ static int parse_for_sec (const char *database,
 		datum nextkey;
 
 		/* ignore db identifier keys */
-		if (*MYDBM_DPTR (key) != '$') { 
+#pragma GCC diagnostic push
+#if GNUC_PREREQ(10,0)
+#  pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
+#endif
+		if (*MYDBM_DPTR (key) != '$') {
+#pragma GCC diagnostic pop
 			datum content;
 
 			content = MYDBM_FETCH (dbf, key);
 
 			if (!MYDBM_DPTR (content))
-				error (FATAL, 0,
+				fatal (0,
 				       _( "NULL content for key: %s"),
 				       MYDBM_DPTR (key));
 
 			/* ignore overflow entries */
-			if (*MYDBM_DPTR (content) != '\t') { 
-				struct mandata entry;
+#pragma GCC diagnostic push
+#if GNUC_PREREQ(10,0)
+#  pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
+#endif
+			if (*MYDBM_DPTR (content) != '\t') {
+#pragma GCC diagnostic pop
+				struct mandata *entry;
 
-				split_content (dbf, MYDBM_DPTR (content),
-					       &entry);
+				entry = split_content (dbf,
+						       MYDBM_DPTR (content));
 
 				/* Accept if the entry is an ultimate manual
 				   page and the section matches the one we're
 				   currently dealing with */
-				if (entry.id == ULT_MAN && 
-				    strcmp (entry.sec, section) == 0) {
+				if (entry->id == ULT_MAN &&
+				    strcmp (entry->sec, section) == 0) {
 					if (message) {
 						printf (_("\nUpdating cat files for section %s of man hierarchy %s\n"),
 							section, manpath);
-						message = 0;
+						message = false;
 					}
 
 					arg_size += add_arg (cmd, key) + 1;
@@ -301,10 +307,10 @@ static int parse_for_sec (const char *database,
 					debug ("arg space free: %zu bytes\n",
 					       ARG_MAX - arg_size);
 
-					/* Check to see if we have enough room 
-					   to add another max sized filename 
-					   and that we haven't run out of array 
-					   space too */ 
+					/* Check to see if we have enough room
+					   to add another max sized filename
+					   and that we haven't run out of array
+					   space too */
 				    	if (arg_size >= ARG_MAX - NAME_MAX ||
 				    	    pipecmd_get_nargs (cmd) ==
 						    MAX_ARGS) {
@@ -315,11 +321,9 @@ static int parse_for_sec (const char *database,
 				    	}
 				}
 
-				/* == MYDBM_DPTR (content), freed below */
-				entry.addr = NULL;
-				free_mandata_elements (&entry);
+				free_mandata_struct (entry);
 			}
-			
+
 			/* we don't need the content ever again */
 			assert (MYDBM_DPTR (content)); /* just to be sure */
 			MYDBM_FREE_DPTR (content);
@@ -330,8 +334,6 @@ static int parse_for_sec (const char *database,
 		key = nextkey;
 	}
 
-	dbf_close_post_fork = NULL;
-	MYDBM_CLOSE (dbf);
 	if (pipecmd_get_nargs (cmd) > first_arg)
 		catman (cmd);
 	else
@@ -342,16 +344,16 @@ static int parse_for_sec (const char *database,
 	return 0;
 }
 
-static int check_access (const char *directory)
+static bool check_access (const char *directory)
 {
 	if (!CAN_ACCESS (directory, W_OK)) {
 		error (0, errno, _("cannot write within %s"), directory);
-		return 1;
+		return true;
 	}
 
-	return 0;
+	return false;
 }
-		
+
 int main (int argc, char *argv[])
 {
 	char *sys_manp;
@@ -373,7 +375,7 @@ int main (int argc, char *argv[])
 	if (argp_parse (&argp, argc, argv, 0, 0, 0))
 		exit (FAIL);
 
-	for (sp = sections; *sp; sp++)
+	for (sp = sections; sp && *sp; sp++)
 		debug ("sections: %s\n", *sp);
 
 	/* Deal with the MANPATH */
@@ -389,15 +391,16 @@ int main (int argc, char *argv[])
 	}
 
 	/* get the manpath as a list of pointers */
-	manpathlist = create_pathlist (manp); 
+	manpathlist = create_pathlist (manp);
 
-	GL_LIST_FOREACH_START (manpathlist, mp) {
+	GL_LIST_FOREACH (manpathlist, mp) {
 		char *catpath, *database;
+		MYDBM_FILE dbf;
 		size_t len;
 
 		catpath = get_catpath (mp, SYSTEM_CAT | USER_CAT);
 
-		if (catpath) { 
+		if (catpath) {
 			if (is_directory (catpath) != 1) {
 				free (catpath);
 				continue;
@@ -409,25 +412,35 @@ int main (int argc, char *argv[])
 			database = mkdbname (mp);
 			catpath = xstrdup (mp);
 		}
+		dbf = MYDBM_NEW (database);
+		if (!MYDBM_RDOPEN (dbf) || dbver_rd (dbf)) {
+			error (0, errno, _("cannot read database %s"),
+			       database);
+			goto next;
+		}
+		dbf_close_post_fork = dbf;
 
 		len = strlen (catpath);
-		
-		for (sp = sections; *sp; sp++) {
+
+		for (sp = sections; sp && *sp; sp++) {
 			*(catpath + len) = '\0';
 			catpath = appendstr (catpath, "/cat", *sp, (void *) 0);
 			if (is_directory (catpath) != 1)
 				continue;
 			if (check_access (catpath))
 				continue;
-			if (parse_for_sec (database, mp, *sp)) {
+			if (parse_for_sec (dbf, mp, *sp)) {
 				error (0, 0, _("unable to update %s"), mp);
 				break;
 			}
 		}
 
+next:
+		dbf_close_post_fork = NULL;
+		MYDBM_FREE (dbf);
 		free (database);
 		free (catpath);
-	} GL_LIST_FOREACH_END (manpathlist);
+	}
 
 	free_pathlist (manpathlist);
 	free (locale);

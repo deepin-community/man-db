@@ -14,7 +14,7 @@
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
- * License along with this library; see the file COPYING.LIB.  If not,
+ * License along with this library; see the file docs/COPYING.LIB.  If not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth
  * Floor, Boston, MA  02110-1301  USA.
 */
@@ -23,12 +23,15 @@
 #  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <stdbool.h>
 #include <stdlib.h>
-#include <stdio.h>		/* SunOS's loosing assert.h needs it */
+#include <stdio.h>		/* SunOS's losing assert.h needs it */
 #include <assert.h>
 #include <signal.h>
 #include <unistd.h>
 #include <string.h>
+
+#include "xalloc.h"
 
 #include "manconfig.h"		/* for FATAL */
 #include "cleanup.h"
@@ -39,7 +42,9 @@
 
 
 /* saved signal actions */
+#ifdef SIGHUP
 static struct sigaction saved_hup_action;
+#endif /* SIGHUP */
 static struct sigaction saved_int_action;
 static struct sigaction saved_term_action;
 
@@ -51,7 +56,7 @@ sighandler (int signo)
   struct sigaction act;
   sigset_t set;
 
-  do_cleanups_sigsafe (1);
+  do_cleanups_sigsafe (true);
 
   /* set default signal action */
   memset (&act, 0, sizeof act);
@@ -73,7 +78,7 @@ sighandler (int signo)
 
   /* signal has now default action and is unmasked,
      reraise it to terminate program abnormally */
-  kill (getpid(), signo);
+  raise (signo);
   abort();
 }
 
@@ -105,9 +110,13 @@ trap_signal (int signo, struct sigaction *oldact)
 static int
 trap_abnormal_exits (void)
 {
-  if (   trap_signal (SIGHUP, &saved_hup_action)
-      || trap_signal (SIGINT, &saved_int_action)
-      || trap_signal (SIGTERM, &saved_term_action))
+#ifdef SIGHUP
+  if (trap_signal (SIGHUP, &saved_hup_action))
+    return -1;
+#endif /* SIGHUP */
+  if (trap_signal (SIGINT, &saved_int_action))
+    return -1;
+  if (trap_signal (SIGTERM, &saved_term_action))
     return -1;
   return 0;
 }
@@ -135,9 +144,13 @@ untrap_signal (int signo, struct sigaction *oldact)
 static int
 untrap_abnormal_exits (void)
 {
-  if (  untrap_signal (SIGHUP, &saved_hup_action)
-      | untrap_signal (SIGINT, &saved_int_action)
-      | untrap_signal (SIGTERM, &saved_term_action))
+#ifdef SIGHUP
+  if (untrap_signal (SIGHUP, &saved_hup_action))
+    return -1;
+#endif /* SIGHUP */
+  if (untrap_signal (SIGINT, &saved_int_action))
+    return -1;
+  if (untrap_signal (SIGTERM, &saved_term_action))
     return -1;
   return 0;
 }
@@ -162,7 +175,7 @@ static unsigned tos = 0;	/* top of stack, 0 <= tos <= nslots */
  * called.
  */
 void
-do_cleanups_sigsafe (int in_sighandler)
+do_cleanups_sigsafe (bool in_sighandler)
 {
   unsigned i;
 
@@ -178,7 +191,7 @@ do_cleanups_sigsafe (int in_sighandler)
 void
 do_cleanups (void)
 {
-  do_cleanups_sigsafe (0);
+  do_cleanups_sigsafe (false);
   tos = 0;
   nslots = 0;
   free (stack);
@@ -195,14 +208,14 @@ do_cleanups (void)
 int
 push_cleanup (cleanup_fun fun, void *arg, int sigsafe)
 {
-  static int handler_installed = 0;
+  static bool handler_installed = false;
 
   assert (tos <= nslots);
 
   if (!handler_installed) {
     if (atexit (do_cleanups))
       return -1;
-    handler_installed = 1;
+    handler_installed = true;
   }
 
   if (tos == nslots) {
@@ -215,7 +228,7 @@ push_cleanup (cleanup_fun fun, void *arg, int sigsafe)
     } else {
       new_stack = xnmalloc (nslots+1, sizeof (slot));
     }
-      
+
     if (!new_stack) return -1;
     stack = new_stack;
     ++nslots;

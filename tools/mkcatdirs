@@ -22,8 +22,7 @@
 
 #PATH=.:/usr/local/bin:/usr/bin:/bin
 
-progname=`basename $0`
-here=`pwd`
+progname=$(basename "$0")
 test_only=
 
 # sort out the command line options
@@ -31,7 +30,7 @@ test_only=
 if test "$1" = "-t" || test "$1" = "--test"
 then
 	test_only=yes
-else 
+else
 	if test "$1" && test "$2" && test "$3"
 	then
 		test_only=no
@@ -41,9 +40,9 @@ else
 	fi
 fi
 
-( test "$1" = "-h" || test "$1" = "--help" ) && help=yes || help=
+{ test "$1" = "-h" || test "$1" = "--help"; } && help=yes || help=
 
-if test "$help" || test -z "$test_only" 
+if test "$help" || test -z "$test_only"
 then
 	cat << EOF
 usage: $progname -h | -t | owner group mode
@@ -62,37 +61,36 @@ EOF
 	exit 0
 fi
 
-for manpath in `manpath -qg | tr ':' ' '`
+for manpath in $(manpath -qg | tr ':' ' ')
 do
+	[ -d "$manpath" ] || continue
 	echo "Manual page hierarchy:	$manpath"
-	catdir=`MANPATH=$manpath manpath -qc 2>/dev/null`
-	cd $manpath
+	catdir=$(MANPATH=$manpath manpath -qc 2>/dev/null)
 
 	subdirs=
-	for subdir in `echo man?*`
+	for subdir in $(cd "$manpath" && echo man?*)
 	do
-		test -d "$subdir" &&
-		subdirs="$subdirs `echo ${subdir} | sed -e 's,man,cat,'`"
+		test -d "$manpath/$subdir" &&
+		subdirs="$subdirs $(echo "$subdir" | sed -e 's,man,cat,')"
 	done
-	
+
 	echo "Cat page hierarchy:	$catdir"
 	echo "Cat sections:		$subdirs"
 
-	if test -d "$catdir" 
+	if test -d "$catdir"
 	then
 	  subs_needed=
 	  subs_ok=
 	  for subdir in $subdirs
 	  do
-		cd $catdir
-	 	test -d "$subdir" &&
-		subs_ok="$subs_ok $subdir" || 
+	 	test -d "$catdir/$subdir" &&
+		subs_ok="$subs_ok $subdir" ||
 		subs_needed="$subs_needed $subdir"
 	  done
 
 	  echo "  already present:	$subs_ok"
 	  echo "  need to be created:	$subs_needed"
-	
+
 	  catdirs=
 	  for subdir in $subs_needed
 	  do
@@ -102,22 +100,15 @@ do
 	  echo "  Cat directory not present, no subdirectories will be created"
 	  catdirs=
 	fi
- 
-	cd $here
+
 	if test "$test_only" = "no" && test "$catdirs"
 	then
 		echo " "
-		echo "mkinstalldirs $catdirs" &&
-		mkinstalldirs $catdirs &&
-		echo "chown $owner $catdirs" &&
-		chown $owner $catdirs &&
-		echo "chgrp $group $catdirs" &&
-		chgrp $group $catdirs &&
-		echo "chmod $mode $catdirs" &&
-		chmod $mode $catdirs ||
+		# shellcheck disable=SC2086
+		echo "install -d -o $owner -g $group -m $mode $catdirs" &&
+		install -d -o "$owner" -g "$group" -m "$mode" $catdirs ||
 		exit $?
 	fi
 
 	echo " "
 done
-

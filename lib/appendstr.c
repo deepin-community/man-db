@@ -12,7 +12,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; see the file COPYING.LIB.  If not, write
+   along with this program; see the file docs/COPYING.LIB.  If not, write
    to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA
    02139, USA.  */
 
@@ -23,9 +23,13 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "xalloc.h"
+
 #include "manconfig.h"
 
-/* append strings to first argument, which is realloced to the correct size 
+#include "appendstr.h"
+
+/* append strings to first argument, which is realloced to the correct size
    first arg may be NULL */
 char *appendstr (char *str, ...)
 {

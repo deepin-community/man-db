@@ -33,6 +33,7 @@
 #include "gl_xlist.h"
 #include "gl_xmap.h"
 #include "hash-pjw-bare.h"
+#include "xalloc.h"
 
 #include "manconfig.h"
 
@@ -118,7 +119,7 @@ datum man_xdbm_firstkey (MYDBM_FILE dbf,
 
 	if (!parent_keys) {
 		parent_keys = new_string_map (GL_HASH_MAP,
-					      (gl_listelement_dispose_fn)
+					      (gl_mapvalue_dispose_fn)
 					      gl_list_free);
 		push_cleanup ((cleanup_fun) gl_map_free, parent_keys, 0);
 	}
@@ -153,7 +154,7 @@ datum man_xdbm_nextkey (MYDBM_FILE dbf, datum key)
 	return copy_datum (*(datum *) gl_list_node_value (keys, next_node));
 }
 
-void man_xdbm_close (MYDBM_FILE dbf, man_xdbm_raw_close raw_close)
+void man_xdbm_free (MYDBM_FILE dbf, man_xdbm_raw_close raw_close)
 {
 	if (!dbf)
 		return;
@@ -163,6 +164,7 @@ void man_xdbm_close (MYDBM_FILE dbf, man_xdbm_raw_close raw_close)
 
 	free (dbf->name);
 	raw_close (dbf);
+	free (dbf->mtime);
 	free (dbf);
 }
 

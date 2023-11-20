@@ -1,6 +1,6 @@
-# serial 32
+# serial 34
 
-# Copyright (C) 2001, 2003, 2005-2006, 2009-2020 Free Software Foundation, Inc.
+# Copyright (C) 2001, 2003, 2005-2006, 2009-2023 Free Software Foundation, Inc.
 # This file is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -57,6 +57,8 @@ AC_DEFUN([gl_FUNC_RENAME],
       [case "$host_os" in
                           # Guess yes on Linux systems.
          linux-* | linux) gl_cv_func_rename_slash_dst_works="guessing yes" ;;
+                          # Guess yes on systems that emulate the Linux system calls.
+         midipix*)        gl_cv_func_rename_slash_dst_works="guessing yes" ;;
                           # Guess yes on glibc systems.
          *-gnu*)          gl_cv_func_rename_slash_dst_works="guessing yes" ;;
                           # Guess no on native Windows.
@@ -113,6 +115,8 @@ AC_DEFUN([gl_FUNC_RENAME],
       [case "$host_os" in
                           # Guess yes on Linux systems.
          linux-* | linux) gl_cv_func_rename_slash_src_works="guessing yes" ;;
+                          # Guess yes on systems that emulate the Linux system calls.
+         midipix*)        gl_cv_func_rename_slash_src_works="guessing yes" ;;
                           # Guess yes on glibc systems.
          *-gnu*)          gl_cv_func_rename_slash_src_works="guessing yes" ;;
                           # Guess yes on native Windows.
@@ -150,7 +154,7 @@ AC_DEFUN([gl_FUNC_RENAME],
 #               include <stdio.h>
 #               include <stdlib.h>
 #               include <unistd.h>
-                ]],
+                ]GL_MDA_DEFINES],
                 [[int result = 0;
                   if (rename ("conftest.f", "conftest.f1"))
                     result |= 1;
@@ -184,6 +188,8 @@ AC_DEFUN([gl_FUNC_RENAME],
          case "$host_os" in
                             # Guess yes on Linux systems.
            linux-* | linux) gl_cv_func_rename_link_works="guessing yes" ;;
+                            # Guess yes on systems that emulate the Linux system calls.
+           midipix*)        gl_cv_func_rename_link_works="guessing yes" ;;
                             # Guess yes on glibc systems.
            *-gnu*)          gl_cv_func_rename_link_works="guessing yes" ;;
                             # Guess yes on native Windows.

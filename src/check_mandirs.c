@@ -31,6 +31,7 @@
 #  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <assert.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
@@ -43,13 +44,16 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include "attribute.h"
 #include "dirname.h"
+#include "error.h"
 #include "gl_array_list.h"
 #include "gl_hash_map.h"
 #include "gl_xlist.h"
 #include "gl_xmap.h"
 #include "stat-time.h"
 #include "timespec.h"
+#include "xalloc.h"
 #include "xvasprintf.h"
 
 #include "gettext.h"
@@ -57,17 +61,22 @@
 
 #include "manconfig.h"
 
-#include "error.h"
+#include "appendstr.h"
+#include "compression.h"
+#include "debug.h"
+#include "fatal.h"
+#include "filenames.h"
 #include "glcontainers.h"
 #include "orderfiles.h"
 #include "security.h"
+#include "util.h"
 
 #include "mydbm.h"
 #include "db_storage.h"
 
 #include "descriptions.h"
-#include "filenames.h"
 #include "globbing.h"
+#include "lexgrog.h"
 #include "manp.h"
 #include "ult_src.h"
 #include "check_mandirs.h"
@@ -80,7 +89,7 @@ gl_map_t whatis_map = NULL;
 
 struct whatis {
 	char *whatis;
-	gl_list_t trace;
+	char *filters;
 };
 
 static void whatis_free (const void *value)
@@ -88,11 +97,11 @@ static void whatis_free (const void *value)
 	struct whatis *whatis = (struct whatis *) value;
 
 	free (whatis->whatis);
-	gl_list_free (whatis->trace);
+	free (whatis->filters);
 	free (whatis);
 }
 
-static void gripe_multi_extensions (const char *path, const char *sec, 
+static void gripe_multi_extensions (const char *path, const char *sec,
 				    const char *name, const char *ext)
 {
 	if (quiet < 2)
@@ -113,19 +122,28 @@ static inline bool is_eagain (int err)
 }
 #pragma GCC diagnostic pop
 
-static void gripe_rwopen_failed (const char *database)
+static void gripe_rwopen_failed (MYDBM_FILE dbf)
 {
 	if (errno == EACCES || errno == EROFS)
-		debug ("database %s is read-only\n", database);
+		debug ("database %s is read-only\n", dbf->name);
 	else if (is_eagain (errno))
-		debug ("database %s is locked by another process\n", database);
+		debug ("database %s is locked by another process\n", dbf->name);
 	else {
 #ifdef MAN_DB_UPDATES
 		if (!quiet)
 #endif /* MAN_DB_UPDATES */
 			error (0, errno, _("can't update index cache %s"),
-			       database);
+			       dbf->name);
 	}
+}
+
+static bool ensure_db_open (MYDBM_FILE dbf)
+{
+	if (dbf->file)
+		return true;
+	if (!MYDBM_RWOPEN (dbf))
+		return false;
+	return true;
 }
 
 /* Take absolute filename and path (for ult_src) and do sanity checks on
@@ -137,185 +155,150 @@ static void gripe_rwopen_failed (const char *database)
 void test_manfile (MYDBM_FILE dbf, const char *file, const char *path)
 {
 	char *manpage_base;
-	const char *ult;
+	const struct ult_value *ult;
 	struct lexgrog lg;
-	char *manpage;
-	struct mandata info, *exists;
+	struct mandata *info, *exists;
+	struct compression *comp;
 	struct stat buf;
 	size_t len;
-	gl_list_t ult_trace = NULL;
 	const struct whatis *whatis;
 
+	debug ("\ntest_manfile: considering %s\n", file);
+
 	memset (&lg, 0, sizeof (struct lexgrog));
-	memset (&info, 0, sizeof (struct mandata));
 
-	manpage = filename_info (file, &info, NULL);
-	if (!manpage)
+	info = filename_info (file, quiet < 2);
+	if (!info)
 		return;
-	manpage_base = manpage + strlen (manpage) + 1;
+	manpage_base = info->name; /* steal memory */
+	info->name = NULL;
 
-	len  = strlen (manpage) + 1;		/* skip over directory name */
-	len += strlen (manpage + len) + 1;	/* skip over base name */
-	len += strlen (manpage + len);		/* skip over section ext */
+	comp = comp_info (file, true);
+	if (comp) {
+		len = strlen (comp->stem);
+		free (comp->stem);
+	} else
+		len = strlen (file);
 
 	/* to get mtime info */
 	(void) lstat (file, &buf);
-	info.mtime = get_stat_mtime (&buf);
+	info->mtime = get_stat_mtime (&buf);
 
 	/* check that our file actually contains some data */
 	if (buf.st_size == 0) {
 		/* man-db pre 2.3 place holder ? */
-		free (manpage);
+		free_mandata_struct (info);
 		return;
 	}
 
-	/* See if we already have it, before going any further. This will
-	 * save both an ult_src() and a find_name(), amongst other wastes of
-	 * time.
+	/* Check for multiple pages whose details match except for having
+	 * different compression extensions.
 	 */
-	exists = dblookup_exact (dbf, manpage_base, info.ext, true);
+	exists = dblookup_exact (dbf, manpage_base, info->ext, true);
+	if (exists && !STREQ (exists->comp, info->comp ? info->comp : "-")) {
+		char *abs_filename;
 
-	/* Ensure we really have the actual page. Gzip keeps the mtime the
-	 * same when it compresses, so we have to compare compression
-	 * extensions as well.
-	 */
-	if (exists) {
-		if (strcmp (exists->comp, info.comp ? info.comp : "-") == 0) {
-			if (timespec_cmp (exists->mtime, info.mtime) == 0 &&
-			    exists->id < WHATIS_MAN) {
-				free_mandata_struct (exists);
-				free (manpage);
-				return;
-			}
+		/* If the cached file still exists, then we have a collision:
+		 * two pages that only differ by compression extension.
+		 */
+		abs_filename = make_filename (path, NULL, exists, "man");
+		if (!abs_filename) {
+			if (!opt_test)
+				dbdelete (dbf, manpage_base, exists);
 		} else {
-			char *abs_filename;
-
-			/* see if the cached file actually exists. It's 
-			   evident at this point that we have multiple 
-			   comp extensions */
-			abs_filename = make_filename (path, NULL,
-						      exists, "man");
-			if (!abs_filename) {
-				if (!opt_test)
-					dbdelete (dbf, manpage_base, exists);
-			} else {
-				gripe_multi_extensions (path, exists->sec,
-							manpage_base,
-							exists->ext);
-				free (abs_filename);
-				free_mandata_struct (exists);
-				free (manpage);
-				return;
-			}
+			gripe_multi_extensions (path, exists->sec,
+						manpage_base, exists->ext);
+			free (abs_filename);
+			free_mandata_struct (exists);
+			free_mandata_struct (info);
+			return;
 		}
-		free_mandata_struct (exists);
 	}
+	free_mandata_struct (exists);
 
-	/* Check if it happens to be a symlink/hardlink to something already
-	 * in our cache. This just does some extra checks to avoid scanning
-	 * links quite so many times.
-	 */
-	{
-		/* Avoid too much noise in debug output */
-		bool save_debug = debug_level;
-		debug_level = false;
-		ult = ult_src (file, path, &buf, SOFT_LINK | HARD_LINK, NULL);
-		debug_level = save_debug;
-	}
-
-	if (!ult) {
-		/* already warned about this, don't do so again */
-		debug ("test_manfile(): bad link %s\n", file);
-		free (manpage);
-		return;
-	}
-
-	if (!whatis_map)
-		whatis_map = new_string_map (GL_HASH_MAP, whatis_free);
-
-	whatis = gl_map_get (whatis_map, ult);
-	if (!whatis) {
-		if (!STRNEQ (ult, file, len))
-			debug ("\ntest_manfile(): link not in cache:\n"
-			       " source = %s\n"
-			       " target = %s\n", file, ult);
-		/* Trace the file to its ultimate source, otherwise we'll be
-		 * looking for whatis info in files containing only '.so
-		 * manx/foo.x', which will give us an unobtainable whatis
-		 * for the entry. */
-		ult_trace = new_string_list (GL_ARRAY_LIST, true);
-		ult = ult_src (file, path, &buf,
-			       SO_LINK | SOFT_LINK | HARD_LINK, ult_trace);
-	}
+	/* Trace the file to its ultimate source, otherwise we'll be
+	 * looking for whatis info in files containing only '.so
+	 * manx/foo.x', which will give us an unobtainable whatis
+	 * for the entry. */
+	ult = ult_src (file, path, &buf, SO_LINK | SOFT_LINK | HARD_LINK);
 
 	if (!ult) {
 		if (quiet < 2)
 			error (0, 0,
 			       _("warning: %s: bad symlink or ROFF `.so' request"),
 			       file);
-		free (manpage);
+		free_mandata_struct (info);
 		return;
 	}
 
 	pages++;			/* pages seen so far */
 
-	if (strncmp (ult, file, len) == 0)
-		info.id = ULT_MAN;	/* ultimate source file */
+	if (strncmp (ult->path, file, len) == 0)
+		info->id = ULT_MAN;	/* ultimate source file */
 	else
-		info.id = SO_MAN;	/* .so, sym or hard linked file */
+		info->id = SO_MAN;	/* .so, sym or hard linked file */
 
 	/* Ok, here goes: Use a hash tree to store the ult_srcs with
-	 * their whatis. Anytime after, check the hash tree, if it's there, 
+	 * their whatis. Anytime after, check the hash tree, if it's there,
 	 * use it. This saves us a find_name() which is a real hog.
 	 *
-	 * Use the full path in ult as the hash key so we don't have to
-	 * clear the hash between calls.
+	 * Use the full path in ult->path as the hash key so we don't have
+	 * to clear the hash between calls.
 	 */
 
-	if (whatis)
+	if (!whatis_map)
+		whatis_map = new_string_map (GL_HASH_MAP, whatis_free);
+
+	whatis = gl_map_get (whatis_map, ult->path);
+	if (whatis) {
 		lg.whatis = whatis->whatis ? xstrdup (whatis->whatis) : NULL;
-	else {
+		lg.filters =
+			whatis->filters ? xstrdup (whatis->filters) : NULL;
+	} else {
 		/* Cache miss; go and get the whatis info in its raw state. */
 		char *file_base = base_name (file);
 		struct whatis *new_whatis;
 
+		if (!STRNEQ (ult->path, file, len))
+			debug ("test_manfile: link not in cache:\n"
+			       " source = %s\n"
+			       " target = %s\n", file, ult->path);
+
 		lg.type = MANPAGE;
 		drop_effective_privs ();
-		find_name (ult, file_base, &lg, NULL);
+		find_name (ult->path, file_base, &lg, NULL);
 		free (file_base);
 		regain_effective_privs ();
 
 		new_whatis = XMALLOC (struct whatis);
 		new_whatis->whatis = lg.whatis ? xstrdup (lg.whatis) : NULL;
-		/* We filled out ult_trace above. */
-		new_whatis->trace = ult_trace;
-		gl_map_put (whatis_map, xstrdup (ult), new_whatis);
-		whatis = new_whatis;
+		new_whatis->filters = lg.filters ? xstrdup (lg.filters) : NULL;
+		gl_map_put (whatis_map, xstrdup (ult->path), new_whatis);
 	}
 
 	debug ("\"%s\"\n", lg.whatis);
 
 	/* split up the raw whatis data and store references */
-	info.pointer = NULL;	/* direct page, so far */
-	info.filter = lg.filters;
+	info->pointer = NULL;	/* direct page, so far */
+	info->filter = lg.filters;
 	if (lg.whatis) {
 		gl_list_t descs = parse_descriptions (manpage_base, lg.whatis);
 		if (!opt_test)
-			store_descriptions (dbf, descs, &info, path,
-					    manpage_base, whatis->trace);
+			store_descriptions (dbf, descs, info, path,
+					    manpage_base, ult->trace);
 		gl_list_free (descs);
 	} else if (quiet < 2) {
-		(void) stat (ult, &buf);
+		(void) stat (ult->path, &buf);
 		if (buf.st_size == 0)
 			error (0, 0, _("warning: %s: ignoring empty file"),
-			       ult);
+			       ult->path);
 		else
 			error (0, 0,
 			       _("warning: %s: whatis parse for %s(%s) failed"),
-			       ult, manpage_base, info.ext);
+			       ult->path, manpage_base, info->ext);
 	}
 
-	free (manpage);
+	free_mandata_struct (info);
 	free (lg.whatis);
 }
 
@@ -329,6 +312,7 @@ static void add_dir_entries (MYDBM_FILE dbf, const char *path, char *infile)
 	const char *name;
 
 	manpage = xasprintf ("%s/%s/", path, infile);
+	assert (manpage);
 	len = strlen (manpage);
 
 	/*
@@ -357,11 +341,11 @@ static void add_dir_entries (MYDBM_FILE dbf, const char *path, char *infile)
 
 	order_files (infile, &names);
 
-	GL_LIST_FOREACH_START (names, name) {
+	GL_LIST_FOREACH (names, name) {
 		manpage = appendstr (manpage, name, (void *) 0);
 		test_manfile (dbf, manpage, path);
 		*(manpage + len) = '\0';
-	} GL_LIST_FOREACH_END (names);
+	}
 
 	gl_list_free (names);
 	free (manpage);
@@ -387,11 +371,11 @@ void chown_if_possible (const char *path)
 	     st.st_gid != man_owner->pw_gid)) {
 		debug ("fixing ownership of %s\n", path);
 		if (lchown (path, man_owner->pw_uid, man_owner->pw_gid) < 0)
-			error (FATAL, 0, _("can't chown %s"), path);
+			fatal (0, _("can't chown %s"), path);
 	}
 }
 #else /* !MAN_OWNER */
-void chown_if_possible (const char *path _GL_UNUSED)
+void chown_if_possible (const char *path MAYBE_UNUSED)
 {
 }
 #endif /* MAN_OWNER */
@@ -479,6 +463,7 @@ static void fix_permissions_tree (const char *catdir)
 
 		fix_permissions (catdir);
 		catname = xasprintf ("%s/cat1", catdir);
+		assert (catname);
 		for (i = 1; i <= 9; ++i) {
 			catname[strlen (catname) - 1] = '0' + i;
 			fix_permissions (catname);
@@ -492,14 +477,13 @@ static void fix_permissions_tree (const char *catdir)
  * any dirs of the tree that have been modified (ie added to) will then be
  * scanned for new files, which are then added to the db.
  */
-static int testmandirs (const char *database,
-			const char *path, const char *catpath,
-			struct timespec last, int create)
+static int testmandirs (MYDBM_FILE dbf, const char *path, const char *catpath,
+			struct timespec last, bool create)
 {
 	DIR *dir;
 	struct dirent *mandir;
 	int amount = 0;
-	int created = 0;
+	bool created = false;
 
 	debug ("Testing %s for new files\n", path);
 
@@ -521,7 +505,6 @@ static int testmandirs (const char *database,
 	while( (mandir = readdir (dir)) ) {
 		struct stat stbuf;
 		struct timespec mtime;
-		MYDBM_FILE dbf;
 
 		if (strncmp (mandir->d_name, "man", 3) != 0)
 			continue;
@@ -554,30 +537,26 @@ static int testmandirs (const char *database,
 
 			/* Open the db in CTRW mode to store the $ver$ ID */
 
-			dbf = MYDBM_CTRWOPEN (database);
-			if (dbf == NULL) {
+			if (!MYDBM_CTRWOPEN (dbf)) {
 				if (errno == EACCES || errno == EROFS) {
 					debug ("database %s is read-only\n",
-					       database);
+					       dbf->name);
 					closedir (dir);
 					return 0;
 				} else {
 					error (0, errno,
 					       _("can't create index cache %s"),
-					       database);
+					       dbf->name);
 					closedir (dir);
-					return -errno;
+					return -1;
 				}
 			}
 
 			dbver_wr (dbf);
 
-			created = 1;
-		} else
-			dbf = MYDBM_RWOPEN(database);
-
-		if (!dbf) {
-			gripe_rwopen_failed (database);
+			created = true;
+		} else if (!ensure_db_open (dbf)) {
+			gripe_rwopen_failed (dbf);
 			closedir (dir);
 			return 0;
 		}
@@ -594,7 +573,6 @@ static int testmandirs (const char *database,
 				fprintf (stderr, "\n");
 		}
 		add_dir_entries (dbf, path, mandir->d_name);
-		MYDBM_CLOSE (dbf);
 		amount++;
 	}
 	closedir (dir);
@@ -602,56 +580,20 @@ static int testmandirs (const char *database,
 	return amount;
 }
 
-/* update the modification timestamp of `database' */
-static void update_db_time (const char *database)
-{
-	MYDBM_FILE dbf;
-	struct timespec now;
-
-	/* Open the db in RW to update its mtime */
-	/* we know that this should succeed because we just updated the db! */
-	dbf = MYDBM_RWOPEN (database);
-	if (dbf == NULL) {
-		if (is_eagain (errno))
-			/* Another mandb process is probably running.  With
-			 * any luck it will update the mtime ...
-			 */
-			debug ("database %s is locked by another process\n",
-			       database);
-		else {
-#ifdef MAN_DB_UPDATES
-			if (!quiet)
-#endif /* MAN_DB_UPDATES */
-				error (0, errno,
-				       _("can't update index cache %s"),
-				       database);
-		}
-		return;
-	}
-	now.tv_sec = 0;
-	now.tv_nsec = UTIME_NOW;
-	MYDBM_SET_TIME (dbf, now);
-
-	MYDBM_CLOSE (dbf);
-}
-
 /* routine to prepare/create the db prior to calling testmandirs() */
-int create_db (const char *database, const char *manpath, const char *catpath)
+int create_db (MYDBM_FILE dbf, const char *manpath, const char *catpath)
 {
 	struct timespec time_zero;
 	int amount;
 
-	debug ("create_db(%s): %s\n", manpath, database);
+	debug ("create_db(%s): %s\n", manpath, dbf->name);
 
 	time_zero.tv_sec = 0;
 	time_zero.tv_nsec = 0;
-	amount = testmandirs (database, manpath, catpath, time_zero, 1);
+	amount = testmandirs (dbf, manpath, catpath, time_zero, true);
 
-	if (amount) {
-		update_db_time (database);
-		if (!quiet)
-			fputs (_("done.\n"), stderr);
-	}
+	if (amount > 0 && !quiet)
+		fputs (_("done.\n"), stderr);
 
 	return amount;
 }
@@ -675,44 +617,39 @@ static bool sanity_check_db (MYDBM_FILE dbf)
 			MYDBM_FREE_DPTR (key);
 			return false;
 		}
+#pragma GCC diagnostic push
+#if GNUC_PREREQ(10,0)
+#  pragma GCC diagnostic ignored "-Wanalyzer-double-free"
+#endif
 		MYDBM_FREE_DPTR (content);
 		nextkey = MYDBM_NEXTKEY (dbf, key);
 		MYDBM_FREE_DPTR (key);
+#pragma GCC diagnostic pop
 		key = nextkey;
 	}
 
 	return true;
 }
 
-/* routine to update the db, ensure that it is consistent with the 
+/* routine to update the db, ensure that it is consistent with the
    filesystem */
-int update_db (const char *database, const char *manpath, const char *catpath)
+int update_db (MYDBM_FILE dbf, const char *manpath, const char *catpath)
 {
-	MYDBM_FILE dbf;
 	struct timespec mtime;
 	int new;
 
-	dbf = MYDBM_RDOPEN (database);
-	if (dbf && !sanity_check_db (dbf)) {
-		MYDBM_CLOSE (dbf);
-		dbf = NULL;
-	}
-	if (!dbf) {
-		debug ("failed to open %s O_RDONLY\n", database);
-		return EOF;
+	if (!ensure_db_open (dbf) || !sanity_check_db (dbf)) {
+		debug ("failed to open %s O_RDONLY\n", dbf->name);
+		return -1;
 	}
 	mtime = MYDBM_GET_TIME (dbf);
-	MYDBM_CLOSE (dbf);
 
 	debug ("update_db(): %ld.%09ld\n",
 	       (long) mtime.tv_sec, (long) mtime.tv_nsec);
-	new = testmandirs (database, manpath, catpath, mtime, 0);
+	new = testmandirs (dbf, manpath, catpath, mtime, false);
 
-	if (new) {
-		update_db_time (database);
-		if (!quiet)
-			fputs (_("done.\n"), stderr);
-	}
+	if (new > 0 && !quiet)
+		fputs (_("done.\n"), stderr);
 
 	return new;
 }
@@ -729,12 +666,17 @@ void purge_pointers (MYDBM_FILE dbf, const char *name)
 
 	while (MYDBM_DPTR (key) != NULL) {
 		datum content, nextkey;
-		struct mandata entry;
+		struct mandata *entry = NULL;
 		char *nicekey, *tab;
 
+#pragma GCC diagnostic push
+#if GNUC_PREREQ(10,0)
+#  pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
+#endif
 		/* Ignore db identifier keys. */
 		if (*MYDBM_DPTR (key) == '$')
 			goto pointers_next;
+#pragma GCC diagnostic pop
 
 		content = MYDBM_FETCH (dbf, key);
 		if (!MYDBM_DPTR (content))
@@ -746,22 +688,28 @@ void purge_pointers (MYDBM_FILE dbf, const char *name)
 		if (tab)
 			*tab = '\0';
 
+#pragma GCC diagnostic push
+#if GNUC_PREREQ(10,0)
+#  pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
+#endif
 		if (*MYDBM_DPTR (content) == '\t')
 			goto pointers_contentnext;
+#pragma GCC diagnostic pop
 
-		split_content (dbf, MYDBM_DPTR (content), &entry);
-		if (entry.id != SO_MAN && entry.id != WHATIS_MAN)
+		entry = split_content (dbf, MYDBM_DPTR (content));
+		if (entry->id != SO_MAN && entry->id != WHATIS_MAN)
 			goto pointers_contentnext;
 
-		if (STREQ (entry.pointer, name)) {
+		if (STREQ (entry->pointer, name)) {
 			if (!opt_test)
-				dbdelete (dbf, nicekey, &entry);
+				dbdelete (dbf, nicekey, entry);
 			else
 				debug ("%s(%s): pointer vanished, "
-				       "would delete\n", nicekey, entry.ext);
+				       "would delete\n", nicekey, entry->ext);
 		}
 
 pointers_contentnext:
+		free_mandata_struct (entry);
 		free (nicekey);
 		MYDBM_FREE_DPTR (content);
 pointers_next:
@@ -775,18 +723,15 @@ pointers_next:
  * (which may return inexact extension matches in some cases). It may turn
  * out that this is better handled in look_for_file() itself.
  */
-static int count_glob_matches (const char *name, const char *ext,
-			       gl_list_t source, struct timespec db_mtime)
+static int count_glob_matches (const char *ext, gl_list_t source,
+			       struct timespec db_mtime)
 {
 	const char *walk;
 	int count = 0;
 
-	GL_LIST_FOREACH_START (source, walk) {
-		struct mandata info;
+	GL_LIST_FOREACH (source, walk) {
+		struct mandata *info;
 		struct stat statbuf;
-		char *buf;
-
-		memset (&info, 0, sizeof (struct mandata));
 
 		if (stat (walk, &statbuf) == -1) {
 			debug ("count_glob_matches: excluding %s "
@@ -800,14 +745,13 @@ static int count_glob_matches (const char *name, const char *ext,
 			continue;
 		}
 
-		buf = filename_info (walk, &info, name);
-		if (buf) {
-			if (STREQ (ext, info.ext))
+		info = filename_info (walk, quiet < 2);
+		if (info) {
+			if (STREQ (ext, info->ext))
 				++count;
-			free (info.name);
-			free (buf);
+			free_mandata_struct (info);
 		}
-	} GL_LIST_FOREACH_END (source);
+	}
 
 	return count;
 }
@@ -825,7 +769,7 @@ static int purge_normal (MYDBM_FILE dbf, const char *name,
 	 */
 	t.tv_sec = -1;
 	t.tv_nsec = -1;
-	if (count_glob_matches (name, info->ext, found, t))
+	if (count_glob_matches (info->ext, found, t))
 		return 0;
 
 	if (!opt_test)
@@ -838,14 +782,14 @@ static int purge_normal (MYDBM_FILE dbf, const char *name,
 }
 
 /* Decide whether to purge a reference to a WHATIS_MAN or WHATIS_CAT page. */
-static int purge_whatis (MYDBM_FILE dbf, const char *path, int cat,
+static int purge_whatis (MYDBM_FILE dbf, const char *path, bool cat,
 			 const char *name, struct mandata *info,
 			 gl_list_t found, struct timespec db_mtime)
 {
 	/* TODO: On some systems, the cat page extension differs from the
 	 * man page extension, so this may be too strict.
 	 */
-	if (count_glob_matches (name, info->ext, found, db_mtime)) {
+	if (count_glob_matches (info->ext, found, db_mtime)) {
 		/* If the page exists and didn't beforehand, then presumably
 		 * we're about to rescan, which will replace the WHATIS_MAN
 		 * entry with something better. However, there have been
@@ -891,8 +835,7 @@ static int purge_whatis (MYDBM_FILE dbf, const char *path, int cat,
 
 		t.tv_sec = -1;
 		t.tv_nsec = -1;
-		count = count_glob_matches (info->pointer, info->ext,
-					    real_found, t);
+		count = count_glob_matches (info->ext, real_found, t);
 		gl_list_free (real_found);
 		if (count)
 			return 0;
@@ -907,32 +850,32 @@ static int purge_whatis (MYDBM_FILE dbf, const char *path, int cat,
 }
 
 /* Check that multi keys are correctly constructed. */
-static int check_multi_key (const char *name, const char *content)
+static bool check_multi_key (const char *name, const char *content)
 {
 	const char *walk, *next;
 
 	if (!*content)
-		return 0;
+		return false;
 
 	for (walk = content; walk && *walk; walk = next) {
 		/* The name in the multi key should only differ from the
 		 * name of the key itself in its case, if at all.
 		 */
-		int valid = 1;
+		bool valid = true;
 		++walk; /* skip over initial tab */
 		next = strchr (walk, '\t');
 		if (next) {
 			if (strncasecmp (name, walk, next - walk))
-				valid = 0;
+				valid = false;
 		} else {
 			if (strcasecmp (name, walk))
-				valid = 0;
+				valid = false;
 		}
 		if (!valid) {
 			debug ("%s: broken multi key \"%s\", "
 			       "forcing a rescan\n", name, content);
 			force_rescan = true;
-			return 1;
+			return true;
 		}
 
 		/* If the name was valid, skip over the extension and
@@ -942,32 +885,29 @@ static int check_multi_key (const char *name, const char *content)
 		next = walk ? strchr (walk + 1, '\t') : NULL;
 	}
 
-	return 0;
+	return false;
 }
 
 /* Go through the database and purge references to man pages that no longer
  * exist.
  */
-int purge_missing (const char *database,
-		   const char *manpath, const char *catpath,
-		   int will_run_mandb)
+int purge_missing (MYDBM_FILE dbf, const char *manpath, const char *catpath)
 {
 #ifdef NDBM
 	char *dirfile;
 #endif
 	struct stat st;
-	int db_exists;
-	MYDBM_FILE dbf;
+	bool db_exists;
 	datum key;
 	int count = 0;
 	struct timespec db_mtime;
 
 #ifdef NDBM
-	dirfile = xasprintf ("%s.dir", database);
+	dirfile = xasprintf ("%s.dir", dbf->name);
 	db_exists = stat (dirfile, &st) == 0;
 	free (dirfile);
 #else
-	db_exists = stat (database, &st) == 0;
+	db_exists = stat (dbf->name, &st) == 0;
 #endif
 	if (!db_exists)
 		/* nothing to purge */
@@ -976,14 +916,8 @@ int purge_missing (const char *database,
 	if (!quiet)
 		printf (_("Purging old database entries in %s...\n"), manpath);
 
-	dbf = MYDBM_RWOPEN (database);
-	if (!dbf) {
-		gripe_rwopen_failed (database);
-		return 0;
-	}
-	if (!sanity_check_db (dbf)) {
-		MYDBM_CLOSE (dbf);
-		dbf = NULL;
+	if (!ensure_db_open (dbf) || !sanity_check_db (dbf)) {
+		gripe_rwopen_failed (dbf);
 		return 0;
 	}
 	db_mtime = MYDBM_GET_TIME (dbf);
@@ -992,11 +926,15 @@ int purge_missing (const char *database,
 
 	while (MYDBM_DPTR (key) != NULL) {
 		datum content, nextkey;
-		struct mandata entry;
+		struct mandata *entry;
 		char *nicekey, *tab;
 		bool save_debug;
 		gl_list_t found;
 
+#pragma GCC diagnostic push
+#if GNUC_PREREQ(10,0)
+#  pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
+#endif
 		/* Ignore db identifier keys. */
 		if (*MYDBM_DPTR (key) == '$') {
 			nextkey = MYDBM_NEXTKEY (dbf, key);
@@ -1004,6 +942,7 @@ int purge_missing (const char *database,
 			key = nextkey;
 			continue;
 		}
+#pragma GCC diagnostic pop
 
 		content = MYDBM_FETCH (dbf, key);
 		if (!MYDBM_DPTR (content)) {
@@ -1019,6 +958,10 @@ int purge_missing (const char *database,
 		if (tab)
 			*tab = '\0';
 
+#pragma GCC diagnostic push
+#if GNUC_PREREQ(10,0)
+#  pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
+#endif
 		/* Deal with multi keys. */
 		if (*MYDBM_DPTR (content) == '\t') {
 			if (check_multi_key (nicekey, MYDBM_DPTR (content)))
@@ -1030,52 +973,46 @@ int purge_missing (const char *database,
 			key = nextkey;
 			continue;
 		}
+#pragma GCC diagnostic pop
 
-		split_content (dbf, MYDBM_DPTR (content), &entry);
+		entry = split_content (dbf, MYDBM_DPTR (content));
 
 		save_debug = debug_level;
 		debug_level = false;	/* look_for_file() is quite noisy */
-		if (entry.id <= WHATIS_MAN)
-			found = look_for_file (manpath, entry.ext,
-					       entry.name ? entry.name
-							  : nicekey,
-					       0, LFF_MATCHCASE);
+		if (entry->id <= WHATIS_MAN)
+			found = look_for_file (manpath, entry->ext,
+					       entry->name ? entry->name
+							   : nicekey,
+					       false, LFF_MATCHCASE);
 		else
-			found = look_for_file (catpath, entry.ext,
-					       entry.name ? entry.name
-							  : nicekey,
-					       1, LFF_MATCHCASE);
+			found = look_for_file (catpath, entry->ext,
+					       entry->name ? entry->name
+							   : nicekey,
+					       true, LFF_MATCHCASE);
 		debug_level = save_debug;
 
 		/* Now actually decide whether to purge, depending on the
 		 * type of entry.
 		 */
-		if (entry.id == ULT_MAN || entry.id == SO_MAN ||
-		    entry.id == STRAY_CAT)
-			count += purge_normal (dbf, nicekey, &entry, found);
-		else if (entry.id == WHATIS_MAN)
-			count += purge_whatis (dbf, manpath, 0, nicekey,
-					       &entry, found, db_mtime);
-		else	/* entry.id == WHATIS_CAT */
-			count += purge_whatis (dbf, catpath, 1, nicekey,
-					       &entry, found, db_mtime);
+		if (entry->id == ULT_MAN || entry->id == SO_MAN ||
+		    entry->id == STRAY_CAT)
+			count += purge_normal (dbf, nicekey, entry, found);
+		else if (entry->id == WHATIS_MAN)
+			count += purge_whatis (dbf, manpath, false, nicekey,
+					       entry, found, db_mtime);
+		else	/* entry->id == WHATIS_CAT */
+			count += purge_whatis (dbf, catpath, true, nicekey,
+					       entry, found, db_mtime);
 
 		gl_list_free (found);
 		free (nicekey);
 
-		free_mandata_elements (&entry);
+		free_mandata_struct (entry);
+		MYDBM_FREE_DPTR (content);
 		nextkey = MYDBM_NEXTKEY (dbf, key);
 		MYDBM_FREE_DPTR (key);
 		key = nextkey;
 	}
 
-	MYDBM_REORG (dbf);
-	if (will_run_mandb)
-		/* Reset mtime to avoid confusing mandb into not running.
-		 * TODO: It would be better to avoid this by only opening
-		 * the database once between here and mandb.
-		 */
-		MYDBM_SET_TIME (dbf, db_mtime);
-	MYDBM_CLOSE (dbf);
 	return count;
 }

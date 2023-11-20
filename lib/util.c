@@ -35,6 +35,8 @@
 #  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <assert.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -44,16 +46,20 @@
 #include <unistd.h>
 #include <locale.h>
 
+#include "attribute.h"
 #include "stat-time.h"
 #include "timespec.h"
+#include "xalloc.h"
+#include "xstrndup.h"
 #include "xvasprintf.h"
 
 #include "gettext.h"
 
 #include "manconfig.h"
 
+#include "debug.h"
 #include "error.h"
-#include "pipeline.h"
+#include "util.h"
 
 /*
  * Does file a have a different timestamp to file b?
@@ -149,7 +155,7 @@ char *escape_shell (const char *unesc)
 /* Remove a directory and all files in it.  Only recurse beyond that if
  * RECURSE is set.
  */
-int remove_directory (const char *directory, int recurse)
+int remove_directory (const char *directory, bool recurse)
 {
 	DIR *handle = opendir (directory);
 	struct dirent *entry;
@@ -163,6 +169,7 @@ int remove_directory (const char *directory, int recurse)
 		if (STREQ (entry->d_name, ".") || STREQ (entry->d_name, ".."))
 			continue;
 		path = xasprintf ("%s/%s", directory, entry->d_name);
+		assert (path);
 		if (stat (path, &st) == -1) {
 			free (path);
 			closedir (handle);
@@ -193,7 +200,7 @@ int remove_directory (const char *directory, int recurse)
 /* Returns an allocated copy of s, with leading and trailing spaces
  * removed.
  */
-char * _GL_ATTRIBUTE_MALLOC trim_spaces (const char *s)
+char * ATTRIBUTE_MALLOC trim_spaces (const char *s)
 {
 	int length;
 	while (*s == ' ')
@@ -211,7 +218,7 @@ char *lang_dir (const char *filename)
 	const char *sm;	/* the second "/man?/" dir */
 
 	ld = xstrdup ("");
-	if (!filename) 
+	if (!filename)
 		return ld;
 
 	/* Check whether filename is in a man page hierarchy. */
@@ -251,7 +258,7 @@ char *lang_dir (const char *filename)
 
 void init_locale (void)
 {
-	char *locale = setlocale (LC_ALL, "");
+	const char *locale = setlocale (LC_ALL, "");
 	if (!locale &&
 	    !getenv ("MAN_NO_LOCALE_WARNING") &&
 	    !getenv ("DPKG_RUNNING_VERSION"))

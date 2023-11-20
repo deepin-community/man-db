@@ -1,6 +1,6 @@
 /*
  * globbing.c: interface to the POSIX glob routines
- *  
+ *
  * Copyright (C) 1995 Graeme W. Wilford. (Wilf.)
  * Copyright (C) 2001, 2002, 2003, 2006, 2007, 2008 Colin Watson.
  *
@@ -20,13 +20,14 @@
  * along with man-db; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- * Mon Mar 13 20:27:36 GMT 1995  Wilf. (G.Wilford@ee.surrey.ac.uk) 
+ * Mon Mar 13 20:27:36 GMT 1995  Wilf. (G.Wilford@ee.surrey.ac.uk)
  */
 
 #ifdef HAVE_CONFIG_H
 #  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <assert.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
@@ -35,19 +36,24 @@
 #include <sys/types.h>
 #include <dirent.h>
 
+#include "error.h"
 #include "fnmatch.h"
 #include "gl_array_list.h"
 #include "gl_hash_map.h"
 #include "gl_xlist.h"
 #include "gl_xmap.h"
 #include "regex.h"
+#include "xalloc.h"
+#include "xstrndup.h"
 #include "xvasprintf.h"
 
 #include "manconfig.h"
 
-#include "error.h"
-#include "glcontainers.h"
+#include "appendstr.h"
 #include "cleanup.h"
+#include "debug.h"
+#include "glcontainers.h"
+#include "util.h"
 #include "xregcomp.h"
 
 #include "globbing.h"
@@ -202,62 +208,24 @@ static int pattern_compare (const void *a, const void *b)
 	return strncasecmp (key->pattern, memb, key->len);
 }
 
-static void match_in_directory (const char *path, const char *pattern,
-				int opts, gl_list_t matched)
+static void match_regex_in_directory (const char *path, const char *pattern,
+				      int opts, gl_list_t matched,
+				      struct dirent_names *cache)
 {
-	struct dirent_names *cache;
 	int flags;
 	regex_t preg;
-	struct pattern_bsearch pattern_start = { NULL, -1 };
-	char **bsearched;
 	size_t i;
 
-	cache = update_directory_cache (path);
-	if (!cache) {
-		debug ("directory cache update failed\n");
-		return;
-	}
+	debug ("matching regex in %s: %s\n", path, pattern);
 
-	debug ("globbing pattern in %s: %s\n", path, pattern);
+	flags = REG_EXTENDED | REG_NOSUB |
+		((opts & LFF_MATCHCASE) ? 0 : REG_ICASE);
 
-	if (opts & LFF_REGEX)
-		flags = REG_EXTENDED | REG_NOSUB |
-			((opts & LFF_MATCHCASE) ? 0 : REG_ICASE);
-	else
-		flags = (opts & LFF_MATCHCASE) ? 0 : FNM_CASEFOLD;
+	xregcomp (&preg, pattern, flags);
 
-	if (opts & LFF_REGEX) {
-		xregcomp (&preg, pattern, flags);
-		bsearched = cache->names;
-	} else {
-		pattern_start.pattern = xstrndup (pattern,
-						  strcspn (pattern, "?*{}\\"));
-		pattern_start.len = strlen (pattern_start.pattern);
-		bsearched = bsearch (&pattern_start, cache->names,
-				     cache->names_len, sizeof *cache->names,
-				     &pattern_compare);
-		if (!bsearched) {
-			free (pattern_start.pattern);
-			return;
-		}
-		while (bsearched > cache->names &&
-		       !strncasecmp (pattern_start.pattern, *(bsearched - 1),
-				     pattern_start.len))
-			--bsearched;
-	}
-
-	for (i = bsearched - cache->names; i < cache->names_len; ++i) {
-		if (opts & LFF_REGEX) {
-			if (regexec (&preg, cache->names[i], 0, NULL, 0) != 0)
-				continue;
-		} else {
-			if (strncasecmp (pattern_start.pattern,
-					 cache->names[i], pattern_start.len))
-				break;
-
-			if (fnmatch (pattern, cache->names[i], flags) != 0)
-				continue;
-		}
+	for (i = 0; i < cache->names_len; ++i) {
+		if (regexec (&preg, cache->names[i], 0, NULL, 0) != 0)
+			continue;
 
 		debug ("matched: %s/%s\n", path, cache->names[i]);
 
@@ -265,14 +233,75 @@ static void match_in_directory (const char *path, const char *pattern,
 				  xasprintf ("%s/%s", path, cache->names[i]));
 	}
 
-	if (opts & LFF_REGEX)
-		regfree (&preg);
-	else
+	regfree (&preg);
+}
+
+static void match_wildcard_in_directory (const char *path, const char *pattern,
+					 int opts, gl_list_t matched,
+					 struct dirent_names *cache)
+{
+	int flags;
+	struct pattern_bsearch pattern_start = { NULL, -1 };
+	char **bsearched;
+	size_t i;
+
+	debug ("matching wildcard in %s: %s\n", path, pattern);
+
+	flags = (opts & LFF_MATCHCASE) ? 0 : FNM_CASEFOLD;
+
+	pattern_start.pattern = xstrndup (pattern,
+					  strcspn (pattern, "?*{}\\"));
+	pattern_start.len = strlen (pattern_start.pattern);
+	bsearched = bsearch (&pattern_start, cache->names,
+			     cache->names_len, sizeof *cache->names,
+			     &pattern_compare);
+	if (!bsearched) {
 		free (pattern_start.pattern);
+		return;
+	}
+	while (bsearched > cache->names &&
+	       !strncasecmp (pattern_start.pattern, *(bsearched - 1),
+			     pattern_start.len))
+		--bsearched;
+
+	for (i = bsearched - cache->names; i < cache->names_len; ++i) {
+		assert (pattern_start.pattern);
+		if (strncasecmp (pattern_start.pattern,
+				 cache->names[i], pattern_start.len))
+			break;
+
+		if (fnmatch (pattern, cache->names[i], flags) != 0)
+			continue;
+
+		debug ("matched: %s/%s\n", path, cache->names[i]);
+
+		gl_list_add_last (matched,
+				  xasprintf ("%s/%s", path, cache->names[i]));
+	}
+
+	free (pattern_start.pattern);
+}
+
+static void match_in_directory (const char *path, const char *pattern,
+				int opts, gl_list_t matched)
+{
+	struct dirent_names *cache;
+
+	cache = update_directory_cache (path);
+	if (!cache) {
+		debug ("directory cache update failed\n");
+		return;
+	}
+
+	if (opts & LFF_REGEX)
+		match_regex_in_directory (path, pattern, opts, matched, cache);
+	else
+		match_wildcard_in_directory (path, pattern, opts, matched,
+					     cache);
 }
 
 gl_list_t look_for_file (const char *hier, const char *sec,
-			 const char *unesc_name, int cat, int opts)
+			 const char *unesc_name, bool cat, int opts)
 {
 	gl_list_t matched;
 	char *pattern, *path = NULL;
@@ -302,16 +331,17 @@ gl_list_t look_for_file (const char *hier, const char *sec,
 
 		dirs = new_string_list (GL_ARRAY_LIST, false);
 		pattern = xasprintf ("%s\t*", cat ? "cat" : "man");
+		assert (pattern);
 		*strrchr (pattern, '\t') = *sec;
 		match_in_directory (hier, pattern, LFF_MATCHCASE, dirs);
 		free (pattern);
 
 		pattern = make_pattern (name, sec, opts);
-		GL_LIST_FOREACH_START (dirs, dir) {
+		GL_LIST_FOREACH (dirs, dir) {
 			if (path)
 				*path = '\0';
 			match_in_directory (dir, pattern, opts, matched);
-		} GL_LIST_FOREACH_END (dirs);
+		}
 		free (pattern);
 		gl_list_free (dirs);
 	}

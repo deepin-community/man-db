@@ -39,7 +39,7 @@ noinst_DATA = man_db.conf
 EXTRA_DIST = lexgrog.c zsoelim.c
 
 AM_CPPFLAGS = \
-	-I$(top_builddir)/include \
+	-I$(top_srcdir)/include \
 	-I$(top_builddir)/gl/lib \
 	-I$(top_srcdir)/gl/lib \
 	-I$(top_srcdir)/lib \
@@ -56,8 +56,7 @@ AM_CFLAGS = \
 	$(WARN_CFLAGS) \
 	$(libpipeline_CFLAGS)
 
-LIBMAN = $(top_builddir)/lib/libman.la $(top_builddir)/gl/lib/libgnu.la \
-	 @LTLIBINTL@
+LIBMAN = $(top_builddir)/lib/libman.la @LTLIBINTL@
 LIBMANDB = $(top_builddir)/libdb/libmandb.la $(LIBMAN) $(DBLIBS)
 
 accessdb_LDADD = $(LIBMANDB)
@@ -65,7 +64,7 @@ catman_LDADD = $(LIBMANDB) $(libpipeline_LIBS)
 globbing_LDADD = $(LIBMAN)
 lexgrog_LDADD = $(LIBMAN) $(LIBCOMPRESS) $(libpipeline_LIBS) $(LTLIBICONV)
 man_LDADD = $(LIBMANDB) $(LIBCOMPRESS) $(libpipeline_LIBS) $(LTLIBICONV)
-man_recode_LDADD = $(LIBMANDB) $(LIBCOMPRESS) $(libpipeline_LIBS) $(LTLIBICONV)
+man_recode_LDADD = $(LIBMAN) $(LIBCOMPRESS) $(libpipeline_LIBS) $(LTLIBICONV)
 manconv_LDADD = $(LIBMAN) $(LIBCOMPRESS) $(libpipeline_LIBS) $(LTLIBICONV)
 mandb_LDADD = $(LIBMANDB) $(LIBCOMPRESS) $(libpipeline_LIBS) $(LTLIBICONV)
 manpath_LDADD = $(LIBMAN)
@@ -85,15 +84,15 @@ globbing_SOURCES = \
 	globbing.h \
 	globbing_test.c
 lexgrog_SOURCES = \
-	compression.c \
+	convert.c \
+	convert.h \
 	decompress.c \
 	decompress.h \
 	descriptions.c \
 	descriptions.h \
-	filenames.c \
-	filenames.h \
 	globbing.c \
 	globbing.h \
+	lexgrog.h \
 	lexgrog.l \
 	lexgrog_test.c \
 	manconv.c \
@@ -101,13 +100,12 @@ lexgrog_SOURCES = \
 	manconv_client.c \
 	manconv_client.h \
 	ult_src.c \
-	ult_src.h
+	ult_src.h \
+	utf8.c \
+	utf8.h
 man_SOURCES = \
-	compression.c \
 	decompress.c \
 	decompress.h \
-	filenames.c \
-	filenames.h \
 	globbing.c \
 	globbing.h \
 	man.c \
@@ -119,17 +117,20 @@ man_SOURCES = \
 	manp.h \
 	ult_src.c \
 	ult_src.h \
+	utf8.c \
+	utf8.h \
 	zsoelim.h \
 	zsoelim.l
 man_recode_SOURCES = \
-	compression.c \
 	decompress.c \
 	decompress.h \
 	man-recode.c \
 	manconv.c \
 	manconv.h \
 	manconv_client.c \
-	manconv_client.h
+	manconv_client.h \
+	utf8.c \
+	utf8.h
 manconv_SOURCES = \
 	decompress.c \
 	decompress.h \
@@ -139,16 +140,14 @@ manconv_SOURCES = \
 mandb_SOURCES = \
 	check_mandirs.c \
 	check_mandirs.h \
-	compression.c \
 	decompress.c \
 	decompress.h \
 	descriptions.c \
 	descriptions.h \
 	descriptions_store.c \
-	filenames.c \
-	filenames.h \
 	globbing.c \
 	globbing.h \
+	lexgrog.h \
 	lexgrog.l \
 	manconv.c \
 	manconv.h \
@@ -158,8 +157,11 @@ mandb_SOURCES = \
 	manp.c \
 	manp.h \
 	straycats.c \
+	straycats.h \
 	ult_src.c \
-	ult_src.h
+	ult_src.h \
+	utf8.c \
+	utf8.h
 manpath_SOURCES = \
 	globbing.c \
 	globbing.h \
@@ -167,6 +169,8 @@ manpath_SOURCES = \
 	manp.h \
 	manpath.c
 whatis_SOURCES = \
+	convert.c \
+	convert.h \
 	globbing.c \
 	globbing.h \
 	manp.c \
@@ -194,12 +198,12 @@ all-am: apropos$(EXEEXT)
 install-exec-hook:
 	if [ "$(man_owner)" ] && [ "$(man_mode)" = 6755 ]; then \
 		chown $(man_owner):$(man_owner) \
-			$(DESTDIR)$(bindir)/$(TRANS_MAN) \
-			$(DESTDIR)$(bindir)/$(TRANS_MANDB); \
+			$(DESTDIR)$(bindir)/$(TRANS_MAN)$(EXEEXT) \
+			$(DESTDIR)$(bindir)/$(TRANS_MANDB)$(EXEEXT); \
 	fi
 	chmod $(man_mode) \
-		$(DESTDIR)$(bindir)/$(TRANS_MAN) \
-		$(DESTDIR)$(bindir)/$(TRANS_MANDB)
+		$(DESTDIR)$(bindir)/$(TRANS_MAN)$(EXEEXT) \
+		$(DESTDIR)$(bindir)/$(TRANS_MANDB)$(EXEEXT)
 	cd $(DESTDIR)$(bindir) && rm -f $(TRANS_APROPOS)$(EXEEXT) && \
 		$(LN_S) $(TRANS_WHATIS)$(EXEEXT) $(TRANS_APROPOS)$(EXEEXT)
 

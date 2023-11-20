@@ -1,6 +1,6 @@
 /*
  * sandbox.c: Process sandboxing
- *  
+ *
  * Copyright (C) 2017 Colin Watson.
  *
  * This file is part of man-db.
@@ -63,10 +63,14 @@
 #  include <seccomp.h>
 #endif /* HAVE_LIBSECCOMP */
 
+#include "attribute.h"
+#include "xalloc.h"
+#include "xstrndup.h"
+
 #include "manconfig.h"
 
-#include "error.h"
-
+#include "debug.h"
+#include "fatal.h"
 #include "sandbox.h"
 
 struct man_sandbox {
@@ -79,7 +83,7 @@ struct man_sandbox {
 };
 
 #ifdef HAVE_LIBSECCOMP
-static int seccomp_filter_unavailable = 0;
+static bool seccomp_filter_unavailable = false;
 
 static void gripe_seccomp_filter_unavailable (void)
 {
@@ -190,7 +194,13 @@ static bool can_load_seccomp (void)
 		if (nr == __NR_SCMP_ERROR) \
 			break; \
 		if (seccomp_rule_add (ctx, SCMP_ACT_ALLOW, nr, 0) < 0) \
-			error (FATAL, errno, "can't add seccomp rule"); \
+			fatal (errno, "can't add seccomp rule"); \
+	} while (0)
+
+#define SC_ALLOW_PERMISSIVE(name) \
+	do { \
+		if (permissive) \
+			SC_ALLOW (name); \
 	} while (0)
 
 #define SC_ALLOW_ARG_1(name, cmp1) \
@@ -199,7 +209,7 @@ static bool can_load_seccomp (void)
 		if (nr == __NR_SCMP_ERROR) \
 			break; \
 		if (seccomp_rule_add (ctx, SCMP_ACT_ALLOW, nr, 1, cmp1) < 0) \
-			error (FATAL, errno, "can't add seccomp rule"); \
+			fatal (errno, "can't add seccomp rule"); \
 	} while (0)
 
 #define SC_ALLOW_ARG_2(name, cmp1, cmp2) \
@@ -209,7 +219,7 @@ static bool can_load_seccomp (void)
 			break; \
 		if (seccomp_rule_add (ctx, SCMP_ACT_ALLOW, nr, \
 				      2, cmp1, cmp2) < 0) \
-			error (FATAL, errno, "can't add seccomp rule"); \
+			fatal (errno, "can't add seccomp rule"); \
 	} while (0)
 
 /* Create a seccomp filter.
@@ -221,7 +231,7 @@ static bool can_load_seccomp (void)
  * files.  Confining these further requires additional tools that can do
  * path-based filtering or similar, such as AppArmor.
  */
-static scmp_filter_ctx make_seccomp_filter (int permissive)
+static scmp_filter_ctx make_seccomp_filter (bool permissive)
 {
 	scmp_filter_ctx ctx;
 	mode_t mode_mask = S_ISUID | S_ISGID | S_IXUSR | S_IXGRP | S_IXOTH;
@@ -231,10 +241,14 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 #endif /* O_TMPFILE */
 		;
 
-	debug ("initialising seccomp filter (permissive: %d)\n", permissive);
+	if (!can_load_seccomp ())
+		return NULL;
+
+	debug ("initialising seccomp filter (permissive: %d)\n",
+	       (int) permissive);
 	ctx = seccomp_init (SCMP_ACT_ERRNO (ENOSYS));
 	if (!ctx)
-		error (FATAL, errno, "can't initialise seccomp filter");
+		fatal (errno, "can't initialise seccomp filter");
 
 	/* Allow sibling architectures for x86, since people sometimes mix
 	 * and match architectures there for performance reasons.
@@ -265,18 +279,25 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	 * Since I currently know of no library with suitable syscall lists,
 	 * the syscall lists here are taken from
 	 * systemd:src/shared/seccomp-util.c, last updated from commit
-	 * bca5a0eaccc849a669b4279e4bfcc6507083a07b (2019-08-01).
+	 * ab9617a76624c43a26de7e94424088ae171ebfef (2023-08-07).
 	 */
 
 	/* systemd: SystemCallFilter=@default */
+	SC_ALLOW ("arch_prctl");
+	SC_ALLOW ("brk");
+	SC_ALLOW ("cacheflush");
 	SC_ALLOW ("clock_getres");
+	SC_ALLOW ("clock_getres_time64");
 	SC_ALLOW ("clock_gettime");
 	SC_ALLOW ("clock_gettime64");
 	SC_ALLOW ("clock_nanosleep");
+	SC_ALLOW ("clock_nanosleep_time64");
 	SC_ALLOW ("execve");
 	SC_ALLOW ("exit");
 	SC_ALLOW ("exit_group");
 	SC_ALLOW ("futex");
+	SC_ALLOW ("futex_time64");
+	SC_ALLOW ("futex_waitv");
 	SC_ALLOW ("get_robust_list");
 	SC_ALLOW ("get_thread_area");
 	SC_ALLOW ("getegid");
@@ -291,6 +312,7 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	SC_ALLOW ("getpgrp");
 	SC_ALLOW ("getpid");
 	SC_ALLOW ("getppid");
+	SC_ALLOW ("getrandom");
 	SC_ALLOW ("getresgid");
 	SC_ALLOW ("getresgid32");
 	SC_ALLOW ("getresuid");
@@ -302,12 +324,19 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	SC_ALLOW ("getuid");
 	SC_ALLOW ("getuid32");
 	SC_ALLOW ("membarrier");
+	SC_ALLOW ("mmap");
+	SC_ALLOW ("mmap2");
+	SC_ALLOW ("mprotect");
+	SC_ALLOW ("munmap");
 	SC_ALLOW ("nanosleep");
 	SC_ALLOW ("pause");
 	SC_ALLOW ("prlimit64");
 	SC_ALLOW ("restart_syscall");
+	SC_ALLOW ("riscv_flush_icache");
+	SC_ALLOW ("riscv_hwprobe");
 	SC_ALLOW ("rseq");
 	SC_ALLOW ("rt_sigreturn");
+	SC_ALLOW ("sched_getaffinity");
 	SC_ALLOW ("sched_yield");
 	SC_ALLOW ("set_robust_list");
 	SC_ALLOW ("set_thread_area");
@@ -320,6 +349,7 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	/* systemd: SystemCallFilter=@basic-io */
 	SC_ALLOW ("_llseek");
 	SC_ALLOW ("close");
+	SC_ALLOW ("close_range");
 	SC_ALLOW ("dup");
 	SC_ALLOW ("dup2");
 	SC_ALLOW ("dup3");
@@ -345,6 +375,7 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 				SCMP_A1 (SCMP_CMP_MASKED_EQ, mode_mask, 0));
 	}
 	SC_ALLOW ("faccessat");
+	SC_ALLOW ("faccessat2");
 	SC_ALLOW ("fallocate");
 	SC_ALLOW ("fchdir");
 	if (permissive) {
@@ -362,19 +393,16 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	SC_ALLOW ("fstatfs64");
 	SC_ALLOW ("ftruncate");
 	SC_ALLOW ("ftruncate64");
-	if (permissive) SC_ALLOW ("futimesat");
+	SC_ALLOW_PERMISSIVE ("futimesat");
 	SC_ALLOW ("getcwd");
 	SC_ALLOW ("getdents");
 	SC_ALLOW ("getdents64");
-	if (permissive) SC_ALLOW ("link");
-	if (permissive) SC_ALLOW ("linkat");
+	SC_ALLOW_PERMISSIVE ("link");
+	SC_ALLOW_PERMISSIVE ("linkat");
 	SC_ALLOW ("lstat");
 	SC_ALLOW ("lstat64");
-	if (permissive) SC_ALLOW ("mkdir");
-	if (permissive) SC_ALLOW ("mkdirat");
-	SC_ALLOW ("mmap");
-	SC_ALLOW ("mmap2");
-	SC_ALLOW ("munmap");
+	SC_ALLOW_PERMISSIVE ("mkdir");
+	SC_ALLOW_PERMISSIVE ("mkdirat");
 	SC_ALLOW ("newfstatat");
 	SC_ALLOW ("oldfstat");
 	SC_ALLOW ("oldlstat");
@@ -410,24 +438,25 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	}
 	SC_ALLOW ("readlink");
 	SC_ALLOW ("readlinkat");
-	if (permissive) SC_ALLOW ("rename");
-	if (permissive) SC_ALLOW ("renameat");
-	if (permissive) SC_ALLOW ("renameat2");
-	if (permissive) SC_ALLOW ("rmdir");
+	SC_ALLOW_PERMISSIVE ("rename");
+	SC_ALLOW_PERMISSIVE ("renameat");
+	SC_ALLOW_PERMISSIVE ("renameat2");
+	SC_ALLOW_PERMISSIVE ("rmdir");
 	SC_ALLOW ("stat");
 	SC_ALLOW ("stat64");
 	SC_ALLOW ("statfs");
 	SC_ALLOW ("statfs64");
 	SC_ALLOW ("statx");
-	if (permissive) SC_ALLOW ("symlink");
-	if (permissive) SC_ALLOW ("symlinkat");
-	if (permissive) SC_ALLOW ("truncate");
-	if (permissive) SC_ALLOW ("truncateat");
-	if (permissive) SC_ALLOW ("unlink");
-	if (permissive) SC_ALLOW ("unlinkat");
-	if (permissive) SC_ALLOW ("utime");
-	if (permissive) SC_ALLOW ("utimensat");
-	if (permissive) SC_ALLOW ("utimes");
+	SC_ALLOW_PERMISSIVE ("symlink");
+	SC_ALLOW_PERMISSIVE ("symlinkat");
+	SC_ALLOW_PERMISSIVE ("truncate");
+	SC_ALLOW_PERMISSIVE ("truncateat");
+	SC_ALLOW_PERMISSIVE ("unlink");
+	SC_ALLOW_PERMISSIVE ("unlinkat");
+	SC_ALLOW_PERMISSIVE ("utime");
+	SC_ALLOW_PERMISSIVE ("utimensat");
+	SC_ALLOW_PERMISSIVE ("utimensat_time64");
+	SC_ALLOW_PERMISSIVE ("utimes");
 
 	/* systemd: SystemCallFilter=@io-event */
 	SC_ALLOW ("_newselect");
@@ -436,13 +465,16 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	SC_ALLOW ("epoll_ctl");
 	SC_ALLOW ("epoll_ctl_old");
 	SC_ALLOW ("epoll_pwait");
+	SC_ALLOW ("epoll_pwait2");
 	SC_ALLOW ("epoll_wait");
 	SC_ALLOW ("epoll_wait_old");
 	SC_ALLOW ("eventfd");
 	SC_ALLOW ("eventfd2");
 	SC_ALLOW ("poll");
 	SC_ALLOW ("ppoll");
+	SC_ALLOW ("ppoll_time64");
 	SC_ALLOW ("pselect6");
+	SC_ALLOW ("pselect6_time64");
 	SC_ALLOW ("select");
 
 	/* systemd: SystemCallFilter=@ipc (subset) */
@@ -450,12 +482,14 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	SC_ALLOW ("pipe2");
 
 	/* systemd: SystemCallFilter=@process (subset) */
-	SC_ALLOW ("arch_prctl");
 	SC_ALLOW ("capget");
 	SC_ALLOW ("clone");
+	SC_ALLOW ("clone3");
 	SC_ALLOW ("execveat");
 	SC_ALLOW ("fork");
 	SC_ALLOW ("getrusage");
+	SC_ALLOW ("pidfd_open");
+	SC_ALLOW ("pidfd_send_signal");
 	SC_ALLOW ("prctl");
 	SC_ALLOW ("vfork");
 	SC_ALLOW ("wait4");
@@ -468,6 +502,7 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	SC_ALLOW ("rt_sigprocmask");
 	SC_ALLOW ("rt_sigsuspend");
 	SC_ALLOW ("rt_sigtimedwait");
+	SC_ALLOW ("rt_sigtimedwait_time64");
 	SC_ALLOW ("sigaction");
 	SC_ALLOW ("sigaltstack");
 	SC_ALLOW ("signal");
@@ -483,13 +518,13 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	SC_ALLOW ("msync");
 	SC_ALLOW ("sync");
 	SC_ALLOW ("sync_file_range");
+	SC_ALLOW ("sync_file_range2");
 	SC_ALLOW ("syncfs");
 
 	/* systemd: SystemCallFilter=@system-service (subset) */
-	SC_ALLOW ("brk");
+	SC_ALLOW ("arm_fadvise64_64");
 	SC_ALLOW ("fadvise64");
 	SC_ALLOW ("fadvise64_64");
-	SC_ALLOW ("getrandom");
 	if (permissive)
 		SC_ALLOW ("ioctl");
 	else {
@@ -497,16 +532,13 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 		SC_ALLOW_ARG_1 ("ioctl", SCMP_A1 (SCMP_CMP_EQ, TIOCGWINSZ));
 	}
 	SC_ALLOW ("madvise");
-	SC_ALLOW ("mprotect");
 	SC_ALLOW ("mremap");
-	SC_ALLOW ("sched_getaffinity");
 	SC_ALLOW ("sysinfo");
 	SC_ALLOW ("uname");
 
 	/* Extra syscalls not in any of systemd's sets. */
 	SC_ALLOW ("arm_fadvise64_64");
 	SC_ALLOW ("arm_sync_file_range");
-	SC_ALLOW ("sync_file_range2");
 
 	/* Allow killing processes and threads.  This is unfortunate but
 	 * unavoidable: groff uses kill to explicitly pass on SIGPIPE to its
@@ -531,10 +563,14 @@ static scmp_filter_ctx make_seccomp_filter (int permissive)
 	 * don't want to allow these syscalls in general, but if such a
 	 * thing is in use we probably have no choice.
 	 *
+	 * Firebuild is a build accelerator that connects to its supervisor
+	 * using a Unix-domain socket.
+	 *
 	 * snoopy is an execve monitoring tool that may log messages to
 	 * /dev/log.
 	 */
 	if (search_ld_preload ("libesets_pac.so") ||
+	    search_ld_preload ("libfirebuild.so") ||
 	    search_ld_preload ("libscep_pac.so") ||
 	    search_ld_preload ("libsnoopy.so")) {
 		SC_ALLOW ("connect");
@@ -570,8 +606,8 @@ man_sandbox *sandbox_init (void)
 	man_sandbox *sandbox = XZALLOC (man_sandbox);
 
 #ifdef HAVE_LIBSECCOMP
-	sandbox->ctx = make_seccomp_filter (0);
-	sandbox->permissive_ctx = make_seccomp_filter (1);
+	sandbox->ctx = make_seccomp_filter (false);
+	sandbox->permissive_ctx = make_seccomp_filter (true);
 #else /* !HAVE_LIBSECCOMP */
 	sandbox->dummy = 0;
 #endif /* HAVE_LIBSECCOMP */
@@ -580,16 +616,18 @@ man_sandbox *sandbox_init (void)
 }
 
 #ifdef HAVE_LIBSECCOMP
-static void _sandbox_load (man_sandbox *sandbox, int permissive) {
+static void _sandbox_load (man_sandbox *sandbox, bool permissive) {
 	if (can_load_seccomp ()) {
 		scmp_filter_ctx ctx;
 
-		debug ("loading seccomp filter (permissive: %d)\n",
-		       permissive);
 		if (permissive)
 			ctx = sandbox->permissive_ctx;
 		else
 			ctx = sandbox->ctx;
+		if (!ctx)
+			return;
+		debug ("loading seccomp filter (permissive: %d)\n",
+		       (int) permissive);
 		if (seccomp_load (ctx) < 0) {
 			if (errno == EINVAL || errno == EFAULT) {
 				/* The kernel doesn't give us particularly
@@ -604,16 +642,15 @@ static void _sandbox_load (man_sandbox *sandbox, int permissive) {
 				 */
 				gripe_seccomp_filter_unavailable ();
 				/* Don't try this again. */
-				seccomp_filter_unavailable = 1;
+				seccomp_filter_unavailable = true;
 			} else
-				error (FATAL, errno,
-				       "can't load seccomp filter");
+				fatal (errno, "can't load seccomp filter");
 		}
 	}
 }
 #else /* !HAVE_LIBSECCOMP */
-static void _sandbox_load (man_sandbox *sandbox _GL_UNUSED,
-			   int permissive _GL_UNUSED)
+static void _sandbox_load (man_sandbox *sandbox MAYBE_UNUSED,
+			   bool permissive MAYBE_UNUSED)
 {
 }
 #endif /* HAVE_LIBSECCOMP */
@@ -623,7 +660,7 @@ void sandbox_load (void *data)
 {
 	man_sandbox *sandbox = data;
 
-	_sandbox_load (sandbox, 0);
+	_sandbox_load (sandbox, false);
 }
 
 /* Enter a sandbox for processing untrusted data, allowing limited file
@@ -633,7 +670,7 @@ void sandbox_load_permissive (void *data)
 {
 	man_sandbox *sandbox = data;
 
-	_sandbox_load (sandbox, 1);
+	_sandbox_load (sandbox, true);
 }
 
 /* Free a sandbox for processing untrusted data. */
@@ -641,8 +678,10 @@ void sandbox_free (void *data) {
 	man_sandbox *sandbox = data;
 
 #ifdef HAVE_LIBSECCOMP
-	seccomp_release (sandbox->ctx);
-	seccomp_release (sandbox->permissive_ctx);
+	if (sandbox->ctx)
+		seccomp_release (sandbox->ctx);
+	if (sandbox->permissive_ctx)
+		seccomp_release (sandbox->permissive_ctx);
 #endif /* HAVE_LIBSECCOMP */
 
 	free (sandbox);

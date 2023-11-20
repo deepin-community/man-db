@@ -2,13 +2,13 @@
 # Copyright (C) 2013 Free Software Foundation, Inc.
 # This file is distributed under the same license as the man-db package.
 # Wylmer Wang <wantinghard@gmail.com>, 2013.
-# Boyuan Yang <073plan@gmail.com>, 2017, 2020.
+# Boyuan Yang <073plan@gmail.com>, 2017, 2020, 2022, 2023.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: man-db-manpages-2.9.0-pre1\n"
-"POT-Creation-Date: 2020-06-22 18:20+0100\n"
-"PO-Revision-Date: 2020-04-03 12:11-0400\n"
+"Project-Id-Version: man-db-manpages-2.12.0-pre2\n"
+"POT-Creation-Date: 2023-08-06 21:18+0100\n"
+"PO-Revision-Date: 2023-08-07 10:37-0400\n"
 "Last-Translator: Boyuan Yang <073plan@gmail.com>\n"
 "Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -16,11 +16,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Bugs: Report translation errors to the Language-Team address.\n"
-"X-Generator: Poedit 2.3\n"
-"X-Poedit-Bookmarks: -1,102,-1,-1,-1,-1,-1,-1,-1,-1\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #. type: TH
-#: ../../man/man1/apropos.man1:12 ../../man/man1/lexgrog.man1:9
+#: ../../man/man1/apropos.man1:12 ../../man/man1/lexgrog.man1:44
 #: ../../man/man1/man.man1:15 ../../man/man1/man-recode.man1:9
 #: ../../man/man1/manconv.man1:9 ../../man/man1/manpath.man1:13
 #: ../../man/man1/whatis.man1:12 ../../man/man1/zsoelim.man1:12
@@ -33,7 +32,7 @@ msgstr "手册分页显示工具"
 # 注意，NAME 是手册页第一节的标题，whatis 程序将搜索它来得到
 # 程序的描述。这个节名“NAME”不翻译。不然 whatis 找不到。
 #. type: SH
-#: ../../man/man1/apropos.man1:13 ../../man/man1/lexgrog.man1:10
+#: ../../man/man1/apropos.man1:13 ../../man/man1/lexgrog.man1:45
 #: ../../man/man1/man.man1:16 ../../man/man1/man-recode.man1:10
 #: ../../man/man1/manconv.man1:10 ../../man/man1/manpath.man1:14
 #: ../../man/man1/whatis.man1:13 ../../man/man1/zsoelim.man1:13
@@ -49,7 +48,7 @@ msgid "%apropos% - search the manual page names and descriptions"
 msgstr "%apropos% - 搜索手册页名称和描述"
 
 #. type: SH
-#: ../../man/man1/apropos.man1:15 ../../man/man1/lexgrog.man1:12
+#: ../../man/man1/apropos.man1:15 ../../man/man1/lexgrog.man1:47
 #: ../../man/man1/man.man1:18 ../../man/man1/man-recode.man1:12
 #: ../../man/man1/manconv.man1:12 ../../man/man1/manpath.man1:16
 #: ../../man/man1/whatis.man1:15 ../../man/man1/zsoelim.man1:15
@@ -63,15 +62,17 @@ msgstr "概述"
 #: ../../man/man1/apropos.man1:32
 msgid ""
 "B<%apropos%> [\\|B<-dalv?V>\\|] [\\|B<-e>\\||\\|B<-w>\\||\\|B<-r>\\|] [\\|B<-"
-"s> I<list>\\|] [\\|B<-m> I<system>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> I<path>"
-"\\|] [\\|B<-L> I<locale>\\|] [\\|B<-C> I<file>\\|] I<keyword> \\&.\\|.\\|."
+"s> I<list>\\|] [\\|B<-m> I<system>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> "
+"I<path>\\|] [\\|B<-L> I<locale>\\|] [\\|B<-C> I<file>\\|] I<keyword> \\&.\\|."
+"\\|."
 msgstr ""
 "B<%apropos%> [\\|B<-dalv?V>\\|] [\\|B<-e>\\||\\|B<-w>\\||\\|B<-r>\\|] [\\|B<-"
-"s> I<列表>\\|] [\\|B<-m> I<系统>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> I<path>"
-"\\|] [\\|B<-L> I<区域>\\|] [\\|B<-C> I<文件>\\|] I<关键词> \\&.\\|.\\|."
+"s> I<列表>\\|] [\\|B<-m> I<系统>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> "
+"I<path>\\|] [\\|B<-L> I<区域>\\|] [\\|B<-C> I<文件>\\|] I<关键词> \\&.\\|."
+"\\|."
 
 #. type: SH
-#: ../../man/man1/apropos.man1:32 ../../man/man1/lexgrog.man1:20
+#: ../../man/man1/apropos.man1:32 ../../man/man1/lexgrog.man1:55
 #: ../../man/man1/man.man1:60 ../../man/man1/man-recode.man1:20
 #: ../../man/man1/manconv.man1:20 ../../man/man1/manpath.man1:23
 #: ../../man/man1/whatis.man1:32 ../../man/man1/zsoelim.man1:20
@@ -118,22 +119,22 @@ msgstr ""
 "这可能是通过定期的 cron 任务进行的，或者需要在安装新手册页后手动进行。"
 
 #. type: SH
-#: ../../man/man1/apropos.man1:61 ../../man/man1/lexgrog.man1:45
+#: ../../man/man1/apropos.man1:61 ../../man/man1/lexgrog.man1:80
 #: ../../man/man1/man.man1:406 ../../man/man1/man-recode.man1:52
 #: ../../man/man1/manconv.man1:50 ../../man/man1/manpath.man1:38
 #: ../../man/man1/whatis.man1:71 ../../man/man1/zsoelim.man1:55
 #: ../../man/man8/accessdb.man8:29 ../../man/man8/catman.man8:55
-#: ../../man/man8/mandb.man8:80
+#: ../../man/man8/mandb.man8:74
 #, no-wrap
 msgid "OPTIONS"
 msgstr "选项"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:65 ../../man/man1/lexgrog.man1:49
+#: ../../man/man1/apropos.man1:65 ../../man/man1/lexgrog.man1:84
 #: ../../man/man1/man.man1:420 ../../man/man1/man-recode.man1:72
 #: ../../man/man1/manconv.man1:67 ../../man/man1/manpath.man1:45
 #: ../../man/man1/whatis.man1:75 ../../man/man8/accessdb.man8:33
-#: ../../man/man8/catman.man8:59 ../../man/man8/mandb.man8:84
+#: ../../man/man8/catman.man8:59 ../../man/man8/mandb.man8:78
 msgid "Print debugging information."
 msgstr "打印调试信息。"
 
@@ -213,7 +214,7 @@ msgstr ""
 "册章节中对应部分的页面。"
 
 #. type: TP
-#: ../../man/man1/apropos.man1:118 ../../man/man1/man.man1:562
+#: ../../man/man1/apropos.man1:118 ../../man/man1/man.man1:571
 #: ../../man/man1/manpath.man1:54 ../../man/man1/whatis.man1:122
 #, no-wrap
 msgid "B<-m> I<system>\\|[\\|,.\\|.\\|.\\|]\\|, B<--systems=>I<system>\\|[\\|,.\\|.\\|.\\|]"
@@ -222,7 +223,7 @@ msgstr "B<-m> I<系统>\\|[\\|,.\\|.\\|.\\|]\\|, B<--systems=>I<系统>\\|[\\|,.
 #. type: Plain text
 #: ../../man/man1/apropos.man1:126
 msgid ""
-"If this system has access to other operating system's manual page "
+"If this system has access to other operating systems' manual page "
 "descriptions, they can be searched using this option.  To search NewOS's "
 "manual page descriptions, use the option B<-m> B<NewOS>."
 msgstr ""
@@ -242,7 +243,7 @@ msgstr ""
 "$B<SYSTEM> 环境变量。"
 
 #. type: TP
-#: ../../man/man1/apropos.man1:138 ../../man/man1/man.man1:582
+#: ../../man/man1/apropos.man1:138 ../../man/man1/man.man1:591
 #: ../../man/man1/whatis.man1:142 ../../man/man8/catman.man8:59
 #, no-wrap
 msgid "B<-M\\ >I<path>,\\ B<--manpath=>I<path>"
@@ -263,14 +264,14 @@ msgstr ""
 "的内容。"
 
 #. type: TP
-#: ../../man/man1/apropos.man1:152 ../../man/man1/man.man1:545
+#: ../../man/man1/apropos.man1:152 ../../man/man1/man.man1:554
 #: ../../man/man1/whatis.man1:156
 #, no-wrap
 msgid "B<-L\\ >I<locale>,\\ B<--locale=>I<locale>"
 msgstr "B<-L\\ >I<区域>,\\ B<--locale=>I<区域>"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:169 ../../man/man1/man.man1:562
+#: ../../man/man1/apropos.man1:169 ../../man/man1/man.man1:571
 #: ../../man/man1/whatis.man1:173
 msgid ""
 "B<%program%> will normally determine your current locale by a call to the C "
@@ -289,7 +290,7 @@ msgstr ""
 #. type: TP
 #: ../../man/man1/apropos.man1:169 ../../man/man1/man.man1:413
 #: ../../man/man1/manpath.man1:74 ../../man/man1/whatis.man1:173
-#: ../../man/man8/catman.man8:64 ../../man/man8/mandb.man8:131
+#: ../../man/man8/catman.man8:64 ../../man/man8/mandb.man8:125
 #, no-wrap
 msgid "B<-C\\ >I<file>,\\ B<--config-file=>I<file>"
 msgstr "B<-C\\ >I<文件>,\\ B<--config-file=>I<文件>"
@@ -297,14 +298,15 @@ msgstr "B<-C\\ >I<文件>,\\ B<--config-file=>I<文件>"
 #. type: Plain text
 #: ../../man/man1/apropos.man1:173 ../../man/man1/man.man1:417
 #: ../../man/man1/manpath.man1:78 ../../man/man1/whatis.man1:177
-#: ../../man/man8/catman.man8:68 ../../man/man8/mandb.man8:135
+#: ../../man/man8/catman.man8:68 ../../man/man8/mandb.man8:129
 msgid ""
-"Use this user configuration file rather than the default of I<~/.manpath>."
-msgstr "使用此用户配置文件代替默认的 I<~/.manpath>。"
+"Use this user configuration file rather than the default of I<\\(ti/."
+"manpath>."
+msgstr "使用此用户配置文件代替默认的 I<\\(ti/.manpath>。"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:176 ../../man/man1/lexgrog.man1:89
-#: ../../man/man1/man.man1:1042 ../../man/man1/man-recode.man1:75
+#: ../../man/man1/apropos.man1:176 ../../man/man1/lexgrog.man1:124
+#: ../../man/man1/man.man1:1051 ../../man/man1/man-recode.man1:75
 #: ../../man/man1/manconv.man1:70 ../../man/man1/manpath.man1:81
 #: ../../man/man1/whatis.man1:180 ../../man/man1/zsoelim.man1:67
 #: ../../man/man8/accessdb.man8:36 ../../man/man8/catman.man8:71
@@ -312,16 +314,16 @@ msgid "Print a help message and exit."
 msgstr "打印帮助消息并退出。"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:179 ../../man/man1/lexgrog.man1:92
-#: ../../man/man1/man.man1:1045 ../../man/man1/manpath.man1:84
+#: ../../man/man1/apropos.man1:179 ../../man/man1/lexgrog.man1:127
+#: ../../man/man1/man.man1:1054 ../../man/man1/manpath.man1:84
 #: ../../man/man1/whatis.man1:183 ../../man/man8/accessdb.man8:39
-#: ../../man/man8/catman.man8:74 ../../man/man8/mandb.man8:141
+#: ../../man/man8/catman.man8:74 ../../man/man8/mandb.man8:135
 msgid "Print a short usage message and exit."
 msgstr "打印简短的帮助消息并退出。"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:182 ../../man/man1/lexgrog.man1:95
-#: ../../man/man1/man.man1:1048 ../../man/man1/man-recode.man1:78
+#: ../../man/man1/apropos.man1:182 ../../man/man1/lexgrog.man1:130
+#: ../../man/man1/man.man1:1057 ../../man/man1/man-recode.man1:78
 #: ../../man/man1/manconv.man1:73 ../../man/man1/manpath.man1:87
 #: ../../man/man1/whatis.man1:186 ../../man/man1/zsoelim.man1:70
 #: ../../man/man8/accessdb.man8:42 ../../man/man8/catman.man8:77
@@ -329,29 +331,29 @@ msgid "Display version information."
 msgstr "显示版本信息。"
 
 #. type: SH
-#: ../../man/man1/apropos.man1:182 ../../man/man1/lexgrog.man1:95
-#: ../../man/man1/man.man1:1048 ../../man/man1/whatis.man1:186
-#: ../../man/man8/mandb.man8:144
+#: ../../man/man1/apropos.man1:182 ../../man/man1/lexgrog.man1:130
+#: ../../man/man1/man.man1:1057 ../../man/man1/whatis.man1:186
+#: ../../man/man8/mandb.man8:138
 #, no-wrap
 msgid "EXIT STATUS"
 msgstr "退出状态"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:186 ../../man/man1/lexgrog.man1:99
-#: ../../man/man1/man.man1:1052 ../../man/man1/whatis.man1:190
-#: ../../man/man8/mandb.man8:148
+#: ../../man/man1/apropos.man1:186 ../../man/man1/lexgrog.man1:134
+#: ../../man/man1/man.man1:1061 ../../man/man1/whatis.man1:190
+#: ../../man/man8/mandb.man8:142
 msgid "Successful program execution."
 msgstr "程序成功执行。"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:189 ../../man/man1/man.man1:1055
+#: ../../man/man1/apropos.man1:189 ../../man/man1/man.man1:1064
 #: ../../man/man1/whatis.man1:193
 msgid "Usage, syntax or configuration file error."
 msgstr "用法、语法或配置文件出错。"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:192 ../../man/man1/man.man1:1058
-#: ../../man/man1/whatis.man1:196 ../../man/man8/mandb.man8:154
+#: ../../man/man1/apropos.man1:192 ../../man/man1/man.man1:1067
+#: ../../man/man1/whatis.man1:196 ../../man/man8/mandb.man8:148
 msgid "Operational error."
 msgstr "操作出错。"
 
@@ -361,7 +363,7 @@ msgid "Nothing was found that matched the criteria specified."
 msgstr "未找到符合指定条件的结果。"
 
 #. type: SH
-#: ../../man/man1/apropos.man1:195 ../../man/man1/man.man1:1064
+#: ../../man/man1/apropos.man1:195 ../../man/man1/man.man1:1073
 #: ../../man/man1/manpath.man1:87 ../../man/man1/whatis.man1:199
 #: ../../man/man8/catman.man8:77
 #, no-wrap
@@ -369,8 +371,8 @@ msgid "ENVIRONMENT"
 msgstr "环境"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:204 ../../man/man1/man.man1:1168
-#: ../../man/man1/manpath.man1:113 ../../man/man1/whatis.man1:208
+#: ../../man/man1/apropos.man1:204 ../../man/man1/man.man1:1184
+#: ../../man/man1/manpath.man1:110 ../../man/man1/whatis.man1:208
 msgid ""
 "If $B<SYSTEM> is set, it will have the same effect as if it had been "
 "specified as the argument to the B<-m> option."
@@ -387,7 +389,18 @@ msgstr ""
 "层次结构搜索路径。"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:222 ../../man/man1/whatis.man1:226
+#: ../../man/man1/apropos.man1:217 ../../man/man1/man.man1:1087
+#: ../../man/man1/manpath.man1:102 ../../man/man1/whatis.man1:221
+#: ../../man/man8/catman.man8:101
+msgid ""
+"See the B<SEARCH PATH> section of B<manpath>(5)  for the default behaviour "
+"and details of how this environment variable is handled."
+msgstr ""
+"请参考 B<manpath>(5) 中的B<搜索路径>一节以了解默认行为以及处理该环境变量的细"
+"节。"
+
+#. type: Plain text
+#: ../../man/man1/apropos.man1:229 ../../man/man1/whatis.man1:233
 msgid ""
 "If $B<MANWIDTH> is set, its value is used as the terminal width (see the B<--"
 "long> option).  If it is not set, the terminal width will be calculated "
@@ -399,87 +412,87 @@ msgstr ""
 "若都失败，将退回到 80 个字符。"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:231
+#: ../../man/man1/apropos.man1:238
 msgid ""
-"If $B<POSIXLY_CORRECT> is set, even to a null value, the default B<%apropos"
-"%> search will be as an extended regex (B<-r>).  Nowadays, this is the "
-"default behaviour anyway."
+"If $B<POSIXLY_CORRECT> is set, even to a null value, the default "
+"B<%apropos%> search will be as an extended regex (B<-r>).  Nowadays, this is "
+"the default behaviour anyway."
 msgstr ""
 "如果设置了 $B<POSIXLY_CORRECT> 环境变量(即使是空值)，默认的 B<%apropos%> 搜索"
 "将视为扩展的正则表达式(B<-r>)。不过，现在这已经是默认行为了。"
 
 #. type: SH
-#: ../../man/man1/apropos.man1:231 ../../man/man1/man.man1:1233
-#: ../../man/man1/manpath.man1:113 ../../man/man1/whatis.man1:226
-#: ../../man/man8/catman.man8:94 ../../man/man8/mandb.man8:191
+#: ../../man/man1/apropos.man1:238 ../../man/man1/man.man1:1269
+#: ../../man/man1/manpath.man1:110 ../../man/man1/whatis.man1:233
+#: ../../man/man8/catman.man8:101 ../../man/man8/mandb.man8:185
 #, no-wrap
 msgid "FILES"
 msgstr "文件"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:237 ../../man/man1/whatis.man1:232
-#: ../../man/man8/catman.man8:103 ../../man/man8/mandb.man8:207
+#: ../../man/man1/apropos.man1:244 ../../man/man1/whatis.man1:239
+#: ../../man/man8/catman.man8:110 ../../man/man8/mandb.man8:201
 msgid "A traditional global I<index> database cache."
 msgstr "传统的全局 I<索引> 数据库缓存。"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:243 ../../man/man1/whatis.man1:238
-#: ../../man/man8/mandb.man8:200
+#: ../../man/man1/apropos.man1:250 ../../man/man1/whatis.man1:245
+#: ../../man/man8/mandb.man8:194
 msgid "An FHS compliant global I<index> database cache."
 msgstr "与 FHS 兼容的全局 I<索引> 数据库缓存。"
 
 #. type: Plain text
-#: ../../man/man1/apropos.man1:248 ../../man/man1/whatis.man1:243
+#: ../../man/man1/apropos.man1:255 ../../man/man1/whatis.man1:250
 msgid "A traditional B<whatis> text database."
 msgstr "传统的 B<whatis> 文本数据库。"
 
 #. type: SH
-#: ../../man/man1/apropos.man1:248 ../../man/man1/lexgrog.man1:197
-#: ../../man/man1/man.man1:1240 ../../man/man1/man-recode.man1:78
-#: ../../man/man1/manconv.man1:73 ../../man/man1/manpath.man1:117
-#: ../../man/man1/whatis.man1:243 ../../man/man1/zsoelim.man1:70
-#: ../../man/man8/catman.man8:109 ../../man/man8/mandb.man8:213
+#: ../../man/man1/apropos.man1:255 ../../man/man1/lexgrog.man1:226
+#: ../../man/man1/man.man1:1278 ../../man/man1/man-recode.man1:78
+#: ../../man/man1/manconv.man1:73 ../../man/man1/manpath.man1:114
+#: ../../man/man1/whatis.man1:250 ../../man/man1/zsoelim.man1:70
+#: ../../man/man8/catman.man8:116 ../../man/man8/mandb.man8:207
 #, no-wrap
 msgid "SEE ALSO"
 msgstr "亦见"
 
 #. type: SH
-#: ../../man/man1/apropos.man1:252 ../../man/man1/lexgrog.man1:207
-#: ../../man/man1/man-recode.man1:84 ../../man/man1/manconv.man1:77
-#: ../../man/man1/manpath.man1:121 ../../man/man1/whatis.man1:247
+#: ../../man/man1/apropos.man1:259 ../../man/man1/lexgrog.man1:236
+#: ../../man/man1/man-recode.man1:86 ../../man/man1/manconv.man1:77
+#: ../../man/man1/manpath.man1:118 ../../man/man1/whatis.man1:254
 #: ../../man/man1/zsoelim.man1:75 ../../man/man8/accessdb.man8:42
-#: ../../man/man8/catman.man8:113 ../../man/man8/mandb.man8:223
+#: ../../man/man8/catman.man8:120 ../../man/man8/mandb.man8:217
 #, no-wrap
 msgid "AUTHOR"
 msgstr "作者"
 
 #. type: SH
-#: ../../man/man1/apropos.man1:258 ../../man/man1/lexgrog.man1:220
-#: ../../man/man1/man.man1:1273 ../../man/man1/man-recode.man1:82
-#: ../../man/man1/manconv.man1:81 ../../man/man1/manpath.man1:127
-#: ../../man/man1/whatis.man1:253 ../../man/man1/zsoelim.man1:81
-#: ../../man/man5/manpath.man5:170 ../../man/man8/accessdb.man8:48
-#: ../../man/man8/catman.man8:119 ../../man/man8/mandb.man8:229
+#: ../../man/man1/apropos.man1:265 ../../man/man1/lexgrog.man1:249
+#: ../../man/man1/man.man1:1311 ../../man/man1/man-recode.man1:82
+#: ../../man/man1/manconv.man1:81 ../../man/man1/manpath.man1:124
+#: ../../man/man1/whatis.man1:260 ../../man/man1/zsoelim.man1:81
+#: ../../man/man5/manpath.man5:240 ../../man/man8/accessdb.man8:48
+#: ../../man/man8/catman.man8:126 ../../man/man8/mandb.man8:223
 #, no-wrap
 msgid "BUGS"
 msgstr "BUGS"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:12
+#: ../../man/man1/lexgrog.man1:47
 msgid "lexgrog - parse header information in man pages"
 msgstr "lexgrog - 解析 man 手册页的头部信息"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:20
+#: ../../man/man1/lexgrog.man1:55
 msgid ""
-"B<lexgrog> [\\|B<-m>\\||\\|B<-c>\\|] [\\|B<-dfw?V>\\|] [\\|B<-E> I<encoding>"
-"\\|] I<file> \\&.\\|.\\|."
+"B<lexgrog> [\\|B<-m>\\||\\|B<-c>\\|] [\\|B<-dfw?V>\\|] [\\|B<-E> "
+"I<encoding>\\|] I<file> \\&.\\|.\\|."
 msgstr ""
 "B<lexgrog> [\\|B<-m>\\||\\|B<-c>\\|] [\\|B<-dfw?V>\\|] [\\|B<-E> I<编码>\\|] "
 "I<文件> \\&.\\|.\\|."
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:36
+#: ../../man/man1/lexgrog.man1:71
 msgid ""
 "B<lexgrog> is an implementation of the traditional \\(lqgroff guess\\(rq "
 "utility in B<lex>.  It reads the list of files on its command line as either "
@@ -494,20 +507,20 @@ msgstr ""
 "会传递给 B<nroff> 和/或 B<troff>。"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:45
+#: ../../man/man1/lexgrog.man1:80
 msgid ""
-"If its input is badly formatted, B<lexgrog> will print \\(lqparse failed"
-"\\(rq; this may be useful for external programs that need to check man pages "
-"for correctness.  If one of B<lexgrog>'s input files is \\(lq-\\(rq, it will "
-"read from standard input; if any input file is compressed, a decompressed "
-"version will be read automatically."
+"If its input is badly formatted, B<lexgrog> will print \\(lqparse "
+"failed\\(rq; this may be useful for external programs that need to check man "
+"pages for correctness.  If one of B<lexgrog>'s input files is \\(lq-\\(rq, "
+"it will read from standard input; if any input file is compressed, a "
+"decompressed version will be read automatically."
 msgstr ""
 "如果它的输入错误，B<lexgrog> 会打印 \\(lqparse 失败\\(rq；这有助于外部程序检"
 "查 man 页面是否正确。如果 B<lexgrog> 的某个输入文件是 \\(lq-\\(rq，它会从标准"
 "输入读取；如果输入文件是压缩文件，将自动读取解压的版本。"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:57
+#: ../../man/man1/lexgrog.man1:92
 msgid ""
 "Parse input as man page source files.  This is the default if neither B<--"
 "man> nor B<--cat> is given."
@@ -516,7 +529,7 @@ msgstr ""
 "值。"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:64
+#: ../../man/man1/lexgrog.man1:99
 msgid ""
 "Parse input as preformatted man pages (\\(lqcat pages\\(rq).  B<--man> and "
 "B<--cat> may not be given simultaneously."
@@ -525,7 +538,7 @@ msgstr ""
 "man> 和 B<--cat>。"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:75
+#: ../../man/man1/lexgrog.man1:110
 msgid ""
 "Display the name and description from the man page's header, as used by "
 "B<apropos> and B<whatis>.  This is the default if neither B<--whatis> nor "
@@ -535,7 +548,7 @@ msgstr ""
 "是未指定 B<--whatis> 或 B<--filters> 时的默认值。"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:82
+#: ../../man/man1/lexgrog.man1:117
 msgid ""
 "Display the list of filters needed to preprocess the man page before "
 "formatting with B<nroff> or B<troff>."
@@ -543,34 +556,34 @@ msgstr ""
 "显示在用 B<nroff> 或 B<troff> 格式化之前对 man 页面预处理所需的过滤器列表。"
 
 #. type: TP
-#: ../../man/man1/lexgrog.man1:82
+#: ../../man/man1/lexgrog.man1:117
 #, no-wrap
 msgid "B<-E> I<encoding>, B<--encoding> I<encoding>"
 msgstr "B<-E> I<编码>, B<--encoding> I<编码>"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:86
+#: ../../man/man1/lexgrog.man1:121
 msgid "Override the guessed character set for the page to I<encoding>."
 msgstr "将页面编码设置为 I<编码>，而非自动推测的编码。"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:102
+#: ../../man/man1/lexgrog.man1:137
 msgid "Usage error."
 msgstr "用法错误。"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:106
+#: ../../man/man1/lexgrog.man1:141
 msgid "B<lexgrog> failed to parse one or more of its input files."
 msgstr "B<lexgrog> 无法解析一个或多个输入文件。"
 
 #. type: SH
-#: ../../man/man1/lexgrog.man1:106 ../../man/man1/man.man1:187
+#: ../../man/man1/lexgrog.man1:141 ../../man/man1/man.man1:187
 #, no-wrap
 msgid "EXAMPLES"
 msgstr "示例"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:116
+#: ../../man/man1/lexgrog.man1:151
 #, no-wrap
 msgid ""
 "  $ lexgrog man.1\n"
@@ -592,13 +605,13 @@ msgstr ""
 "  broken.1: parse failed\n"
 
 #. type: SH
-#: ../../man/man1/lexgrog.man1:117
+#: ../../man/man1/lexgrog.man1:152
 #, no-wrap
 msgid "WHATIS PARSING"
 msgstr "WHATIS 解析"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:128
+#: ../../man/man1/lexgrog.man1:163
 msgid ""
 "B<%mandb%> (which uses the same code as B<lexgrog>)  parses the B<NAME> "
 "section at the top of each manual page looking for names and descriptions of "
@@ -610,34 +623,34 @@ msgstr ""
 "其中所说明对象的名称和描述。"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:134
+#: ../../man/man1/lexgrog.man1:169
 msgid ""
 "When using the traditional I<man> macro set, a correct B<NAME> section looks "
 "something like this:"
 msgstr "在使用传统的 I<man> 宏集时，正确的 B<NAME> 节看起来是这样："
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:140
+#: ../../man/man1/lexgrog.man1:174
 #, no-wrap
 msgid ""
-"CW<\\&.SH NAME\n"
-"foo \\e- program to do something>\n"
+"\\&.SH NAME\n"
+"foo \\e- program to do something\n"
 msgstr ""
-"CW<\\&.SH NAME\n"
-"foo \\e- program to do something>\n"
+"\\&.SH NAME\n"
+"foo \\e- program to do something\n"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:148
+#: ../../man/man1/lexgrog.man1:181
 msgid ""
-"Some manual pagers require the \\(oq\\e-\\(cq to be exactly as shown; B<"
-"%mandb%> is more tolerant, but for compatibility with other systems it is "
+"Some manual pagers require the \\(oq\\e-\\(cq to be exactly as shown; "
+"B<%mandb%> is more tolerant, but for compatibility with other systems it is "
 "nevertheless a good idea to retain the backslash."
 msgstr ""
 "一些手册分页程序要求 \\(oq\\e-\\(cq 与上面显示的完全相同；不过 B<%mandb%> 更"
 "宽松。尽管如此，保留反斜杠可以更好地兼容其他系统。"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:158
+#: ../../man/man1/lexgrog.man1:191
 msgid ""
 "On the left-hand side, there may be several names, separated by commas.  "
 "Names containing whitespace will be ignored to avoid pathological behaviour "
@@ -651,54 +664,54 @@ msgstr ""
 "述了几种不同的功能，将使用以下形式："
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:166
+#: ../../man/man1/lexgrog.man1:198
 #, no-wrap
 msgid ""
-"CW<\\&.SH NAME\n"
+"\\&.SH NAME\n"
 "foo, bar \\e- programs to do something\n"
 "\\&.br\n"
-"baz \\e- program to do nothing>\n"
+"baz \\e- program to do nothing\n"
 msgstr ""
-"CW<\\&.SH NAME\n"
+"\\&.SH NAME\n"
 "foo, bar \\e- programs to do something\n"
 "\\&.br\n"
-"baz \\e- program to do nothing>\n"
+"baz \\e- program to do nothing\n"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:172
+#: ../../man/man1/lexgrog.man1:203
 msgid ""
-"(A macro which starts a new paragraph, like CW<.PP>, may be used instead of "
-"the break macro CW<.br>.)"
-msgstr "(可以用一个开始新段落的宏，如 CW<.PP> 来代替换行的宏 CW<.br>。)"
+"(A macro which starts a new paragraph, like B<.PP>, may be used instead of "
+"the break macro B<.br>.)"
+msgstr "(可以用一个开始新段落的宏，如 B<.PP> 来代替换行的宏 B<.br>。)"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:178
+#: ../../man/man1/lexgrog.man1:209
 msgid ""
 "When using the BSD-derived I<mdoc> macro set, a correct B<NAME> section "
 "looks something like this:"
 msgstr "若使用 BSD 衍生的 I<mdoc> 宏集，正确的 B<NAME> 节看起来是这样："
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:185
+#: ../../man/man1/lexgrog.man1:215
 #, no-wrap
 msgid ""
-"CW<\\&.Sh NAME\n"
+"\\&.Sh NAME\n"
 "\\&.Nm foo\n"
-"\\&.Nd program to do something>\n"
+"\\&.Nd program to do something\n"
 msgstr ""
-"CW<\\&.Sh NAME\n"
+"\\&.Sh NAME\n"
 "\\&.Nm foo\n"
-"\\&.Nd program to do something>\n"
+"\\&.Nd program to do something\n"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:197
+#: ../../man/man1/lexgrog.man1:226
 msgid ""
 "There are several common reasons why whatis parsing fails.  Sometimes "
-"authors of manual pages replace \\(oq.SH NAME\\(cq with \\(oq.SH MYPROGRAM"
-"\\(cq, and then B<%mandb%> cannot find the section from which to extract the "
-"information it needs.  Sometimes authors include a NAME section, but place "
-"free-form text there rather than \\(oqname \\e- description\\(cq.  However, "
-"any syntax resembling the above should be accepted."
+"authors of manual pages replace \\(oq.SH NAME\\(cq with \\(oq.SH "
+"MYPROGRAM\\(cq, and then B<%mandb%> cannot find the section from which to "
+"extract the information it needs.  Sometimes authors include a NAME section, "
+"but place free-form text there rather than \\(oqname \\e- description\\(cq.  "
+"However, any syntax resembling the above should be accepted."
 msgstr ""
 "whatis 解析失败可能有几种原因。有时文档作者将 \\(oq.SH NAME\\(cq 替换成了 "
 "\\(oq.SH MYPROGRAM\\(cq，导致 B<%mandb%> 找不到用来提取信息的这一节。有时作者"
@@ -706,13 +719,13 @@ msgstr ""
 "何遵循上面列出语法的用法都是可以授受的。"
 
 #. type: SH
-#: ../../man/man1/lexgrog.man1:202
+#: ../../man/man1/lexgrog.man1:231
 #, no-wrap
 msgid "NOTES"
 msgstr "注"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:207
+#: ../../man/man1/lexgrog.man1:236
 msgid ""
 "B<lexgrog> attempts to parse files containing .so requests, but will only be "
 "able to do so correctly if the files are properly installed in a manual page "
@@ -722,12 +735,12 @@ msgstr ""
 "径中时才能正确处理。"
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:211
+#: ../../man/man1/lexgrog.man1:240
 msgid "The code used by B<lexgrog> to scan man pages was written by:"
 msgstr "B<lexgrog> 所使用的扫描 man 页面的代码的作者："
 
 #. type: Plain text
-#: ../../man/man1/lexgrog.man1:220
+#: ../../man/man1/lexgrog.man1:249
 msgid ""
 "Colin Watson wrote the current incarnation of the command-line front-end, as "
 "well as this man page."
@@ -785,13 +798,13 @@ msgstr "B<%man%> B<-w>\\||\\|B<-W> [\\|I<man 选项>\\|] I<page> \\&.\\|.\\|.\\&
 #. type: Plain text
 #: ../../man/man1/man.man1:88
 msgid ""
-"B<%man%> is the system's manual pager.  Each I<page> argument given to B<%man"
-"%> is normally the name of a program, utility or function.  The I<manual "
-"page> associated with each of these arguments is then found and displayed.  "
-"A I<section>, if provided, will direct B<%man%> to look only in that "
-"I<section> of the manual.  The default action is to search in all of the "
-"available I<sections> following a pre-defined order (see B<DEFAULTS>), and "
-"to show only the first I<page> found, even if I<page> exists in several "
+"B<%man%> is the system's manual pager.  Each I<page> argument given to "
+"B<%man%> is normally the name of a program, utility or function.  The "
+"I<manual page> associated with each of these arguments is then found and "
+"displayed.  A I<section>, if provided, will direct B<%man%> to look only in "
+"that I<section> of the manual.  The default action is to search in all of "
+"the available I<sections> following a pre-defined order (see B<DEFAULTS>), "
+"and to show only the first I<page> found, even if I<page> exists in several "
 "I<sections>."
 msgstr ""
 "B<%man%> 是系统的手册分页程序。指定给 B<%man%> 的 I<页> 选项通常是程序、工具"
@@ -848,8 +861,10 @@ msgstr "游戏"
 #, no-wrap
 msgid ""
 "Miscellaneous (including macro packages and conventions),\n"
-"e.g.\\& B<man>(7), B<groff>(7)"
-msgstr "杂项(包括宏包和规范，如 B<man>(7)，B<groff>(7))"
+"e.g.\\& B<man>(7), B<groff>(7), B<man-pages>(7)"
+msgstr ""
+"杂项（包括宏包和规范），\n"
+"如 B<man>(7)，B<groff>(7), B<man-pages>(7)"
 
 #. type: tbl table
 #: ../../man/man1/man.man1:120
@@ -873,14 +888,14 @@ msgstr "一个手册 I<页面> 包含若干个小节。"
 msgid ""
 "Conventional section names include B<NAME>, B<SYNOPSIS>, B<CONFIGURATION>, "
 "B<DESCRIPTION>, B<OPTIONS>, B<EXIT\\ STATUS>, B<RETURN\\ VALUE>, B<ERRORS>, "
-"B<ENVIRONMENT>, B<FILES>, B<VERSIONS>, B<CONFORMING\\ TO>, B<NOTES>, "
-"B<BUGS>, B<EXAMPLE>, B<AUTHORS>, and B<SEE\\ ALSO>."
+"B<ENVIRONMENT>, B<FILES>, B<VERSIONS>, B<STANDARDS>, B<NOTES>, B<BUGS>, "
+"B<EXAMPLE>, B<AUTHORS>, and B<SEE\\ ALSO>."
 msgstr ""
 "小节名称通常包括 B<NAME>, B<概述(SYNOPSIS)>, B<配置(CONFIGURATION)>, B<描述"
-"(DESCRIPTION)>, B<选项(OPTIONS)>, B<退出状态(EXIT\\ STATUS)>, B<返回值(RETURN"
-"\\ VALUE)>, B<错误(ERRORS)>, B<环境(ENVIRONMENT)>, B<文件(FILES)>, B<版本"
-"(VERSIONS)>, B<符合标准(CONFORMING\\ TO)>, B<注(NOTES)>, B<缺陷(BUGS)>, B<示"
-"例(EXAMPLE)>, B<作者(AUTHORS)>, 和 B<亦见(SEE\\ ALSO)>."
+"(DESCRIPTION)>, B<选项(OPTIONS)>, B<退出状态(EXIT\\ STATUS)>, B<返回值"
+"(RETURN\\ VALUE)>, B<错误(ERRORS)>, B<环境(ENVIRONMENT)>, B<文件(FILES)>, B<"
+"版本(VERSIONS)>, B<标准(STANDARDS)>, B<注(NOTES)>, B<缺陷(BUGS)>, B<示例"
+"(EXAMPLE)>, B<作者(AUTHORS)>, 和 B<亦见(SEE\\ ALSO)>."
 
 #. type: Plain text
 #: ../../man/man1/man.man1:153
@@ -935,7 +950,7 @@ msgstr "B<-a\\|>|\\|B<-b>"
 #: ../../man/man1/man.man1:168
 #, no-wrap
 msgid "options delimited by | cannot be used together."
-msgstr "以“|”分隔的选项可以一起使用。"
+msgstr "以“|”分隔的选项不可以一起使用。"
 
 #. type: tbl table
 #: ../../man/man1/man.man1:169
@@ -1050,22 +1065,15 @@ msgstr "B<%man% -t >I<bash >|I< lpr -Pps>"
 
 #. type: Plain text
 #: ../../man/man1/man.man1:237
-#, fuzzy
-#| msgid ""
-#| "Format the manual page referenced by `I<alias>', usually a shell manual "
-#| "page, into the default B<troff> or B<groff> format and pipe it to the "
-#| "printer named I<ps>.  The default output for B<groff> is usually "
-#| "PostScript.  B<%man% --help> should advise as to which processor is bound "
-#| "to the B<-t> option."
 msgid ""
 "Format the manual page for I<bash> into the default B<troff> or B<groff> "
 "format and pipe it to the printer named I<ps>.  The default output for "
 "B<groff> is usually PostScript.  B<%man% --help> should advise as to which "
 "processor is bound to the B<-t> option."
 msgstr ""
-"将别名“I<alias>”所引用的手册页(常为 shell 手册页)格式化为默认的 B<troff> 或 "
-"B<groff> 格式并通过管道传送给名为 I<ps> 的打印机。B<groff> 的默认输出通常为 "
-"PostScript。B<%man% --help> 应该会提示哪个处理器程序与 B<-t> 选项绑定。"
+"将 I<bash> 的手册页格式化为默认的 B<troff> 或 B<groff> 格式，并将其通过管道送"
+"至名为 I<ps> 的打印机。B<groff> 的默认输出通常是 PostScript。B<%man% --help> "
+"应该会提示哪个处理器程序与 B<-t> 选项绑定。"
 
 #. type: TP
 #: ../../man/man1/man.man1:237
@@ -1075,13 +1083,6 @@ msgstr "B<%man% -l -T>I<dvi ./foo.1x.gz>B< E<gt> >I<./foo.1x.dvi>"
 
 #. type: Plain text
 #: ../../man/man1/man.man1:253
-#, fuzzy
-#| msgid ""
-#| "This command will decompress and format the nroff source manual page I<./"
-#| "foo.1x.gz> into a B<device independent (dvi)> file.  The redirection is "
-#| "necessary as the B<-T> flag causes output to be directed to B<stdout> "
-#| "with no pager.  The output could be viewed with a program such as B<xdvi> "
-#| "or further processed into PostScript using a program such as B<dvips.>"
 msgid ""
 "This command will decompress and format the nroff source manual page I<./"
 "foo.1x.gz> into a B<device independent (dvi)> file.  The redirection is "
@@ -1104,8 +1105,8 @@ msgstr "B<%man%\\ -k>I<\\ printf>"
 #: ../../man/man1/man.man1:261
 msgid ""
 "Search the short descriptions and manual page names for the keyword "
-"I<printf> as regular expression.  Print out any matches.  Equivalent to B<"
-"%apropos%>I<\\ printf>B<.>"
+"I<printf> as regular expression.  Print out any matches.  Equivalent to "
+"B<%apropos%>I<\\ printf>B<.>"
 msgstr ""
 "将关键词 I<printf> 作为正则表达式来搜索对应的手册页概述和手册页名称，并打印所"
 "有匹配结果。等效于 B<%apropos%>I<\\ printf>B<.>"
@@ -1143,18 +1144,6 @@ msgstr ""
 
 #. type: Plain text
 #: ../../man/man1/man.man1:296
-#, fuzzy
-#| msgid ""
-#| "If set, various environment variables are interrogated to determine the "
-#| "operation of B<%man%>.  It is possible to set the `catch all' variable "
-#| "$B<MANOPT> to any string in command line format with the exception that "
-#| "any spaces used as part of an option's argument must be escaped (preceded "
-#| "by a backslash).  B<%man%> will parse $B<MANOPT> prior to parsing its own "
-#| "command line.  Those options requiring an argument will be overridden by "
-#| "the same options found on the command line.  To reset all of the options "
-#| "set in $B<MANOPT>, B<-D> can be specified as the initial command line "
-#| "option.  This will allow %man% to `forget' about the options specified in "
-#| "$B<MANOPT> although they must still have been valid."
 msgid ""
 "If set, various environment variables are interrogated to determine the "
 "operation of B<%man%>.  It is possible to set the \"catch-all\" variable "
@@ -1168,11 +1157,11 @@ msgid ""
 "although they must still have been valid."
 msgstr ""
 "如果被设置，程序将检查各种环境变量来确定 B<%man%> 如何操作。可以对命令行中的"
-"任何字符串设置“catch all”变量 $B<MANOPT>，除非是选项参数中需要转义的空格。B<"
-"%man%> 将会先解析 $B<MANOPT>，再解析它自己的命令行。这些需要参数的选项将会被"
-"命令行中其他的相同选项所覆盖。若要重置 $B<MANOPT> 中的所有选项，可以在命令行"
-"开头指定 B<-D> 选项。这会让 %man% “忘掉”$B<MANOPT> 中指定的选项，即便它们可能"
-"仍然是有效的。"
+"任何字符串设置“catch all”变量 $B<MANOPT>，除非是选项参数中需要转义的空格。"
+"B<%man%> 将会先解析 $B<MANOPT>，再解析它自己的命令行。这些需要参数的选项将会"
+"被命令行中其他的相同选项所覆盖。若要重置 $B<MANOPT> 中的所有选项，可以在命令"
+"行开头指定 B<-D> 选项。这会让 %man% “忘掉”$B<MANOPT> 中给定的选项，但即便如此"
+"曾经给定的选项必须仍然合法。"
 
 #. type: Plain text
 #: ../../man/man1/man.man1:307
@@ -1182,17 +1171,12 @@ msgid ""
 "preformatted I<cat pages> to improve performance.  See B<manpath>(5)  for "
 "details of where these files are stored."
 msgstr ""
+"手册页通常以 B<nroff>(1) 格式存放在诸如 I</usr/share/man> 路径下的目录中。在"
+"某些安装场景中，也可能存在用于提高性能的预格式化 I<cat pages>。请参见 "
+"B<manpath>(5) 以了解这些文件存放位置的具体信息。"
 
 #. type: Plain text
 #: ../../man/man1/man.man1:318
-#, fuzzy
-#| msgid ""
-#| "International support is available with this package.  Native language "
-#| "manual pages are accessible (if available on your system)  via use of "
-#| "I<locale> functions.  To activate such support, it is necessary to set "
-#| "either $B<LC_MESSAGES>, $B<LANG> or another system dependent environment "
-#| "variable to your language locale, usually specified in the B<POSIX "
-#| "1003.1> based format:"
 msgid ""
 "This package supports manual pages in multiple languages, controlled by your "
 "I<locale>.  If your system did not set this up for you automatically, then "
@@ -1200,10 +1184,9 @@ msgid ""
 "environment variable to indicate your preferred locale, usually specified in "
 "the B<POSIX> format:"
 msgstr ""
-"此包提供了国际化支持。本地语言的手册页(如果系统上有)可以通过使用 I<locale> 功"
-"能来访问。要启用本地语言支持，需要将 $B<LC_MESSAGES> 或 $B<LANG> 或其他系统相"
-"关的环境变量设置为您的语言区域代码；该代码通常以基于 B<POSIX 1003.1> 的格式指"
-"定："
+"本软件包支持多语言的手册页，其行为由您的 I<locale>（语区）所控制。如果您的系"
+"统未帮您自动设置，那么您可能需要手动设置 $B<LC_MESSAGES>、$B<LANG> 或其它系统"
+"相关的环境变量以指示您偏好的区域语言设置，通常以 B<POSIX> 格式给出："
 
 #
 #. type: Plain text
@@ -1226,22 +1209,13 @@ msgstr ""
 
 #. type: Plain text
 #: ../../man/man1/man.man1:332
-#, fuzzy
-#| msgid ""
-#| "Support for international message catalogues is also featured in this "
-#| "package and can be activated in the same way, again if available.  If you "
-#| "find that the manual pages and message catalogues supplied with this "
-#| "package are not available in your native language and you would like to "
-#| "supply them, please contact the maintainer who will be coordinating such "
-#| "activity."
 msgid ""
 "If you find that the translations supplied with this package are not "
 "available in your native language and you would like to supply them, please "
 "contact the maintainer who will be coordinating such activity."
 msgstr ""
-"国际化的消息分类功能也包含在此包中，可以用同样的方式启用(如果可用的话)。如果"
-"您发现此包提供的手册页和消息分类对您的本地语言不可用并且想提供支持，请联系协"
-"调这类活动的(手册本地化)维护者。"
+"如果您发现此包提供的翻译对您的本地语言不可用并且您想提供支持的话，请联系协调"
+"这类活动的（手册本地化）维护者。"
 
 #. type: Plain text
 #: ../../man/man1/man.man1:338
@@ -1273,9 +1247,11 @@ msgstr "默认值"
 #: ../../man/man1/man.man1:350
 msgid ""
 "The order of sections to search may be overridden by the environment "
-"variable $B<MANSECT> or by the B<SECTION> directive in I<%manpath_config_file"
-"%>.  By default it is as follows:"
+"variable $B<MANSECT> or by the B<SECTION> directive in "
+"I<%manpath_config_file%>.  By default it is as follows:"
 msgstr ""
+"要搜索的章节顺序可以使用 $B<MANSECT> 或 I<%manpath_config_file%> 配置文件的 "
+"B<SECTION> 指令进行覆盖。其默认行为如下所示："
 
 #. type: Plain text
 #: ../../man/man1/man.man1:361
@@ -1337,11 +1313,6 @@ msgstr ""
 
 #. type: Plain text
 #: ../../man/man1/man.man1:412
-#, fuzzy
-#| msgid ""
-#| "Non argument options that are duplicated either on the command line, in "
-#| "$B<MANOPT>, or both, are not harmful.  For options that require an "
-#| "argument, each duplication will override the previous argument value."
 msgid ""
 "Non-argument options that are duplicated either on the command line, in "
 "$B<MANOPT>, or both, are not harmful.  For options that require an argument, "
@@ -1359,10 +1330,10 @@ msgstr "常规选项"
 #. type: Plain text
 #: ../../man/man1/man.man1:430
 msgid ""
-"This option is normally issued as the very first option and resets B<%man"
-"%'s> behaviour to its default.  Its use is to reset those options that may "
-"have been set in $B<MANOPT>.  Any options that follow B<-D> will have their "
-"usual effect."
+"This option is normally issued as the very first option and resets "
+"B<%man%'s> behaviour to its default.  Its use is to reset those options that "
+"may have been set in $B<MANOPT>.  Any options that follow B<-D> will have "
+"their usual effect."
 msgstr ""
 "此选项通常作为第一个选项，它将 B<%man%> 的行为恢复为默认值。它的作用是重置任"
 "何在 $B<MANOPT> 中设置的选项。B<-D> 之后的任何选项保留其原有效果。"
@@ -1374,43 +1345,49 @@ msgid "B<--warnings>[=I<warnings\\/>]"
 msgstr "B<--warnings>[=I<警告\\/>]"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:442
+#: ../../man/man1/man.man1:448
 msgid ""
 "Enable warnings from I<groff>.  This may be used to perform sanity checks on "
 "the source text of manual pages.  I<warnings> is a comma-separated list of "
-"warning names; if it is not supplied, the default is \"mac\".  See the "
-"\\(lqWarnings\\(rq node in B<info groff> for a list of available warning "
-"names."
+"warning names; if it is not supplied, the default is \"mac\".  To disable a "
+"I<groff> warning, prefix it with \"!\": for example, B<--warnings=mac,!"
+"break> enables warnings in the \"mac\" category and disables warnings in the "
+"\"break\" category.  See the \\(lqWarnings\\(rq node in B<info groff> for a "
+"list of available warning names."
 msgstr ""
 "启用来自 I<groff> 的警告。这可以用于检查手册页源文件完整性。I<警告> 是以英文"
-"逗号分隔的警告名列表；如果不提供，默认为“mac”。请查阅 B<info groff> 中的 "
-"\\(lq警告\\(rq 节点了解可用的警告名列表。"
+"逗号分隔的警告名列表；如果不提供，默认为“mac”。如需禁用某个 I<groff> 警告，请"
+"在其名称前添加“!”符号：例如，B<--warnings=mac,!break> 启用“mac”分类里的警告并"
+"禁用“break”分类里的警告。请查阅 B<info groff> 中的 \\(lq警告\\(rq 节点了解可"
+"用的警告名列表。"
 
 #. type: SS
-#: ../../man/man1/man.man1:442
+#: ../../man/man1/man.man1:448
 #, no-wrap
 msgid "Main modes of operation"
 msgstr "主要操作方式"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:451
+#: ../../man/man1/man.man1:457
 msgid ""
-"Equivalent to B<%whatis%>.  Display a short description from the manual "
-"page, if available.  See B<%whatis%>(1)  for details."
+"Approximately equivalent to B<%whatis%>.  Display a short description from "
+"the manual page, if available.  See B<%whatis%>(1)  for details."
 msgstr ""
-"等同于 B<%whatis%>。显示来自手册页的加简短说明(若有)。详见 B<%whatis%>(1)。"
+"大约等同于 B<%whatis%>。显示来自手册页的加简短说明(若有)。详见 "
+"B<%whatis%>(1)。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:460
+#: ../../man/man1/man.man1:466
 msgid ""
-"Equivalent to B<%apropos%>.  Search the short manual page descriptions for "
-"keywords and display any matches.  See B<%apropos%>(1)  for details."
+"Approximately equivalent to B<%apropos%>.  Search the short manual page "
+"descriptions for keywords and display any matches.  See B<%apropos%>(1)  for "
+"details."
 msgstr ""
-"等同于 B<%apropos%>。搜索关键词对应的手册概述并显示所有匹配结果。详见 B<"
-"%apropos%>。"
+"大约等同于 B<%apropos%>。搜索关键词对应的手册概述并显示所有匹配结果。详见 "
+"B<%apropos%>。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:470
+#: ../../man/man1/man.man1:476
 msgid ""
 "Search for text in all manual pages.  This is a brute-force search, and is "
 "likely to take some time; if you can, you should specify a section to reduce "
@@ -1423,100 +1400,93 @@ msgstr ""
 "达式(若使用了 B<--regex> 选项)。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:476
+#: ../../man/man1/man.man1:483
 msgid ""
 "Note that this searches the I<sources> of the manual pages, not the rendered "
 "text, and so may include false positives due to things like comments in "
-"source files.  Searching the rendered text would be much slower."
+"source files, or false negatives due to things like hyphens being written as "
+"\"\\e-\" in source files.  Searching the rendered text would be much slower."
 msgstr ""
 "注意，这种做法应用于搜索手册页的 I<资源>，而非渲染后的文本，所以可能会包含一"
-"些不相干的内容（如源文件中的注释）。若要搜索渲染后的文本，速度会比较慢。"
+"些假结果（如源文件中的注释），或遗漏某些结果（如源文件中写为“\\e-”的连字"
+"符）。若要搜索渲染后的文本，速度会比较慢。"
 
 #.  Compressed nroff source files with a supported compression
 #.  extension will be decompressed by man prior to being displaying via the
 #.  usual filters.
 #. type: Plain text
-#: ../../man/man1/man.man1:492
-#, fuzzy
-#| msgid ""
-#| "Activate `local' mode.  Format and display local manual files instead of "
-#| "searching through the system's manual collection.  Each manual page "
-#| "argument will be interpreted as an nroff source file in the correct "
-#| "format.  No cat file is produced.  If '-' is listed as one of the "
-#| "arguments, input will be taken from stdin.  When this option is not used, "
-#| "and man fails to find the page required, before displaying the error "
-#| "message, it attempts to act as if this option was supplied, using the "
-#| "name as a filename and looking for an exact match."
+#: ../../man/man1/man.man1:495
 msgid ""
 "Activate \"local\" mode.  Format and display local manual files instead of "
 "searching through the system's manual collection.  Each manual page argument "
 "will be interpreted as an nroff source file in the correct format.  No cat "
 "file is produced.  If '-' is listed as one of the arguments, input will be "
-"taken from stdin.  When this option is not used, and man fails to find the "
-"page required, before displaying the error message, it attempts to act as if "
-"this option was supplied, using the name as a filename and looking for an "
-"exact match."
+"taken from stdin."
 msgstr ""
 "启用“本地”方式。格式化并显示本地手册文件，而非搜索系统手册集。每个手册页参数"
 "将解释为格式正确的 nroff 源文件。不产生 cat 文件。如果参数中有“-”，将从标准输"
-"入读取。如果未指定它，而 man 未找到要求的页面，在显示错误消息前 man 会假设指"
-"定了此选项进行尝试，使用名称作为文件名并查找精确匹配。"
+"入读取。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:500
-#, fuzzy
-#| msgid ""
-#| "Don't actually display the manual pages, but do print the location(s) of "
-#| "the cat files that would be displayed.  If -w and -W are both specified, "
-#| "print both separated by a space."
+#: ../../man/man1/man.man1:501
+msgid ""
+"If this option is not used, then B<%man%> will also fall back to "
+"interpreting manual page arguments as local file names if the argument "
+"contains a \"/\" character, since that is a good indication that the "
+"argument refers to a path on the file system."
+msgstr ""
+"如果未指定该选项，则 B<%man%> 也会在参数中包含“/”字符的情况下回退到将手册页参"
+"数解释为本地文件名的行为。这是因为该特征说明参数对应了文件系统中的一个文件路"
+"径。"
+
+#. type: Plain text
+#: ../../man/man1/man.man1:509
 msgid ""
 "Don't actually display the manual page, but do print the location of the "
 "source nroff file that would be formatted.  If the B<-a> option is also "
 "used, then print the locations of all source files that match the search "
 "criteria."
 msgstr ""
-"不实际显示手册页，但打印将显示的 cat 文件的位置。如果同时指定了 -w 和 -W，则"
-"同时打印二者，以空格隔开。"
+"不实际显示手册页，但打印将被格式化的源 nroff 文件的位置。如果同时指定了 B<-"
+"a> 选项，则打印所有匹配搜索条件的源文件的位置。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:508
-#, fuzzy
-#| msgid ""
-#| "Don't actually display the manual pages, but do print the location(s) of "
-#| "the cat files that would be displayed.  If -w and -W are both specified, "
-#| "print both separated by a space."
+#: ../../man/man1/man.man1:517
 msgid ""
 "Don't actually display the manual page, but do print the location of the "
 "preformatted cat file that would be displayed.  If the B<-a> option is also "
 "used, then print the locations of all preformatted cat files that match the "
 "search criteria."
 msgstr ""
-"不实际显示手册页，但打印将显示的 cat 文件的位置。如果同时指定了 -w 和 -W，则"
-"同时打印二者，以空格隔开。"
+"不实际显示手册页，但打印将显示的预格式化 cat 文件的位置。如果同时使用了 B<-"
+"a> 选项，则打印所有匹配搜索条件的预格式化 cat 文件的位置。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:522
+#: ../../man/man1/man.man1:531
 msgid ""
 "If B<-w> and B<-W> are both used, then print both source file and cat file "
 "separated by a space.  If all of B<-w>, B<-W>, and B<-a> are used, then do "
 "this for each possible match."
 msgstr ""
+"如果同时使用了 B<-w> 和 B<-W> 选项，则同时打印源文件和 cat 文件，并使用空格分"
+"隔。如果使用了全部 B<-w>、B<-W> 和 B<-a> 三个选项，则为每个可能的匹配进行相同"
+"的操作。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:527
+#: ../../man/man1/man.man1:536
 msgid ""
-"This option is not for general use and should only be used by the B<%catman"
-"%> program."
+"This option is not for general use and should only be used by the "
+"B<%catman%> program."
 msgstr "此选项一般不使用，并且只应由 B<%catman%> 程序使用。"
 
 #. type: TP
-#: ../../man/man1/man.man1:527
+#: ../../man/man1/man.man1:536
 #, no-wrap
 msgid "B<-R\\ >I<encoding>,\\ B<--recode>=I<encoding>"
 msgstr "B<-R\\ >I<编码>,\\ B<--recode>=I<编码>"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:539
+#: ../../man/man1/man.man1:548
 msgid ""
 "Instead of formatting the manual page in the usual way, output its source "
 "converted to the specified I<encoding>.  If you already know the encoding of "
@@ -1531,7 +1501,7 @@ msgstr ""
 "似的目录结构中。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:544
+#: ../../man/man1/man.man1:553
 msgid ""
 "Consider using B<%man_recode%>(1)  instead for converting multiple manual "
 "pages, since it has an interface designed for bulk conversion and so can be "
@@ -1541,23 +1511,23 @@ msgstr ""
 "口，能够大大加快处理速度。"
 
 #. type: SS
-#: ../../man/man1/man.man1:544
+#: ../../man/man1/man.man1:553
 #, no-wrap
 msgid "Finding manual pages"
 msgstr "查找手册页"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:571
+#: ../../man/man1/man.man1:580
 msgid ""
-"If this system has access to other operating system's manual pages, they can "
+"If this system has access to other operating systems' manual pages, they can "
 "be accessed using this option.  To search for a manual page from NewOS's "
 "manual page collection, use the option B<-m> B<NewOS>."
 msgstr ""
 "如果此系统可以访问其他操作系统的手册页，可以使用此选项访问它们。如要在 NewOS "
-"的手册页集中搜索某个手册页，使用 B<-m> B<NewOS> 选项。"
+"的手册页集合中搜索某个手册页，使用 B<-m> B<NewOS> 选项。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:582
+#: ../../man/man1/man.man1:591
 msgid ""
 "The I<system> specified can be a combination of comma delimited operating "
 "system names.  To include a search of the native operating system's manual "
@@ -1569,7 +1539,7 @@ msgstr ""
 "变量。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:595
+#: ../../man/man1/man.man1:604
 msgid ""
 "Specify an alternate manpath to use.  By default, B<%man%> uses B<%manpath%> "
 "derived code to determine the path to search.  This option overrides the "
@@ -1579,7 +1549,7 @@ msgstr ""
 "码来确定搜索路径。此选项会覆盖 $B<SYSTEM> 环境变量。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:602
+#: ../../man/man1/man.man1:611
 msgid ""
 "A path specified as a manpath must be the root of a manual page hierarchy "
 "structured into sections as described in the man-db manual (under \"The "
@@ -1591,50 +1561,31 @@ msgstr ""
 "项。"
 
 #. type: TP
-#: ../../man/man1/man.man1:602
+#: ../../man/man1/man.man1:611
 #, no-wrap
 msgid "B<-S> I<list\\/>, B<-s> I<list\\/>, B<--sections=>I<list\\/>"
 msgstr "B<-S> I<列表\\/>, B<-s> I<列表\\/>, B<--sections=>I<列表\\/>"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:616
-#, fuzzy
-#| msgid ""
-#| "List is a colon- or comma-separated list of `order specific' manual "
-#| "sections to search.  This option overrides the $B<MANSECT> environment "
-#| "variable.  (The B<-s> spelling is for compatibility with System V.)"
+#: ../../man/man1/man.man1:625
 msgid ""
 "The given I<list> is a colon- or comma-separated list of sections, used to "
 "determine which manual sections to search and in what order.  This option "
 "overrides the $B<MANSECT> environment variable.  (The B<-s> spelling is for "
 "compatibility with System V.)"
 msgstr ""
-"要搜索的“指定顺序”的手册章节列表，以英文冒号或逗号分隔。此选项会覆盖 "
-"$B<MANSECT> 环境变量。(使用 B<-s> 表示是为了与 System V 兼容。)"
+"给定的 I<list> 是一个用英文冒号或逗号分隔的手册章节列表，用于确定要搜索的手册"
+"章节的搜索顺序。此选项会覆盖 $B<MANSECT> 环境变量。(使用 B<-s> 表示是为了与 "
+"System V 兼容。)"
 
 #. type: TP
-#: ../../man/man1/man.man1:616
+#: ../../man/man1/man.man1:625
 #, no-wrap
 msgid "B<-e\\ >I<sub-extension>,\\ B<--extension=>I<sub-extension>"
 msgstr "B<-e\\ >I<sub-extension>,\\ B<--extension=>I<sub-extension>"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:650
-#, fuzzy
-#| msgid ""
-#| "Some systems incorporate large packages of manual pages, such as those "
-#| "that accompany the B<Tcl> package, into the main manual page hierarchy.  "
-#| "To get around the problem of having two manual pages with the same name "
-#| "such as B<exit>(3), the B<Tcl> pages were usually all assigned to section "
-#| "B<l>.  As this is unfortunate, it is now possible to put the pages in the "
-#| "correct section, and to assign a specific `extension' to them, in this "
-#| "case, B<exit>(3tcl).  Under normal operation, B<%man%> will display "
-#| "B<exit>(3)  in preference to B<exit>(3tcl).  To negotiate this situation "
-#| "and to avoid having to know which section the page you require resides "
-#| "in, it is now possible to give B<%man%> a I<sub-extension> string "
-#| "indicating which package the page must belong to.  Using the above "
-#| "example, supplying the option B<-e\\ tcl> to B<%man%> will restrict the "
-#| "search to pages having an extension of B<*tcl>."
+#: ../../man/man1/man.man1:659
 msgid ""
 "Some systems incorporate large packages of manual pages, such as those that "
 "accompany the B<Tcl> package, into the main manual page hierarchy.  To get "
@@ -1646,31 +1597,31 @@ msgid ""
 "preference to B<exit>(3tcl).  To negotiate this situation and to avoid "
 "having to know which section the page you require resides in, it is now "
 "possible to give B<%man%> a I<sub-extension> string indicating which package "
-"the page must belong to.  Using the above example, supplying the option B<-e"
-"\\ tcl> to B<%man%> will restrict the search to pages having an extension of "
-"B<*tcl>."
+"the page must belong to.  Using the above example, supplying the option B<-"
+"e\\ tcl> to B<%man%> will restrict the search to pages having an extension "
+"of B<*tcl>."
 msgstr ""
 "某些系统包含大量的手册页包，例如某些系统将 B<Tcl> (手册)包并入主手册页层次目"
 "录。为避免两个手册页重名，如 B<exit>(3)，B<Tcl> 手册页通常都归于 B<l> 章节。"
 "为解决这一不便，现在可以将页面放在正确的节，分配给它们一个特定的“扩展"
-"(extension”即可；这个例子中，就是 B<exit>(3tcl)。正常操作时，B<%man%> 会优先"
+"（extension）”即可；这个例子中则是 B<exit>(3tcl)。正常操作时，B<%man%> 会优先"
 "显示 B<exit>(3) 而不是 B<exit>(3tcl)。为协调这一状况并避免要记住所需手册页属"
 "于哪个章节，现在可以给 B<%man%> 指定一个 I<sub-extension>字符串，指示该手册页"
 "必须属于哪个包。对于上面的例子，给 B<%man%> 加上 B<-e\\ tcl> 选项，就能限制只"
 "搜索带有 B<*tcl> 扩展的页面。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:654
+#: ../../man/man1/man.man1:663
 msgid "Ignore case when searching for manual pages.  This is the default."
 msgstr "搜索手册页时忽略大小写。此为默认值。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:657
+#: ../../man/man1/man.man1:666
 msgid "Search for manual pages case-sensitively."
 msgstr "搜索手册页时匹配大小写。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:667
+#: ../../man/man1/man.man1:676
 msgid ""
 "Show all pages with any part of either their names or their descriptions "
 "matching each I<page> argument as a regular expression, as with "
@@ -1682,7 +1633,7 @@ msgstr ""
 "隐含了 B<-a> 选项。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:682
+#: ../../man/man1/man.man1:691
 msgid ""
 "Show all pages with any part of either their names or their descriptions "
 "matching each I<page> argument using shell-style wildcards, as with "
@@ -1697,7 +1648,7 @@ msgstr ""
 "项隐含了 B<-a> 选项。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:691
+#: ../../man/man1/man.man1:700
 msgid ""
 "If the B<--regex> or B<--wildcard> option is used, match only page names, "
 "not page descriptions, as with B<whatis>(1).  Otherwise, no effect."
@@ -1706,17 +1657,17 @@ msgstr ""
 "像使用 B<whatis>(1) 一样。否则不起作用。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:699
+#: ../../man/man1/man.man1:708
 msgid ""
 "By default, B<%man%> will exit after displaying the most suitable manual "
 "page it finds.  Using this option forces B<%man%> to display all the manual "
 "pages with names that match the search criteria."
 msgstr ""
-"默认情况下，B<%man%> 在显示它找到的最符合的手册页后会退出。此选项强制 B<%man"
-"%> 显示名字匹配搜索条件的所有的手册页。"
+"默认情况下，B<%man%> 在显示它找到的最符合的手册页后会退出。此选项强制 "
+"B<%man%> 显示名字匹配搜索条件的所有的手册页。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:707
+#: ../../man/man1/man.man1:716
 msgid ""
 "This option causes B<%man%> to update its database caches of installed "
 "manual pages.  This is only needed in rare situations, and it is normally "
@@ -1726,7 +1677,7 @@ msgstr ""
 "需要进行，一般情况下只运行 B<%mandb%>(8) 更好。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:719
+#: ../../man/man1/man.man1:728
 msgid ""
 "By default, B<%man%> will try to interpret pairs of manual page names given "
 "on the command line as equivalent to a single manual page name containing a "
@@ -1740,24 +1691,24 @@ msgstr ""
 "为每个子命令提供手册页，并用和调用各子命令的语法类似的方式访问它们。例如："
 
 #. type: Plain text
-#: ../../man/man1/man.man1:728
+#: ../../man/man1/man.man1:737
 msgid "To disable this behaviour, use the B<--no-subpages> option."
 msgstr "要禁用此行为，请使用 B<--no-subpages> 选项。"
 
 #. type: SS
-#: ../../man/man1/man.man1:735
+#: ../../man/man1/man.man1:744
 #, no-wrap
 msgid "Controlling formatted output"
 msgstr "控制格式化输出"
 
 #. type: TP
-#: ../../man/man1/man.man1:736
+#: ../../man/man1/man.man1:745
 #, no-wrap
 msgid "B<-P\\ >I<pager>,\\ B<--pager=>I<pager>"
 msgstr "B<-P\\ >I<分页程序>,\\ B<--pager=>I<分页程序>"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:757
+#: ../../man/man1/man.man1:766
 msgid ""
 "Specify which output pager to use.  By default, B<%man%> uses B<%pager%>, "
 "falling back to B<%cat%> if B<%pager%> is not found or is not executable.  "
@@ -1765,12 +1716,13 @@ msgid ""
 "overrides the $B<PAGER> environment variable.  It is not used in conjunction "
 "with B<-f> or B<-k>."
 msgstr ""
-"指定使用哪个输出分页程序。B<%man%> 默认使用 B<%pager%>，在无法找到 B<%pager"
-"%> 或它不是可执行文件时则会回退到使用 B<%cat%>。此选项会覆盖 $B<MANPAGER> 环"
-"境变量，进一步覆盖 $B<PAGER> 环境变量。它不和 B<-f> 或 B<-k> 合用。"
+"指定使用哪个输出分页程序。B<%man%> 默认使用 B<%pager%>，在无法找到 "
+"B<%pager%> 或它不是可执行文件时则会回退到使用 B<%cat%>。此选项会覆盖 "
+"$B<MANPAGER> 环境变量，进一步覆盖 $B<PAGER> 环境变量。它不和 B<-f> 或 B<-k> "
+"合用。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:763 ../../man/man1/man.man1:1125
+#: ../../man/man1/man.man1:772 ../../man/man1/man.man1:1141
 msgid ""
 "The value may be a simple command name or a command with arguments, and may "
 "use shell quoting (backslashes, single quotes, or double quotes).  It may "
@@ -1783,13 +1735,13 @@ msgstr ""
 "式或从标准输入获得要显示的文件。"
 
 #. type: TP
-#: ../../man/man1/man.man1:763
+#: ../../man/man1/man.man1:772
 #, no-wrap
 msgid "B<-r\\ >I<prompt>,\\ B<--prompt=>I<prompt>"
 msgstr "B<-r\\ >I<提示>,\\ B<--prompt=>I<提示>"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:771
+#: ../../man/man1/man.man1:780
 msgid ""
 "If a recent version of B<less> is used as the pager, B<%man%> will attempt "
 "to set its prompt and some sensible options.  The default prompt looks like"
@@ -1798,7 +1750,7 @@ msgstr ""
 "感选项。默认的提示消息类似于"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:773
+#: ../../man/man1/man.man1:782
 msgid "B< Manual page>I< name>B<(>I<sec>B<) line>I< x>"
 msgstr "B< Manual page>I< name>B<(>I<sec>B<) line>I< x>"
 
@@ -1807,7 +1759,7 @@ msgstr "B< Manual page>I< name>B<(>I<sec>B<) line>I< x>"
 #. The actual default will depend on your chosen
 #. .BR locale .
 #. type: Plain text
-#: ../../man/man1/man.man1:788
+#: ../../man/man1/man.man1:797
 msgid ""
 "where I<name> denotes the manual page name, I<sec> denotes the section it "
 "was found under and I<x> the current line number.  This is achieved by using "
@@ -1821,40 +1773,34 @@ msgstr ""
 #. .B less
 #. rejects the default options or if you prefer a different prompt.
 #. type: Plain text
-#: ../../man/man1/man.man1:801
-#, fuzzy
-#| msgid ""
-#| "Supplying B<-r> with a string will override this default.  The string may "
-#| "contain the text B<$MAN_PN> which will be expanded to the name of the "
-#| "current manual page and its section name surrounded by `(' and `)'.  The "
-#| "string used to produce the default could be expressed as"
+#: ../../man/man1/man.man1:810
 msgid ""
 "Supplying B<-r> with a string will override this default.  The string may "
 "contain the text B<$MAN_PN> which will be expanded to the name of the "
 "current manual page and its section name surrounded by \"(\" and \")\".  The "
 "string used to produce the default could be expressed as"
 msgstr ""
-"提供一个带字符串的 B<-r> 选项会覆盖这个默认值。字符串可以包含文本 B<"
-"$MAN_PN>，它会展开为用“(”和“)”括起来的当前手册页的章节名。显示默认提示的字符"
-"串可以表示为"
+"提供一个带字符串的 B<-r> 选项会覆盖这个默认值。字符串可以包含文本 "
+"B<$MAN_PN>，它会展开为用“(”和“)”括起来的当前手册页的章节名。显示默认提示的字"
+"符串可以表示为"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:803
+#: ../../man/man1/man.man1:812
 msgid "B<\\e\\ Manual\\e\\ page\\e\\ \\e$MAN_PN\\e\\ ?ltline\\e\\ %lt?L/%L.:>"
 msgstr "B<\\e\\ Manual\\e\\ page\\e\\ \\e$MAN_PN\\e\\ ?ltline\\e\\ %lt?L/%L.:>"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:805
+#: ../../man/man1/man.man1:814
 msgid "B<byte\\e\\ %bB?s/%s..?\\e\\ (END):?pB\\e\\ %pB\\e\\e%..>"
 msgstr "B<byte\\e\\ %bB?s/%s..?\\e\\ (END):?pB\\e\\ %pB\\e\\e%..>"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:807
+#: ../../man/man1/man.man1:816
 msgid "B<(press h for help or q to quit)>"
 msgstr "B<(press h for help or q to quit)>"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:822
+#: ../../man/man1/man.man1:831
 msgid ""
 "It is broken into three lines here for the sake of readability only.  For "
 "its meaning see the B<less>(1)  manual page.  The prompt string is first "
@@ -1869,7 +1815,7 @@ msgstr ""
 "设置 B<-ix8> 选项。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:827
+#: ../../man/man1/man.man1:836
 msgid ""
 "The $B<MANLESS> environment variable described below may be used to set a "
 "default prompt string if none is supplied on the command line."
@@ -1877,7 +1823,7 @@ msgstr ""
 "下面描述的 $B<MANLESS> 环境变量可以用来在命令行未指定时设置默认的提示字符串。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:853
+#: ../../man/man1/man.man1:862
 msgid ""
 "When viewing a pure I<ascii>(7)  manual page on a 7 bit terminal or terminal "
 "emulator, some characters may not display correctly when using the "
@@ -1894,43 +1840,43 @@ msgstr ""
 "B<nroff> 的 I<latin1>(7) 设备时才正确显示。"
 
 #. type: tbl table
-#: ../../man/man1/man.man1:862
+#: ../../man/man1/man.man1:871
 #, no-wrap
 msgid "Description"
 msgstr "描述"
 
 #. type: tbl table
-#: ../../man/man1/man.man1:862
+#: ../../man/man1/man.man1:871
 #, no-wrap
 msgid "Octal"
 msgstr "八进制"
 
 #. type: tbl table
-#: ../../man/man1/man.man1:866
+#: ../../man/man1/man.man1:875
 #, no-wrap
 msgid "continuation hyphen"
 msgstr "连字符"
 
 #. type: tbl table
-#: ../../man/man1/man.man1:869
+#: ../../man/man1/man.man1:878
 #, no-wrap
 msgid "bullet (middle dot)"
-msgstr "点(中间点)"
+msgstr "点（中间点）"
 
 #. type: tbl table
-#: ../../man/man1/man.man1:872
+#: ../../man/man1/man.man1:881
 #, no-wrap
 msgid "acute accent"
 msgstr "重音符号"
 
 #. type: tbl table
-#: ../../man/man1/man.man1:875
+#: ../../man/man1/man.man1:884
 #, no-wrap
 msgid "multiplication sign"
 msgstr "乘号"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:897
+#: ../../man/man1/man.man1:906
 msgid ""
 "If the I<latin1> column displays correctly, your terminal may be set up for "
 "I<latin1> characters and this option is not necessary.  If the I<latin1> and "
@@ -1945,7 +1891,7 @@ msgstr ""
 "要使用此选项来查看手册页。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:908
+#: ../../man/man1/man.man1:917
 msgid ""
 "This option is ignored when using options B<-t>, B<-H>, B<-T>, or B<-Z> and "
 "may be useless for B<nroff> other than B<GNU's>."
@@ -1954,13 +1900,13 @@ msgstr ""
 "B<nroff> 程序无用。"
 
 #. type: TP
-#: ../../man/man1/man.man1:908
+#: ../../man/man1/man.man1:917
 #, no-wrap
 msgid "B<-E\\ >I<encoding>,\\ B<--encoding>=I<encoding>"
 msgstr "B<-E\\ >I<编码>,\\ B<--encoding>=I<编码>"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:919
+#: ../../man/man1/man.man1:928
 msgid ""
 "Generate output for a character encoding other than the default.  For "
 "backward compatibility, I<encoding> may be an B<nroff> device such as "
@@ -1971,7 +1917,7 @@ msgstr ""
 "备，如 B<ascii>、B<latin1> 或 B<utf8>，也可以是实际的字符编码如 B<UTF-8>。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:928
+#: ../../man/man1/man.man1:937
 msgid ""
 "Normally, B<nroff> will automatically hyphenate text at line breaks even in "
 "words that do not contain hyphens, if it is necessary to do so to lay out "
@@ -1984,7 +1930,7 @@ msgstr ""
 "时才会被断开。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:937
+#: ../../man/man1/man.man1:946
 msgid ""
 "If you are writing a manual page and simply want to prevent B<nroff> from "
 "hyphenating a word at an inappropriate point, do not use this option, but "
@@ -1997,7 +1943,7 @@ msgstr ""
 "该位置可以断字，或在单词开头插入“\\e%”来阻止对它断字。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:944
+#: ../../man/man1/man.man1:953
 msgid ""
 "Normally, B<nroff> will automatically justify text to both margins.  This "
 "option disables full justification, leaving justified only to the left "
@@ -2007,12 +1953,12 @@ msgstr ""
 "的“ragged-right”(右边不齐)的文本。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:951
+#: ../../man/man1/man.man1:960
 msgid ""
 "If you are writing a manual page and simply want to prevent B<nroff> from "
 "justifying certain paragraphs, do not use this option, but consult the "
-"B<nroff> documentation instead; for instance, you can use the \".na\", \".nf"
-"\", \".fi\", and \".ad\" requests to temporarily disable adjusting and "
+"B<nroff> documentation instead; for instance, you can use the \".na\", \"."
+"nf\", \".fi\", and \".ad\" requests to temporarily disable adjusting and "
 "filling."
 msgstr ""
 "如果您编写手册页时只是不希望 B<nroff> 对齐某些段落，不要使用此选项，而应查阅 "
@@ -2020,13 +1966,13 @@ msgstr ""
 "时禁止对齐和填充。"
 
 #. type: TP
-#: ../../man/man1/man.man1:951
+#: ../../man/man1/man.man1:960
 #, no-wrap
 msgid "B<-p\\ >I<string>,\\ B<--preprocessor=>I<string>"
 msgstr "B<-p\\ >I<字符串>,\\ B<--preprocessor=>I<字符串>"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:970
+#: ../../man/man1/man.man1:979
 msgid ""
 "Specify the sequence of preprocessors to run before B<nroff> or B<troff>/"
 "B<groff>.  Not all installations will have a full set of preprocessors.  "
@@ -2041,7 +1987,7 @@ msgstr ""
 "$B<MANROFFSEQ> 环境变量。B<%zsoelim%> 总是作为第一个预处理器运行。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:980
+#: ../../man/man1/man.man1:989
 msgid ""
 "Use I<%troff%> to format the manual page to stdout.  This option is not "
 "required in conjunction with B<-H>, B<-T>, or B<-Z>."
@@ -2050,13 +1996,13 @@ msgstr ""
 "一起使用。"
 
 #. type: TP
-#: ../../man/man1/man.man1:980
+#: ../../man/man1/man.man1:989
 #, no-wrap
 msgid "B<-T>[I<device\\/>], B<--troff-device>[=I<device\\/>]"
 msgstr "B<-T>[I<设备\\/>], B<--troff-device>[=I<设备\\/>]"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:992
+#: ../../man/man1/man.man1:1001
 msgid ""
 "This option is used to change B<groff> (or possibly B<troff's>)  output to "
 "be suitable for a device other than the default.  It implies B<-t>.  "
@@ -2068,13 +2014,13 @@ msgstr ""
 "B<utf8>、B<X75> 和 B<X100>。"
 
 #. type: TP
-#: ../../man/man1/man.man1:992
+#: ../../man/man1/man.man1:1001
 #, no-wrap
 msgid "B<-H>[I<browser\\/>], B<--html>[=I<browser\\/>]"
 msgstr "B<-H>[I<浏览器\\/>], B<--html>[=I<浏览器\\/>]"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1008
+#: ../../man/man1/man.man1:1017
 msgid ""
 "This option will cause B<groff> to produce HTML output, and will display "
 "that output in a web browser.  The choice of browser is determined by the "
@@ -2089,13 +2035,13 @@ msgstr ""
 "B<troff> 一起使用。"
 
 #. type: TP
-#: ../../man/man1/man.man1:1008
+#: ../../man/man1/man.man1:1017
 #, no-wrap
 msgid "B<-X>[I<dpi\\/>], B<--gxditview>[=I<dpi\\/>]"
 msgstr "B<-X>[I<dpi\\/>], B<--gxditview>[=I<dpi\\/>]"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1022
+#: ../../man/man1/man.man1:1031
 msgid ""
 "This option displays the output of B<groff> in a graphical window using the "
 "B<gxditview> program.  The I<dpi> (dots per inch) may be 75, 75-12, 100, or "
@@ -2108,7 +2054,7 @@ msgstr ""
 "字号。此选项隐含了带相应 X75、X75-12、X100 或 X100-12 参数的 B<-T> 选项。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1038
+#: ../../man/man1/man.man1:1047
 msgid ""
 "B<groff> will run B<troff> and then use an appropriate post-processor to "
 "produce output suitable for the chosen device.  If I<%troff%> is B<groff>, "
@@ -2120,31 +2066,31 @@ msgstr ""
 "了 B<-t> 选项。"
 
 #. type: SS
-#: ../../man/man1/man.man1:1038
+#: ../../man/man1/man.man1:1047
 #, no-wrap
 msgid "Getting help"
 msgstr "获取帮助"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1061
+#: ../../man/man1/man.man1:1070
 msgid "A child process returned a non-zero exit status."
 msgstr "子进程返回了非零的退出状态码。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1064
+#: ../../man/man1/man.man1:1073
 msgid ""
 "At least one of the pages/files/keywords didn't exist or wasn't matched."
 msgstr "至少有一个页面/文件/关键词不存在或不匹配。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1071
+#: ../../man/man1/man.man1:1080
 msgid ""
 "If $B<MANPATH> is set, its value is used as the path to search for manual "
 "pages."
 msgstr "如果设置了 $B<MANPATH>，它的值会用作搜索手册页的路径。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1083
+#: ../../man/man1/man.man1:1099
 msgid ""
 "Every time B<man> invokes the formatter (B<nroff>, B<troff>, or B<groff>), "
 "it adds the contents of $B<MANROFFOPT> to the formatter's command line."
@@ -2153,7 +2099,7 @@ msgstr ""
 "$B<MANROFFOPT> 的内容添加至格式化工具的命令行参数。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1090
+#: ../../man/man1/man.man1:1106
 msgid ""
 "If $B<MANROFFSEQ> is set, its value is used to determine the set of "
 "preprocessors to pass each manual page through.  The default preprocessor "
@@ -2163,7 +2109,7 @@ msgstr ""
 "默认的预处理器列表因系统而异。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1102 ../../man/man8/catman.man8:88
+#: ../../man/man1/man.man1:1118 ../../man/man8/catman.man8:88
 msgid ""
 "If $B<MANSECT> is set, its value is a colon-delimited list of sections and "
 "it is used to determine which manual sections to search and in what order.  "
@@ -2175,26 +2121,26 @@ msgstr ""
 "B<SECTION> 指令覆盖。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1119
+#: ../../man/man1/man.man1:1135
 msgid ""
 "If $B<MANPAGER> or $B<PAGER> is set ($B<MANPAGER> is used in preference), "
 "its value is used as the name of the program used to display the manual "
-"page.  By default, B<%pager%> is used, falling back to B<%cat%> if B<%pager"
-"%> is not found or is not executable."
+"page.  By default, B<%pager%> is used, falling back to B<%cat%> if "
+"B<%pager%> is not found or is not executable."
 msgstr ""
 "如果设置了 $B<MANPAGER> 或 $B<PAGER> (优先使用 $B<MANPAGER>)，它的值会用作显"
 "示手册页的程序的名称。默认使用 B<%pager%>，如果无法找到 B<%pager%> 或它不是可"
 "执行文件的话则会回退到使用 B<%cat%>。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1144
+#: ../../man/man1/man.man1:1160
 msgid ""
 "If $B<MANLESS> is set, its value will be used as the default prompt string "
 "for the B<less> pager, as if it had been passed using the B<-r> option (so "
 "any occurrences of the text B<$MAN_PN> will be expanded in the same way).  "
 "For example, if you want to set the prompt string unconditionally to \\(lqmy "
-"prompt string\\(rq, set $B<MANLESS> to \\(oqB<-Psmy\\ prompt\\ string>"
-"\\(cq.  Using the B<-r> option overrides this environment variable."
+"prompt string\\(rq, set $B<MANLESS> to \\(oqB<-Psmy\\ prompt\\ "
+"string>\\(cq.  Using the B<-r> option overrides this environment variable."
 msgstr ""
 "如果设置了 $B<MANLESS>，它的值将用作 B<less> 分页程序的默认提示字符串，如同作"
 "为 B<-r> 选项的参数传递一样(因此出现的任何 B<$MAN_PN> 会以同样的方式展开)。例"
@@ -2203,20 +2149,20 @@ msgstr ""
 "盖此环境变量。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1160
+#: ../../man/man1/man.man1:1176
 msgid ""
 "If $B<BROWSER> is set, its value is a colon-delimited list of commands, each "
 "of which in turn is used to try to start a web browser for B<man> B<--"
 "html>.  In each command, I<%s> is replaced by a filename containing the HTML "
-"output from B<groff>, I<%%> is replaced by a single percent sign (%), and I<"
-"%c> is replaced by a colon (:)."
+"output from B<groff>, I<%%> is replaced by a single percent sign (%), and "
+"I<%c> is replaced by a colon (:)."
 msgstr ""
 "如果设置了 $B<BROWSER>，它的值(冒号分隔的命令列表)中的每一个会轮流用于尝试为 "
 "B<man> B<--html> 启动一个网络浏览器。每个命令中，I<%s> 会替换成包含 B<groff> "
 "HTML 输出的文件名，I<%%> 会替换成一个百分号(%)，I<%c> 会替换成冒号(:)。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1183
+#: ../../man/man1/man.man1:1199
 msgid ""
 "If $B<MANOPT> is set, it will be parsed prior to B<%man%'s> command line and "
 "is expected to be in a similar format.  As all of the other B<%man%> "
@@ -2231,16 +2177,7 @@ msgstr ""
 "分的空格必须被转义。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1197
-#, fuzzy
-#| msgid ""
-#| "If $B<MANWIDTH> is set, its value is used as the line length for which "
-#| "manual pages should be formatted.  If it is not set, manual pages will be "
-#| "formatted with a line length appropriate to the current terminal (using "
-#| "the value of $B<COLUMNS>, an B<ioctl>(2)  if available, or falling back "
-#| "to 80 characters if neither is available).  Cat pages will only be saved "
-#| "when the default formatting can be used, that is when the terminal line "
-#| "length is between 66 and 80 characters."
+#: ../../man/man1/man.man1:1213
 msgid ""
 "If $B<MANWIDTH> is set, its value is used as the line length for which "
 "manual pages should be formatted.  If it is not set, manual pages will be "
@@ -2256,7 +2193,7 @@ msgstr ""
 "时才会保存，即终端行长度介于 66 到 80 个字符时。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1208
+#: ../../man/man1/man.man1:1224
 msgid ""
 "Normally, when output is not being directed to a terminal (such as to a file "
 "or a pipe), formatting characters are discarded to make it easier to read "
@@ -2270,7 +2207,7 @@ msgstr ""
 "这些格式化字符将保存。这对于可以解释格式化字符的 B<%man%> 封装程序有用。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1221
+#: ../../man/man1/man.man1:1237
 msgid ""
 "Normally, when output is being directed to a terminal (usually to a pager), "
 "any error output from the command used to produce formatted versions of "
@@ -2288,11 +2225,35 @@ msgstr ""
 "非空的值，这些错误输出会照常显示。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1233
+#: ../../man/man1/man.man1:1249
+msgid ""
+"On Linux, B<%man%> normally confines subprocesses that handle untrusted data "
+"using a B<seccomp>(2)  sandbox.  This makes it safer to run complex parsing "
+"code over arbitrary manual pages.  If this goes wrong for some reason "
+"unrelated to the content of the page being displayed, you can set "
+"$B<MAN_DISABLE_SECCOMP> to any non-empty value to disable the sandbox."
+msgstr ""
+"在 Linux 系统中，B<%man%> 通常将处理不受信任数据的子进程使用 B<seccomp>(2) 沙"
+"盒进行限制。这能够使得运行复杂的手册页解析代码变得更加安全。如果这种限制使得"
+"一些与页面显示内容无关的原因影响了程序正常行为，您可以设置 "
+"$B<MAN_DISABLE_SECCOMP> 为任意非空值来禁用该沙盒。"
+
+#. type: Plain text
+#: ../../man/man1/man.man1:1257
+msgid ""
+"If the $B<PIPELINE_DEBUG> environment variable is set to \"1\", then "
+"B<%man%> will print debugging messages to standard error describing each "
+"subprocess it runs."
+msgstr ""
+"如果 $B<PIPELINE_DEBUG> 环境变量置为“1”，则 B<%man%> 会向标准错误打印描述每个"
+"所运行子进程的调试信息。"
+
+#. type: Plain text
+#: ../../man/man1/man.man1:1269
 msgid ""
 "Depending on system and implementation, either or both of $B<LANG> and "
-"$B<LC_MESSAGES> will be interrogated for the current message locale.  B<%man"
-"%> will display its messages in that locale (if available).  See "
+"$B<LC_MESSAGES> will be interrogated for the current message locale.  "
+"B<%man%> will display its messages in that locale (if available).  See "
 "B<setlocale>(3)  for precise details."
 msgstr ""
 "取决于系统和实现，程序会查询 $B<LANG> 和/或 $B<LC_MESSAGES> 获知当前的消息区"
@@ -2300,37 +2261,48 @@ msgstr ""
 "确的详情。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1237 ../../man/man1/manpath.man1:117
-#: ../../man/man8/catman.man8:98 ../../man/man8/mandb.man8:195
+#: ../../man/man1/man.man1:1273 ../../man/man1/manpath.man1:114
+#: ../../man/man8/catman.man8:105 ../../man/man8/mandb.man8:189
 msgid "man-db configuration file."
 msgstr "man-db 配置文件。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1240
+#: ../../man/man1/man.man1:1276
 msgid "A global manual page hierarchy."
 msgstr "全局手册页层次结构。"
 
+#. type: SH
+#: ../../man/man1/man.man1:1276
+#, no-wrap
+msgid "STANDARDS"
+msgstr "标准"
+
 #. type: Plain text
-#: ../../man/man1/man.man1:1257
+#: ../../man/man1/man.man1:1278
+msgid "POSIX.1-2001, POSIX.1-2008, POSIX.1-2017."
+msgstr "POSIX.1-2001, POSIX.1-2008, POSIX.1-2017."
+
+#. type: Plain text
+#: ../../man/man1/man.man1:1295
 msgid ""
 "Documentation for some packages may be available in other formats, such as "
 "B<info>(1)  or HTML."
 msgstr "某些包的文档可能以其它格式提供，如 B<info>(1) 或 HTML。"
 
 #. type: SH
-#: ../../man/man1/man.man1:1257
+#: ../../man/man1/man.man1:1295
 #, no-wrap
 msgid "HISTORY"
 msgstr "历史"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1259
+#: ../../man/man1/man.man1:1297
 msgid ""
 "1990, 1991 \\(en Originally written by John W.\\& Eaton (jwe@che.utexas.edu)."
 msgstr "1990, 1991 \\(en 原作者 John W.\\& Eaton (jwe@che.utexas.edu)。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1262
+#: ../../man/man1/man.man1:1300
 msgid ""
 "Dec 23 1992: Rik Faith (faith@cs.unc.edu) applied bug fixes supplied by "
 "Willem Kasdorp (wkasdo@nikhefk.nikef.nl)."
@@ -2339,7 +2311,7 @@ msgstr ""
 "(wkasdo@nikhefk.nikef.nl) 提供的 bug 补丁。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1266
+#: ../../man/man1/man.man1:1304
 msgid ""
 "30th April 1994 \\(en 23rd February 2000: Wilf.\\& (G.Wilford@ee.surrey.ac."
 "uk)  has been developing and maintaining this package with the help of a few "
@@ -2349,7 +2321,7 @@ msgstr ""
 "位热心人的帮助下开发和维护这个包。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1270
+#: ../../man/man1/man.man1:1308
 msgid ""
 "30th October 1996 \\(en 30th March 2001: Fabrizio Polacco "
 "E<lt>fpolacco@debian.orgE<gt> maintained and enhanced this package for the "
@@ -2359,7 +2331,7 @@ msgstr ""
 "orgE<gt> 为 Debian 项目维护并增强了这个包，过程中得到整个社区的帮助。"
 
 #. type: Plain text
-#: ../../man/man1/man.man1:1273
+#: ../../man/man1/man.man1:1311
 msgid ""
 "31st March 2001 \\(en present day: Colin Watson E<lt>cjwatson@debian."
 "orgE<gt> is now developing and maintaining man-db."
@@ -2392,6 +2364,11 @@ msgid ""
 "program is much faster than running B<%man% --recode> or B<%manconv%> on "
 "each page."
 msgstr ""
+"B<%man_recode%> 可将多个手册页从一种编码转换至另一种编码，并猜测每一个手册页"
+"的合适的输入编码。它在永久性对过时字符集编写的页面进行转码时很有用，或者也可"
+"以在构建系统需要将一组手册页转码为单一的通用编码（通常为 UTF-8）时起到作用。"
+"在转换多个手册页时，该程序要远快于对每个页面运行 B<%man% --recode> 或 "
+"B<%manconv%>。"
 
 #. type: Plain text
 #: ../../man/man1/man-recode.man1:36
@@ -2436,13 +2413,14 @@ msgid ""
 "Form each output file name by appending I<suffix> to the input file name, "
 "after removing any compression extension."
 msgstr ""
+"在移除任何压缩扩展名后，将输出文件名设置为输入文件名并添加 I<suffix> 后缀。"
 
 #. type: Plain text
 #: ../../man/man1/man-recode.man1:66
 msgid ""
 "Overwrite each input file with the output, after removing any compression "
 "extension."
-msgstr ""
+msgstr "在移除任何压缩扩展名后，将输入的每个文件使用输出覆写。"
 
 #. type: Plain text
 #: ../../man/man1/man-recode.man1:69 ../../man/man1/manconv.man1:64
@@ -2456,16 +2434,12 @@ msgstr "%manconv% - 将手册页从一种编码转换到另一种"
 
 #. type: Plain text
 #: ../../man/man1/manconv.man1:20
-#, fuzzy
-#| msgid ""
-#| "B<%manconv%> B<-f> I<from-code>\\|[:I<from-code>\\|.\\|.\\|.] B<-t> I<to-"
-#| "code> [\\|B<-dqhV>\\|] [\\|I<filename>\\|]"
 msgid ""
 "B<%manconv%> B<-f> [\\|I<from-code>\\|[:I<from-code>\\|.\\|.\\|.]\\|] B<-t> "
 "I<to-code> [\\|B<-dqhV>\\|] [\\|I<filename>\\|]"
 msgstr ""
-"B<%manconv%> B<-f> I<源编码>\\|[:I<源编码>\\|.\\|.\\|.] B<-t> I<目标编码> "
-"[\\|B<-dqhV>\\|] [\\|I<文件名>\\|]"
+"B<%manconv%> B<-f> [\\|I<源编码>\\|[:I<源编码>\\|.\\|.\\|.]\\|] B<-t> I<目标"
+"编码> [\\|B<-dqhV>\\|] [\\|I<文件名>\\|]"
 
 #. type: Plain text
 #: ../../man/man1/manconv.man1:30
@@ -2498,15 +2472,13 @@ msgstr "B<-f> I<编码>, B<--from-code> I<编码>"
 
 #. type: Plain text
 #: ../../man/man1/manconv.man1:57
-#, fuzzy
-#| msgid ""
-#| "Try each of I<encodings> (a colon-separated list) in sequence as the "
-#| "input encoding."
 msgid ""
 "Try each of I<encodings> (a colon-separated list) in sequence as the input "
 "encoding.  The default is to guess likely input encodings based on the file "
 "name."
-msgstr "依次尝试每种 I<编码> (冒号分隔的列表)作为输入编码。"
+msgstr ""
+"依次尝试每种 I<编码>（冒号分隔的列表）作为输入编码。默认行为是根据文件名猜测"
+"可能的输入编码。"
 
 #. type: TP
 #: ../../man/man1/manconv.man1:57
@@ -2545,18 +2517,13 @@ msgstr ""
 
 #. type: Plain text
 #: ../../man/man1/manpath.man1:38
-#, fuzzy
-#| msgid ""
-#| "The colon-delimited path is determined using information gained from the "
-#| "man-db configuration file - (I<%manpath_config_file%>)  and the user's "
-#| "environment."
 msgid ""
 "The colon-delimited path is determined using information gained from the man-"
 "db configuration file \\(en (I<%manpath_config_file%>)  and the user's "
 "environment."
 msgstr ""
-"冒号分隔的路径使用由 man-db 配置文件 - (I<%manpath_config_file%>) 和用户环境"
-"变量所得到的信息确定。"
+"冒号分隔的路径使用由 man-db 配置文件 \\(en (I<%manpath_config_file%>) 和用户"
+"环境变量所得到的信息确定。"
 
 #. type: Plain text
 #: ../../man/man1/manpath.man1:42
@@ -2583,12 +2550,13 @@ msgstr "在 man-db 配置文件中生成一个名为“global”的，包含所�
 #. type: Plain text
 #: ../../man/man1/manpath.man1:63
 msgid ""
-"If this system has access to other operating system's manual hierarchies, "
+"If this system has access to other operating systems' manual hierarchies, "
 "this option can be used to include them in the output of B<%manpath%>.  To "
 "include NewOS's manual page hierarchies use the option B<-m> B<NewOS>."
 msgstr ""
-"如果此系统可以访问其他操作系统的手册页层次结构，可以使用此选项将它们包含在 B<"
-"%manpath%> 的输出中。要包含NewOS 的手册页层次结构，使用 B<-m> B<NewOS> 选项。"
+"如果此系统可以访问其他操作系统的手册页层次结构，可以使用此选项将它们包含在 "
+"B<%manpath%> 的输出中。要包含NewOS 的手册页层次结构，使用 B<-m> B<NewOS> 选"
+"项。"
 
 #. type: Plain text
 #: ../../man/man1/manpath.man1:74
@@ -2603,21 +2571,12 @@ msgstr ""
 "变量。"
 
 #. type: Plain text
-#: ../../man/man1/manpath.man1:105
+#: ../../man/man1/manpath.man1:95
 msgid ""
 "If $B<MANPATH> is set, B<%manpath%> displays its value rather than "
-"determining it on the fly.  If $B<MANPATH> is prefixed by a colon, then the "
-"value of the variable is appended to the list determined from the content of "
-"the configuration files.  If the colon comes at the end of the value in the "
-"variable, then the determined list is appended to the content of the "
-"variable.  If the value of the variable contains a double colon (B<::>), "
-"then the determined list is inserted in the middle of the value, between the "
-"two colons."
+"determining it on the fly."
 msgstr ""
-"如果设置了 $B<MANPATH>，B<%manpath%> 显示它的值，而不是在运行时确定它。如果 "
-"$B<MANPATH> 前缀是冒号，则变量的值会追加到从配置文件内容确定的列表之后。如果"
-"冒号在变量值的结尾，则确定的列表会追加到变量内容之后。如果变量的值包含双冒号"
-"(B<::>)，则确定的列表会插入值的中间（两个冒号间）。"
+"如果设置了 $B<MANPATH>，B<%manpath%> 将显示它的值，而不是在运行时确定它。"
 
 #. type: Plain text
 #: ../../man/man1/whatis.man1:15
@@ -2627,13 +2586,14 @@ msgstr "%whatis% - 显示在线手册页说明"
 #. type: Plain text
 #: ../../man/man1/whatis.man1:32
 msgid ""
-"B<%whatis%> [\\|B<-dlv?V>\\|] [\\|B<-r>\\||\\|B<-w>\\|] [\\|B<-s> I<list>"
-"\\|] [\\|B<-m> I<system>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> I<path>\\|] [\\|"
-"B<-L> I<locale>\\|] [\\|B<-C> I<file>\\|] I<name> \\&.\\|.\\|."
+"B<%whatis%> [\\|B<-dlv?V>\\|] [\\|B<-r>\\||\\|B<-w>\\|] [\\|B<-s> "
+"I<list>\\|] [\\|B<-m> I<system>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> "
+"I<path>\\|] [\\|B<-L> I<locale>\\|] [\\|B<-C> I<file>\\|] I<name> \\&.\\|."
+"\\|."
 msgstr ""
-"B<%whatis%> [\\|B<-dlv?V>\\|] [\\|B<-r>\\||\\|B<-w>\\|] [\\|B<-s> I<列表>"
-"\\|] [\\|B<-m> I<系统>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> I<路径>\\|] [\\|B<-"
-"L> I<区域>\\|] [\\|B<-C> I<文件>\\|] I<名称> \\&.\\|.\\|."
+"B<%whatis%> [\\|B<-dlv?V>\\|] [\\|B<-r>\\||\\|B<-w>\\|] [\\|B<-s> I<列表"
+">\\|] [\\|B<-m> I<系统>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> I<路径>\\|] [\\|"
+"B<-L> I<区域>\\|] [\\|B<-C> I<文件>\\|] I<名称> \\&.\\|.\\|."
 
 #. type: Plain text
 #: ../../man/man1/whatis.man1:39
@@ -2658,8 +2618,8 @@ msgstr ""
 #. type: Plain text
 #: ../../man/man1/whatis.man1:61
 msgid ""
-"B<index> databases are used during the search, and are updated by the B<"
-"%mandb%> program.  Depending on your installation, this may be run by a "
+"B<index> databases are used during the search, and are updated by the "
+"B<%mandb%> program.  Depending on your installation, this may be run by a "
 "periodic cron job, or may need to be run manually after new manual pages "
 "have been installed.  To produce an old style text B<whatis> database from "
 "the relative B<index> database, issue the command:"
@@ -2703,7 +2663,7 @@ msgstr ""
 #. type: Plain text
 #: ../../man/man1/whatis.man1:131
 msgid ""
-"If this system has access to other operating system's manual page names, "
+"If this system has access to other operating systems' manual page names, "
 "they can be accessed using this option.  To search NewOS's manual page "
 "names, use the option B<-m> B<NewOS>."
 msgstr ""
@@ -2811,35 +2771,121 @@ msgstr ""
 #. type: SH
 #: ../../man/man5/manpath.man5:26
 #, no-wrap
+msgid "SEARCH PATH"
+msgstr "搜索路径"
+
+#. type: Plain text
+#: ../../man/man5/manpath.man5:35
+msgid ""
+"By default, man-db examines the user's $B<PATH>.  For each I<path_element> "
+"found there, it adds I<manpath_element> to the search path."
+msgstr ""
+"默认情况下，man-db 检查用户的 $B<PATH>。对每个找到的 I<path_element>，它会将 "
+"I<manpath_element> 添加至搜索路径。"
+
+#. type: Plain text
+#: ../../man/man5/manpath.man5:47
+msgid ""
+"If there is no B<MANPATH_MAP> line in the configuration file for a given "
+"I<path_element>, then it adds all of I<path_element/../man>, I<path_element/"
+"man>, I<path_element/../share/man>, and I<path_element/share/man> that exist "
+"as directories to the search path."
+msgstr ""
+"如果对于一个给定的 I<path_element> 在配置文件中不存在对应的 B<MANPATH_MAP> "
+"行，则它将添加 I<path_element/../man>、I<path_element/man>、"
+"I<path_element/../share/man> 和 I<path_element/share/man> 这些路径中所有存在"
+"的目录至搜索路径中。"
+
+#. type: Plain text
+#: ../../man/man5/manpath.man5:51
+msgid ""
+"It then adds any B<MANDATORY_MANPATH> entries from the configuration file to "
+"the search path."
+msgstr ""
+"在此之后，它将添加配置文件中所有的 B<MANDATORY_MANPATH> 条目至搜索路径中。"
+
+#. type: Plain text
+#: ../../man/man5/manpath.man5:73
+msgid ""
+"Finally, if the B<--systems> option is used or the $B<SYSTEM> environment "
+"variable is set, then that should consist of a sequence of operating system "
+"names separated by commas or colons.  This acts as a template, expanding the "
+"search path once more to allow access to other operating systems' manual "
+"pages: for each system name, man-db looks for that name as a subdirectory of "
+"each entry in the search path, and adds it to the final search path if it "
+"exists.  A system name of B<man> inserts the normal search path without "
+"subdirectories.  For example, if the search path would otherwise have been "
+"I</usr/share/man:/usr/local/man>, and $B<SYSTEM> is set to I<newOS:man>, "
+"then the final search path will be I</usr/share/man/newOS:/usr/share/man:/"
+"usr/local/man/newOS:/usr/local/man>."
+msgstr ""
+"最后，如果使用了 B<--systems> 选项或设置了 $B<SYSTEM> 环境变量，它们应该包含"
+"使用英文逗号或冒号分隔的操作系统名称的列表。它将作为模板，并再一次扩展为搜索"
+"路径以访问其它操作系统的手册页：对于每一个系统名称，man-db 将查找搜索路径下给"
+"定条目为名称的子目录，并在其存在的情况下将其添加到最终的搜索路径中。若系统名"
+"称为 B<man>，则将使用通常的、不带子目录的搜索路径。例如，如果搜索路径原先为 "
+"I</usr/share/man:/usr/local/man> 且 $B<SYSTEM> 被设置为 I<newOS:man>，则最终"
+"的搜索路径将为 I</usr/share/man/newOS:/usr/share/man:/usr/local/man/newOS:/"
+"usr/local/man>。"
+
+#. type: Plain text
+#: ../../man/man5/manpath.man5:83
+msgid ""
+"The $B<MANPATH> environment variable overrides man-db's default manual page "
+"search paths.  Most users should not need to set it.  Its syntax is similar "
+"to the $B<PATH> environment variable: it consists of a sequence of directory "
+"names separated by colons.  It overrides the default search path described "
+"above."
+msgstr ""
+"$B<MANPATH> 环境变量会覆盖 man-db 的默认手册页搜索路径。大部分用户不应该需要"
+"对此进行设置。其语法类似 $B<PATH> 环境变量：它包含一个目录名称的序列，并使用"
+"冒号进行分隔。它会覆盖上文所述的默认搜索路径。"
+
+#. type: Plain text
+#: ../../man/man5/manpath.man5:96
+msgid ""
+"If the value of $B<MANPATH> starts with a colon, then the default search "
+"path is added at its start.  If the value of $B<MANPATH> ends with a colon, "
+"then the default search path is added at its end.  If the value of "
+"$B<MANPATH> contains a double colon (B<::>), then the default search path is "
+"inserted in the middle of the value, between the two colons."
+msgstr ""
+"如果 $B<MANPATH> 使用冒号开头，则默认搜索路径将添加到其开头位置。如果 "
+"$B<MANPATH> 使用冒号结尾，则默认搜索路径将添加到其结束位置。如果变量的值包含"
+"双冒号（B<::>），则默认搜索路径将插入到两个冒号之间。"
+
+#. type: SH
+#: ../../man/man5/manpath.man5:96
+#, no-wrap
 msgid "FORMAT"
 msgstr "格式"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:28
+#: ../../man/man5/manpath.man5:98
 msgid "The following field types are currently recognised:"
 msgstr "当前支持以下字段类型："
 
 #. type: TP
-#: ../../man/man5/manpath.man5:28
+#: ../../man/man5/manpath.man5:98
 #, no-wrap
 msgid "B<#>I<\\ comment>"
 msgstr "B<#>I<\\ 注释>"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:33
+#: ../../man/man5/manpath.man5:103
 msgid ""
 "Blank lines or those beginning with a B<#> will be treated as comments and "
 "ignored."
 msgstr "空行或以 B<#> 开头的行将视为注释并忽略。"
 
 #. type: TP
-#: ../../man/man5/manpath.man5:33
+#: ../../man/man5/manpath.man5:103
 #, no-wrap
 msgid "B<MANDATORY_MANPATH>I<\\ manpath_element>"
 msgstr "B<MANDATORY_MANPATH>I<\\ manpath_element>"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:40
+#: ../../man/man5/manpath.man5:110
 msgid ""
 "Lines of this form indicate manpaths that every automatically generated "
 "$B<MANPATH> should contain.  This will typically include I</usr/man>."
@@ -2848,13 +2894,13 @@ msgstr ""
 "usr/man>。"
 
 #. type: TP
-#: ../../man/man5/manpath.man5:40
+#: ../../man/man5/manpath.man5:110
 #, no-wrap
 msgid "B<MANPATH_MAP>I<\\ path_element\\ manpath_element>"
 msgstr "B<MANPATH_MAP>I<\\ path_element\\ manpath_element>"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:54
+#: ../../man/man5/manpath.man5:124
 msgid ""
 "Lines of this form set up $B<PATH> to $B<MANPATH> mappings.  For each "
 "I<path_element> found in the user's $B<PATH>, I<manpath_element> will be "
@@ -2864,13 +2910,13 @@ msgstr ""
 "的每个 I<path_element>，会将 I<manpath_element> 添加到 $B<MANPATH>。"
 
 #. type: TP
-#: ../../man/man5/manpath.man5:54
+#: ../../man/man5/manpath.man5:124
 #, no-wrap
 msgid "B<MANDB_MAP >I<manpath_element >\\|[\\| I<catpath_element> \\|]"
 msgstr "B<MANDB_MAP >I<manpath_element >\\|[\\| I<catpath_element> \\|]"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:64
+#: ../../man/man5/manpath.man5:134
 msgid ""
 "Lines of this form indicate which manpaths are to be treated as system "
 "manpaths, and optionally where their cat files should be stored.  This field "
@@ -2885,7 +2931,7 @@ msgstr ""
 "册页层次结构作为 setuid 用户访问，哪些作为调用用户访问。"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:72
+#: ../../man/man5/manpath.man5:142
 msgid ""
 "The system manual page hierarchies are usually those stored under I</usr> "
 "such as I</usr/man>, I</usr/local/man> and I</usr/X11R6/man>."
@@ -2894,7 +2940,7 @@ msgstr ""
 "和 I</usr/X11R6/man>。"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:78
+#: ../../man/man5/manpath.man5:148
 msgid ""
 "If cat pages from a particular I<manpath_element> are not to be stored or "
 "are to be stored in the traditional location, I<catpath_element> may be "
@@ -2904,14 +2950,7 @@ msgstr ""
 "忽略 I<catpath_element>。"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:87
-#, fuzzy
-#| msgid ""
-#| "Traditional cat placement would be impossible for read only mounted "
-#| "manual page hierarchies and because of this it is possible to specify any "
-#| "valid directory hierarchy for their storage.  To observe the B<Linux "
-#| "FSSTND> the keyword `B<FSSTND> can be used in place of an actual "
-#| "directory."
+#: ../../man/man5/manpath.man5:157
 msgid ""
 "Traditional cat placement would be impossible for read only mounted manual "
 "page hierarchies and because of this it is possible to specify any valid "
@@ -2923,7 +2962,7 @@ msgstr ""
 "实际目录的位置使用关键词“B<FSSTND>”。"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:96
+#: ../../man/man5/manpath.man5:166
 msgid ""
 "Unfortunately, it is necessary to specify B<all> system man tree paths, "
 "including alternate operating system paths such as I</usr/man/sun> and any "
@@ -2933,7 +2972,7 @@ msgstr ""
 "I</usr/man/sun> 和任何的 B<NLS 区域语言> 路径，如 I</usr/man/de_DE.88591>。"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:104
+#: ../../man/man5/manpath.man5:174
 msgid ""
 "As the information is parsed line by line in the order written, it is "
 "necessary for any manpath that is a sub-hierarchy of another hierarchy to be "
@@ -2945,13 +2984,13 @@ msgstr ""
 "usr/man> 之前。"
 
 #. type: TP
-#: ../../man/man5/manpath.man5:104
+#: ../../man/man5/manpath.man5:174
 #, no-wrap
 msgid "B<DEFINE>I<\\ key\\ value>"
 msgstr "B<DEFINE>I<\\ 键\\ 值>"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:114
+#: ../../man/man5/manpath.man5:184
 msgid ""
 "Lines of this form define miscellaneous configuration variables; see the "
 "default configuration file for those variables used by the manual pager "
@@ -2963,13 +3002,13 @@ msgstr ""
 "集。"
 
 #. type: TP
-#: ../../man/man5/manpath.man5:114
+#: ../../man/man5/manpath.man5:184
 #, no-wrap
 msgid "B<SECTION> I<section> .\\|.\\|."
 msgstr "B<SECTION> I<章节> .\\|.\\|."
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:122
+#: ../../man/man5/manpath.man5:192
 msgid ""
 "Lines of this form define the order in which manual sections should be "
 "searched.  If there are no B<SECTION> directives in the configuration file, "
@@ -2979,14 +3018,14 @@ msgstr ""
 "为："
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:132
+#: ../../man/man5/manpath.man5:202
 msgid ""
 "If multiple B<SECTION> directives are given, their section lists will be "
 "concatenated."
 msgstr "如果给出了多个 B<SECTION> 指令，它们的章节列表会被合并。"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:139
+#: ../../man/man5/manpath.man5:209
 msgid ""
 "If a particular extension is not in this list (say, 1mh) it will be "
 "displayed with the rest of the section it belongs to.  The effect of this is "
@@ -2999,18 +3038,18 @@ msgstr ""
 "其主章节相邻(如“1 1mh 8 ...)。"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:142
+#: ../../man/man5/manpath.man5:212
 msgid "B<SECTIONS> is accepted as an alternative name for this directive."
 msgstr "B<SECTIONS> 是此指令的替代名称，也允许使用。"
 
 #. type: TP
-#: ../../man/man5/manpath.man5:143
+#: ../../man/man5/manpath.man5:213
 #, no-wrap
 msgid "B<MINCATWIDTH>I<\\ width>"
 msgstr "B<MINCATWIDTH>I<\\ 宽度>"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:149
+#: ../../man/man5/manpath.man5:219
 msgid ""
 "If the terminal width is less than I<width>, cat pages will not be created "
 "(if missing) or displayed.  The default is 80."
@@ -3018,13 +3057,13 @@ msgstr ""
 "如果终端宽度小于 I<宽度>，将不会创建(若缺少)或显示 cat 页面。默认值为 80。"
 
 #. type: TP
-#: ../../man/man5/manpath.man5:149
+#: ../../man/man5/manpath.man5:219
 #, no-wrap
 msgid "B<MAXCATWIDTH>I<\\ width>"
 msgstr "B<MAXCATWIDTH>I<\\ 宽度>"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:155
+#: ../../man/man5/manpath.man5:225
 msgid ""
 "If the terminal width is greater than I<width>, cat pages will not be "
 "created (if missing) or displayed.  The default is 80."
@@ -3032,30 +3071,28 @@ msgstr ""
 "如果终端宽度大于 I<宽度>，将不会创建(若缺少)或显示 cat 页面。默认值为 80。"
 
 #. type: TP
-#: ../../man/man5/manpath.man5:155
+#: ../../man/man5/manpath.man5:225
 #, no-wrap
 msgid "B<CATWIDTH>I<\\ width>"
 msgstr "B<CATWIDTH>I<\\ 宽度>"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:165
+#: ../../man/man5/manpath.man5:235
 msgid ""
 "If I<width> is non-zero, cat pages will always be formatted for a terminal "
 "of the given width, regardless of the width of the terminal actually being "
-"used.  This should generally be within the range set by B<MINCATWIDTH> and "
-"B<MAXCATWIDTH>."
+"used.  This overrides B<MINCATWIDTH> and B<MAXCATWIDTH>."
 msgstr ""
 "如果 I<宽度> 是非零的，对指定宽度的终端将总是格式化 cat 页面，不管实际使用的"
-"终端宽度是多少。此数值通常应在 B<MINCATWIDTH> 和 B<MAXCATWIDTH> 设置的范围之"
-"内。"
+"终端宽度是多少。此数值将覆盖 B<MINCATWIDTH> 和 B<MAXCATWIDTH>。"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:170
+#: ../../man/man5/manpath.man5:240
 msgid "This flag prevents B<%man%>(1)  from creating cat pages automatically."
 msgstr "此标志阻止 B<%man%>(1) 自动创建 cat 页面。"
 
 #. type: Plain text
-#: ../../man/man5/manpath.man5:174
+#: ../../man/man5/manpath.man5:244
 msgid ""
 "Unless the rules above are followed and observed precisely, the manual pager "
 "utilities will not function as desired.  The rules are overly complicated."
@@ -3131,8 +3168,8 @@ msgid ""
 msgstr ""
 "B<%catman%> 的可用选项为要预格式化的手册页层次结构和章节。默认的层次结构是那"
 "些在 man-db 配置文件中指定的系统层次结构，默认章节是环境变量 $B<MANSECT> 中以"
-"冒号分隔的内容或编译进 B<%man%> 的标准集合(如果未定义 $B<MANSECT>)。给 B<"
-"%catman%> 提供一组空格分隔的章节名会覆盖以上两个选项。"
+"冒号分隔的内容或编译进 B<%man%> 的标准集合(如果未定义 $B<MANSECT>)。给 "
+"B<%catman%> 提供一组空格分隔的章节名会覆盖以上两个选项。"
 
 #. type: Plain text
 #: ../../man/man8/catman.man8:55
@@ -3154,7 +3191,7 @@ msgstr ""
 "件中指定的所有系统层次结构。"
 
 #. type: Plain text
-#: ../../man/man8/catman.man8:109 ../../man/man8/mandb.man8:213
+#: ../../man/man8/catman.man8:116 ../../man/man8/mandb.man8:207
 msgid "An alternate or FSSTND compliant global I<index> database cache."
 msgstr "替代的或 FSSTND 兼容的全局 I<索引> 数据库缓存。"
 
@@ -3168,8 +3205,8 @@ msgstr "%mandb% - 创建或更新手册页索引缓存"
 msgid ""
 "B<%mandb%> [\\|B<-dqsucpt?V>\\|] [\\|B<-C> I<file>\\|] [\\|I<manpath>\\|]"
 msgstr ""
-"B<%mandb%> [\\|B<-dqsucpt?V>\\||\\|B<-h>\\||\\|B<-V>\\|] [\\|B<-C> I<文件>"
-"\\|] [\\|I<manpath>\\|]"
+"B<%mandb%> [\\|B<-dqsucpt?V>\\||\\|B<-h>\\||\\|B<-V>\\|] [\\|B<-C> I<文件"
+">\\|] [\\|I<manpath>\\|]"
 
 #. type: Plain text
 #: ../../man/man8/mandb.man8:30
@@ -3182,22 +3219,14 @@ msgstr ""
 
 #. type: Plain text
 #: ../../man/man8/mandb.man8:38
-#, fuzzy
-#| msgid ""
-#| "B<%mandb%> is used to initialise or manually update B<index> database "
-#| "caches that are usually maintained by B<%man%>.  The caches contain "
-#| "information relevant to the current state of the manual page system and "
-#| "the information stored within them is used by the man-db utilities to "
-#| "enhance their speed and functionality."
 msgid ""
 "B<%mandb%> is used to initialise or manually update B<index> database "
 "caches.  The caches contain information relevant to the current state of the "
 "manual page system and the information stored within them is used by the man-"
 "db utilities to enhance their speed and functionality."
 msgstr ""
-"B<%mandb%> 用于初始化或手动更新 B<索引> 数据库缓存(通常由 B<%man%> 维护)。缓"
-"存包含与手册页系统当前状态相关的信息；保存在缓存中的这些信息被 man-db 工具用"
-"来提高速度和增强功能。"
+"B<%mandb%> 用于初始化或手动更新 B<索引> 数据库缓存。缓存包含与手册页系统当前"
+"状态相关的信息；保存在缓存中的这些信息被 man-db 工具用来提高速度和增强功能。"
 
 #. type: Plain text
 #: ../../man/man8/mandb.man8:46
@@ -3241,12 +3270,6 @@ msgstr "名称"
 #. type: tbl table
 #: ../../man/man8/mandb.man8:59
 #, no-wrap
-msgid "Type"
-msgstr "类型"
-
-#. type: tbl table
-#: ../../man/man8/mandb.man8:59
-#, no-wrap
 msgid "Async"
 msgstr "异步"
 
@@ -3263,61 +3286,49 @@ msgid "Berkeley db"
 msgstr "Berkeley db"
 
 #. type: tbl table
-#: ../../man/man8/mandb.man8:63
-#, no-wrap
-msgid "Binary tree"
-msgstr "二叉树"
-
-#. type: tbl table
-#: ../../man/man8/mandb.man8:63 ../../man/man8/mandb.man8:66
+#: ../../man/man8/mandb.man8:61 ../../man/man8/mandb.man8:62
 #, no-wrap
 msgid "Yes"
 msgstr "是"
 
 #. type: tbl table
-#: ../../man/man8/mandb.man8:63
+#: ../../man/man8/mandb.man8:61
 #, no-wrap
 msgid "I<index.bt>"
 msgstr "I<index.bt>"
 
 #. type: tbl table
-#: ../../man/man8/mandb.man8:64
+#: ../../man/man8/mandb.man8:62
 #, no-wrap
 msgid "GNU gdbm"
 msgstr "GNU gdbm"
 
 #. type: tbl table
-#: ../../man/man8/mandb.man8:66 ../../man/man8/mandb.man8:69
-#, no-wrap
-msgid "Hashed"
-msgstr "已散列"
-
-#. type: tbl table
-#: ../../man/man8/mandb.man8:66
+#: ../../man/man8/mandb.man8:62
 #, no-wrap
 msgid "I<index.db>"
 msgstr "I<index.db>"
 
 #. type: tbl table
-#: ../../man/man8/mandb.man8:67
+#: ../../man/man8/mandb.man8:63
 #, no-wrap
 msgid "UNIX ndbm"
 msgstr "UNIX ndbm"
 
 #. type: tbl table
-#: ../../man/man8/mandb.man8:69
+#: ../../man/man8/mandb.man8:63
 #, no-wrap
 msgid "No"
 msgstr "否"
 
 #. type: tbl table
-#: ../../man/man8/mandb.man8:69
+#: ../../man/man8/mandb.man8:63
 #, no-wrap
 msgid "I<index.(dir|pag)>"
 msgstr "I<index.(dir|pag)>"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:80
+#: ../../man/man8/mandb.man8:74
 msgid ""
 "Those database types that support asynchronous updates provide enhanced "
 "speed at the cost of possible corruption in the event of unusual "
@@ -3329,32 +3340,32 @@ msgstr ""
 "事情发生，可能要重新以 B<-c> 选项运行 B<%mandb%> 来重建数据库。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:87
+#: ../../man/man8/mandb.man8:81
 msgid "Produce no warnings."
 msgstr "不显示警告。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:91
+#: ../../man/man8/mandb.man8:85
 msgid ""
 "Do not spend time looking for or adding information to the databases "
 "regarding stray cats."
 msgstr "不花时间查找或向数据库添加有关孤立 cat 页面的信息。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:95
+#: ../../man/man8/mandb.man8:89
 msgid ""
 "Do not spend time checking for deleted manual pages and purging them from "
 "the databases."
 msgstr "不花时间检查删除的手册页并从数据库中清理它们。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:107
+#: ../../man/man8/mandb.man8:101
 msgid ""
 "By default, B<%mandb%> will try to update any previously created databases.  "
-"If a database does not exist, it will create it.  This option forces B<%mandb"
-"%> to delete previous databases and re-create them from scratch, and implies "
-"B<--no-purge.> This may be necessary if a database becomes corrupt or if a "
-"new database storage scheme is introduced in the future."
+"If a database does not exist, it will create it.  This option forces "
+"B<%mandb%> to delete previous databases and re-create them from scratch, and "
+"implies B<--no-purge.> This may be necessary if a database becomes corrupt "
+"or if a new database storage scheme is introduced in the future."
 msgstr ""
 "默认情况下，B<%mandb%> 会尝试更新任何以前创建的数据库。如果某个数据库不存在，"
 "程序会创建它。此选项强制 B<%mandb%> 删除以前的数据库并重新生成数据库，并隐含"
@@ -3362,14 +3373,14 @@ msgstr ""
 "到。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:111
+#: ../../man/man8/mandb.man8:105
 msgid ""
 "Create user databases only, even with write permissions necessary to create "
 "system databases."
 msgstr "只创建用户数据库，即使有创建系统数据库所需的写权限。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:117
+#: ../../man/man8/mandb.man8:111
 msgid ""
 "Perform correctness checks on manual pages in the hierarchy search path.  "
 "With this option, B<%mandb%> will not alter existing databases."
@@ -3378,7 +3389,7 @@ msgstr ""
 "现有的数据库。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:131
+#: ../../man/man8/mandb.man8:125
 msgid ""
 "Update only the entries for the given filename.  This option is not for "
 "general use; it is used internally by B<%man%> when it has been compiled "
@@ -3390,44 +3401,44 @@ msgstr ""
 "B<-c> 和 B<-s>。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:138
+#: ../../man/man8/mandb.man8:132
 msgid "Show the usage message, then exit."
 msgstr "显示用法消息，然后退出。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:144
+#: ../../man/man8/mandb.man8:138
 msgid "Show the version, then exit."
 msgstr "显示版本号，然后退出。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:151
+#: ../../man/man8/mandb.man8:145
 msgid "Usage, syntax, or configuration file error."
 msgstr "用法、语法或配置文件错误。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:157
+#: ../../man/man8/mandb.man8:151
 msgid "A child process failed."
 msgstr "子进程失败。"
 
 #. type: SH
-#: ../../man/man8/mandb.man8:157
+#: ../../man/man8/mandb.man8:151
 #, no-wrap
 msgid "DIAGNOSTICS"
 msgstr "诊断"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:159
+#: ../../man/man8/mandb.man8:153
 msgid "The following warning messages can be emitted during database building."
 msgstr "在构建数据库时可能会显示以下警告消息。"
 
 #. type: TP
-#: ../../man/man8/mandb.man8:159
+#: ../../man/man8/mandb.man8:153
 #, no-wrap
 msgid "B<E<lt>filenameE<gt>: whatis parse for page(sec) failed>"
 msgstr "B<E<lt>文件名E<gt>: 页面(章节) 的 whatis 解析失败>"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:170
+#: ../../man/man8/mandb.man8:164
 msgid ""
 "An attempt to extract whatis line(s) from the given E<lt>filenameE<gt> "
 "failed.  This is usually due to a poorly written manual page, but if many "
@@ -3440,13 +3451,13 @@ msgstr ""
 "兼容的手册页。请参阅 B<lexgrog>(1) 中的 B<WHATIS PARSING> 一节了解更多信息。"
 
 #. type: TP
-#: ../../man/man8/mandb.man8:170
+#: ../../man/man8/mandb.man8:164
 #, no-wrap
 msgid "B<E<lt>filenameE<gt>: is a dangling symlink>"
 msgstr "B<E<lt>文件名E<gt>: 是一个的无效的符号链接>"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:175
+#: ../../man/man8/mandb.man8:169
 msgid ""
 "E<lt>filenameE<gt> does not exist but is referenced by a symbolic link.  "
 "Further diagnostics are usually emitted to identify the E<lt>filenameE<gt> "
@@ -3456,13 +3467,13 @@ msgstr ""
 "别出非法链接的 E<lt>文件名E<gt>。"
 
 #. type: TP
-#: ../../man/man8/mandb.man8:175
+#: ../../man/man8/mandb.man8:169
 #, no-wrap
 msgid "B<E<lt>filenameE<gt>: bad symlink or ROFF `.so' request>"
 msgstr "B<E<lt>文件名E<gt>: 错误的符号链接或 ROFF `.so' 请求>"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:179
+#: ../../man/man8/mandb.man8:173
 msgid ""
 "E<lt>filenameE<gt> is either a symbolic link to, or contains a ROFF include "
 "request to, a non existent file."
@@ -3471,13 +3482,13 @@ msgstr ""
 "ROFF。"
 
 #. type: TP
-#: ../../man/man8/mandb.man8:179
+#: ../../man/man8/mandb.man8:173
 #, no-wrap
 msgid "B<E<lt>filenameE<gt>: ignoring bogus filename>"
 msgstr "B<E<lt>文件名E<gt>: 将忽略假的文件名>"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:185
+#: ../../man/man8/mandb.man8:179
 msgid ""
 "The E<lt>filenameE<gt> may or may not be a valid manual page but its name is "
 "invalid.  This is usually due to a manual page with sectional extension "
@@ -3487,13 +3498,13 @@ msgstr ""
 "册页包含章节扩展 E<lt>xE<gt> 却被放在了手册页章节 E<lt>yE<gt>。"
 
 #. type: TP
-#: ../../man/man8/mandb.man8:185
+#: ../../man/man8/mandb.man8:179
 #, no-wrap
 msgid "B<E<lt>filename_maskE<gt>: competing extensions>"
 msgstr "B<E<lt>文件名掩码E<gt>: 扩展冲突>"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:191
+#: ../../man/man8/mandb.man8:185
 msgid ""
 "The wildcard E<lt>filename_maskE<gt> is not unique.  This is usually caused "
 "by the existence of both a compressed and uncompressed version of the same "
@@ -3503,72 +3514,82 @@ msgstr ""
 "版本导致的。"
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:202
+#: ../../man/man8/mandb.man8:196
 msgid "Older locations for the database cache included:"
 msgstr "包含的数据库缓存的较早位置："
 
 #. type: Plain text
-#: ../../man/man8/mandb.man8:223
+#: ../../man/man8/mandb.man8:217
 msgid ""
 "The B<WHATIS PARSING> section formerly in this manual page is now part of "
 "B<lexgrog>(1)."
 msgstr "此手册页中的 B<WHATIS PARSING> 小节现在是 B<lexgrog>(1) 的一部分。"
+
+#~ msgid "Type"
+#~ msgstr "类型"
+
+#~ msgid "Binary tree"
+#~ msgstr "二叉树"
+
+#~ msgid "Hashed"
+#~ msgstr "已散列"
 
 #~ msgid ""
 #~ "B<%man%> [\\|B<-C> I<file>\\|] [\\|B<-d>\\|] [\\|B<-D>\\|] [\\|B<--"
 #~ "warnings>\\|[\\|=I<warnings>\\|]\\|] [\\|B<-R> I<encoding>\\|] [\\|B<-L> "
 #~ "I<locale>\\|] [\\|B<-m> I<system>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> "
 #~ "I<path>\\|] [\\|B<-S> I<list>\\|] [\\|B<-e> I<extension>\\|] [\\|B<-i>\\||"
-#~ "\\|B<-I>\\|] [\\|B<--regex>\\||\\|B<--wildcard>\\|] [\\|B<--names-only>"
-#~ "\\|] [\\|B<-a>\\|] [\\|B<-u>\\|] [\\|B<--no-subpages>\\|] [\\|B<-P> "
-#~ "I<pager>\\|] [\\|B<-r> I<prompt>\\|] [\\|B<-7>\\|] [\\|B<-E> I<encoding>"
-#~ "\\|] [\\|B<--no-hyphenation>\\|] [\\|B<--no-justification>\\|] [\\|B<-p> "
-#~ "I<string>\\|] [\\|B<-t>\\|] [\\|B<-T>\\|[\\|I<device>\\|]\\|] [\\|B<-H>\\|"
-#~ "[\\|I<browser>\\|]\\|] [\\|B<-X>\\|[\\|I<dpi>\\|]\\|] [\\|B<-Z>\\|] [\\|"
-#~ "[\\|I<section>\\|] I<page>[.\\|I<section>\\|]\\ \\|.\\|.\\|.\\|]\\ .\\|."
-#~ "\\|.\\&"
+#~ "\\|B<-I>\\|] [\\|B<--regex>\\||\\|B<--wildcard>\\|] [\\|B<--names-"
+#~ "only>\\|] [\\|B<-a>\\|] [\\|B<-u>\\|] [\\|B<--no-subpages>\\|] [\\|B<-P> "
+#~ "I<pager>\\|] [\\|B<-r> I<prompt>\\|] [\\|B<-7>\\|] [\\|B<-E> "
+#~ "I<encoding>\\|] [\\|B<--no-hyphenation>\\|] [\\|B<--no-justification>\\|] "
+#~ "[\\|B<-p> I<string>\\|] [\\|B<-t>\\|] [\\|B<-T>\\|[\\|I<device>\\|]\\|] "
+#~ "[\\|B<-H>\\|[\\|I<browser>\\|]\\|] [\\|B<-X>\\|[\\|I<dpi>\\|]\\|] [\\|B<-"
+#~ "Z>\\|] [\\|[\\|I<section>\\|] I<page>[.\\|I<section>\\|]\\ \\|.\\|.\\|."
+#~ "\\|]\\ .\\|.\\|.\\&"
 #~ msgstr ""
 #~ "B<%man%> [\\|B<-C> I<文件>\\|] [\\|B<-d>\\|] [\\|B<-D>\\|] [\\|B<--"
-#~ "warnings>\\|[\\|=I<警告>\\|]\\|] [\\|B<-R> I<编码>\\|] [\\|B<-L> I<区域>"
-#~ "\\|] [\\|B<-m> I<系统>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> I<路径>\\|] [\\|"
-#~ "B<-S> I<列表>\\|] [\\|B<-e> I<扩展>\\|] [\\|B<-i>\\||\\|B<-I>\\|] [\\|B<--"
-#~ "regex>\\||\\|B<--wildcard>\\|] [\\|B<--names-only>\\|] [\\|B<-a>\\|] [\\|"
-#~ "B<-u>\\|] [\\|B<--no-subpages>\\|] [\\|B<-P> I<分页程序>\\|] [\\|B<-r> I<"
-#~ "提示>\\|] [\\|B<-7>\\|] [\\|B<-E> I<编码>\\|] [\\|B<--no-hyphenation>\\|] "
-#~ "[\\|B<--no-justification>\\|] [\\|B<-p> I<字符串>\\|] [\\|B<-t>\\|] [\\|"
-#~ "B<-T>\\|[\\|I<设备>\\|]\\|] [\\|B<-H>\\|[\\|I<浏览器>\\|]\\|] [\\|B<-X>\\|"
-#~ "[\\|I<dpi>\\|]\\|] [\\|B<-Z>\\|] [\\|[\\|I<章节>\\|] I<页>[.\\|I<章节>"
-#~ "\\|]\\ \\|.\\|.\\|.\\|]\\ .\\|.\\|.\\&"
+#~ "warnings>\\|[\\|=I<警告>\\|]\\|] [\\|B<-R> I<编码>\\|] [\\|B<-L> I<区域"
+#~ ">\\|] [\\|B<-m> I<系统>\\|[\\|,.\\|.\\|.\\|]\\|] [\\|B<-M> I<路径>\\|] "
+#~ "[\\|B<-S> I<列表>\\|] [\\|B<-e> I<扩展>\\|] [\\|B<-i>\\||\\|B<-I>\\|] [\\|"
+#~ "B<--regex>\\||\\|B<--wildcard>\\|] [\\|B<--names-only>\\|] [\\|B<-a>\\|] "
+#~ "[\\|B<-u>\\|] [\\|B<--no-subpages>\\|] [\\|B<-P> I<分页程序>\\|] [\\|B<-"
+#~ "r> I<提示>\\|] [\\|B<-7>\\|] [\\|B<-E> I<编码>\\|] [\\|B<--no-"
+#~ "hyphenation>\\|] [\\|B<--no-justification>\\|] [\\|B<-p> I<字符串>\\|] "
+#~ "[\\|B<-t>\\|] [\\|B<-T>\\|[\\|I<设备>\\|]\\|] [\\|B<-H>\\|[\\|I<浏览器"
+#~ ">\\|]\\|] [\\|B<-X>\\|[\\|I<dpi>\\|]\\|] [\\|B<-Z>\\|] [\\|[\\|I<章节"
+#~ ">\\|] I<页>[.\\|I<章节>\\|]\\ \\|.\\|.\\|.\\|]\\ .\\|.\\|.\\&"
 
 #~ msgid ""
-#~ "B<%man%> B<-K> [\\|B<-w>\\||\\|B<-W>\\|] [\\|B<-S> I<list>\\|] [\\|B<-i>"
-#~ "\\||\\|B<-I>\\|] [\\|B<--regex>\\|] [\\|I<section>\\|] I<term>\\ .\\|.\\|."
-#~ "\\&"
+#~ "B<%man%> B<-K> [\\|B<-w>\\||\\|B<-W>\\|] [\\|B<-S> I<list>\\|] [\\|B<-"
+#~ "i>\\||\\|B<-I>\\|] [\\|B<--regex>\\|] [\\|I<section>\\|] I<term>\\ .\\|."
+#~ "\\|.\\&"
 #~ msgstr ""
-#~ "B<%man%> B<-K> [\\|B<-w>\\||\\|B<-W>\\|] [\\|B<-S> I<list>\\|] [\\|B<-i>"
-#~ "\\||\\|B<-I>\\|] [\\|B<--regex>\\|] [\\|I<章节>\\|] I<词语>\\ .\\|.\\|.\\&"
+#~ "B<%man%> B<-K> [\\|B<-w>\\||\\|B<-W>\\|] [\\|B<-S> I<list>\\|] [\\|B<-"
+#~ "i>\\||\\|B<-I>\\|] [\\|B<--regex>\\|] [\\|I<章节>\\|] I<词语>\\ .\\|.\\|."
+#~ "\\&"
 
 #~ msgid ""
 #~ "B<%man%> B<-l> [\\|B<-C> I<file>\\|] [\\|B<-d>\\|] [\\|B<-D>\\|] [\\|B<--"
 #~ "warnings>\\|[\\|=I<warnings>\\|]\\|] [\\|B<-R> I<encoding>\\|] [\\|B<-L> "
-#~ "I<locale>\\|] [\\|B<-P> I<pager>\\|] [\\|B<-r> I<prompt>\\|] [\\|B<-7>"
-#~ "\\|] [\\|B<-E> I<encoding>\\|] [\\|B<-p> I<string>\\|] [\\|B<-t>\\|] [\\|"
-#~ "B<-T>\\|[\\|I<device>\\|]\\|] [\\|B<-H>\\|[\\|I<browser>\\|]\\|] [\\|B<-X>"
-#~ "\\|[\\|I<dpi>\\|]\\|] [\\|B<-Z>\\|] I<file> \\&.\\|.\\|.\\&"
+#~ "I<locale>\\|] [\\|B<-P> I<pager>\\|] [\\|B<-r> I<prompt>\\|] [\\|"
+#~ "B<-7>\\|] [\\|B<-E> I<encoding>\\|] [\\|B<-p> I<string>\\|] [\\|B<-t>\\|] "
+#~ "[\\|B<-T>\\|[\\|I<device>\\|]\\|] [\\|B<-H>\\|[\\|I<browser>\\|]\\|] [\\|"
+#~ "B<-X>\\|[\\|I<dpi>\\|]\\|] [\\|B<-Z>\\|] I<file> \\&.\\|.\\|.\\&"
 #~ msgstr ""
 #~ "B<%man%> B<-l> [\\|B<-C> I<文件>\\|] [\\|B<-d>\\|] [\\|B<-D>\\|] [\\|B<--"
-#~ "warnings>\\|[\\|=I<警告>\\|]\\|] [\\|B<-R> I<编码>\\|] [\\|B<-L> I<区域>"
-#~ "\\|] [\\|B<-P> I<分页程序>\\|] [\\|B<-r> I<提示>\\|] [\\|B<-7>\\|] [\\|B<-"
-#~ "E> I<编码>\\|] [\\|B<-p> I<字符串>\\|] [\\|B<-t>\\|] [\\|B<-T>\\|[\\|I<设"
-#~ "备>\\|]\\|] [\\|B<-H>\\|[\\|I<浏览器>\\|]\\|] [\\|B<-X>\\|[\\|I<dpi>"
-#~ "\\|]\\|] [\\|B<-Z>\\|] I<文件> \\&.\\|.\\|.\\&"
+#~ "warnings>\\|[\\|=I<警告>\\|]\\|] [\\|B<-R> I<编码>\\|] [\\|B<-L> I<区域"
+#~ ">\\|] [\\|B<-P> I<分页程序>\\|] [\\|B<-r> I<提示>\\|] [\\|B<-7>\\|] [\\|"
+#~ "B<-E> I<编码>\\|] [\\|B<-p> I<字符串>\\|] [\\|B<-t>\\|] [\\|B<-T>\\|[\\|I<"
+#~ "设备>\\|]\\|] [\\|B<-H>\\|[\\|I<浏览器>\\|]\\|] [\\|B<-X>\\|[\\|"
+#~ "I<dpi>\\|]\\|] [\\|B<-Z>\\|] I<文件> \\&.\\|.\\|.\\&"
 
 #~ msgid ""
-#~ "B<%man%> B<-w>\\||\\|B<-W> [\\|B<-C> I<file>\\|] [\\|B<-d>\\|] [\\|B<-D>"
-#~ "\\|] I<page> \\&.\\|.\\|.\\&"
+#~ "B<%man%> B<-w>\\||\\|B<-W> [\\|B<-C> I<file>\\|] [\\|B<-d>\\|] [\\|B<-"
+#~ "D>\\|] I<page> \\&.\\|.\\|.\\&"
 #~ msgstr ""
-#~ "B<%man%> B<-w>\\||\\|B<-W> [\\|B<-C> I<文件>\\|] [\\|B<-d>\\|] [\\|B<-D>"
-#~ "\\|] I<页> \\&.\\|.\\|.\\&"
+#~ "B<%man%> B<-w>\\||\\|B<-W> [\\|B<-C> I<文件>\\|] [\\|B<-d>\\|] [\\|B<-"
+#~ "D>\\|] I<页> \\&.\\|.\\|.\\&"
 
 #~ msgid ""
 #~ "B<%man%> B<-c> [\\|B<-C> I<file>\\|] [\\|B<-d>\\|] [\\|B<-D>\\|] I<page> "
@@ -3605,9 +3626,9 @@ msgstr "此手册页中的 B<WHATIS PARSING> 小节现在是 B<lexgrog>(1) 的�
 #~ "instead."
 #~ msgstr ""
 #~ "如果 B<%man%> 从 B<%mandb%> 初始化的 B<索引> 数据库中找不到某个手册页层次"
-#~ "结构，它仍然会搜索请求的手册页，尽管搜索该层次结构时需要展开文件。如果 B<"
-#~ "%whatis%> 或 B<%apropos%> 找不到 B<索引>，它会尝试从传统的 I<whatis> 数据"
-#~ "库中提取信息。"
+#~ "结构，它仍然会搜索请求的手册页，尽管搜索该层次结构时需要展开文件。如果 "
+#~ "B<%whatis%> 或 B<%apropos%> 找不到 B<索引>，它会尝试从传统的 I<whatis> 数"
+#~ "据库中提取信息。"
 
 #~ msgid ""
 #~ "These utilities support compressed source nroff files having, by default, "
@@ -3635,8 +3656,8 @@ msgstr "此手册页中的 B<WHATIS PARSING> 小节现在是 B<lexgrog>(1) 的�
 #~ "B<%man%> will search for the desired manual pages within the I<index> "
 #~ "database caches. If the B<-u> option is given, a cache consistency check "
 #~ "is performed to ensure the databases accurately reflect the filesystem.  "
-#~ "If this option is always given, it is not generally necessary to run B<"
-#~ "%mandb%> after the caches are initially created, unless a cache becomes "
+#~ "If this option is always given, it is not generally necessary to run "
+#~ "B<%mandb%> after the caches are initially created, unless a cache becomes "
 #~ "corrupt.  However, the cache consistency check can be slow on systems "
 #~ "with many manual pages installed, so it is not performed by default, and "
 #~ "system administrators may wish to run B<%mandb%> every week or so to keep "
@@ -3764,8 +3785,8 @@ msgstr "此手册页中的 B<WHATIS PARSING> 小节现在是 B<lexgrog>(1) 的�
 #~ "manpath~5 -E<gt> \"5 5 795981543 A - - format of the /etc/man_db.config "
 #~ "file\"\n"
 #~ "whatis -E<gt> \"1 1 795981543 A - - search the manual page names\"\n"
-#~ "zsoelim -E<gt> \"1 1 795981543 A - - satisfy .so requests in roff input"
-#~ "\"\n"
+#~ "zsoelim -E<gt> \"1 1 795981543 A - - satisfy .so requests in roff "
+#~ "input\"\n"
 #~ msgstr ""
 #~ "$mtime$ -E<gt> “795987034”\n"
 #~ "$version$ -E<gt> “2.3.1”\n"

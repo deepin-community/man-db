@@ -3,10 +3,11 @@
 # Test for:
 #   https://bugs.debian.org/608490
 
-: ${srcdir=.}
+: "${srcdir=.}"
+# shellcheck source-path=SCRIPTDIR
 . "$srcdir/testlib.sh"
 
-: ${MAN=man}
+: "${MAN=man}"
 
 init
 fake_config /usr/share/man
@@ -17,7 +18,6 @@ write_page file 1 "$tmpdir/file.1" UTF-8 '' '' 'file \- test'
 chmod +x "$tmpdir/file.1"
 PATH="$PATH:$tmpdir" run $MAN \
 	-C "$tmpdir/manpath.config" "$tmpdir/file.1" >/dev/null
-code=$?
-expect_pass 'executable page on path' 'test "$code" = 0'
+report 'executable page on path' "$?"
 
 finish

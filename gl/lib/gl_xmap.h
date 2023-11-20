@@ -1,10 +1,10 @@
 /* Abstract map data type, with out-of-memory checking.
-   Copyright (C) 2009-2020 Free Software Foundation, Inc.
+   Copyright (C) 2009-2023 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2018.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
+   the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -18,12 +18,15 @@
 #ifndef _GL_XMAP_H
 #define _GL_XMAP_H
 
+/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE,
+   _GL_ATTRIBUTE_RETURNS_NONNULL.  */
+#if !_GL_CONFIG_H_INCLUDED
+ #error "Please include config.h first."
+#endif
+
 #include "gl_map.h"
 #include "xalloc.h"
 
-#ifndef _GL_INLINE_HEADER_BEGIN
- #error "Please include config.h first."
-#endif
 _GL_INLINE_HEADER_BEGIN
 #ifndef GL_XMAP_INLINE
 # define GL_XMAP_INLINE _GL_INLINE
@@ -42,13 +45,18 @@ extern gl_map_t gl_map_create_empty (gl_map_implementation_t implementation,
                                      gl_mapkey_equals_fn equals_fn,
                                      gl_mapkey_hashcode_fn hashcode_fn,
                                      gl_mapkey_dispose_fn kdispose_fn,
-                                     gl_mapvalue_dispose_fn vdispose_fn);
+                                     gl_mapvalue_dispose_fn vdispose_fn)
+  /*_GL_ATTRIBUTE_DEALLOC (gl_map_free, 1)*/
+  _GL_ATTRIBUTE_RETURNS_NONNULL;
 extern bool gl_map_put (gl_map_t map, const void *key, const void *value);
 extern bool gl_map_getput (gl_map_t map, const void *key, const void *value,
                            const void **oldvaluep);
 #endif
 
-GL_XMAP_INLINE gl_map_t
+GL_XMAP_INLINE
+/*_GL_ATTRIBUTE_DEALLOC (gl_map_free, 1)*/
+_GL_ATTRIBUTE_RETURNS_NONNULL
+gl_map_t
 gl_map_create_empty (gl_map_implementation_t implementation,
                      gl_mapkey_equals_fn equals_fn,
                      gl_mapkey_hashcode_fn hashcode_fn,

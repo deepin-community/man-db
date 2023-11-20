@@ -1,3 +1,154 @@
+man-db (2.12.0-1) unstable; urgency=medium
+
+  * New upstream release:
+    - Always pass a line length to nroff (closes: #1041704).
+    - bootstrap: Make --skip-po disable Gnulib downloads too (closes:
+      #1050089).
+    - systemd: Avoid duplicate cleanup of old cat pages (closes: #1052221).
+
+ -- Colin Watson <cjwatson@debian.org>  Sat, 23 Sep 2023 22:35:45 +0100
+
+man-db (2.11.2-3) unstable; urgency=medium
+
+  * Cherry-pick from upstream:
+    - Update warning regex for groff 1.23.0 (closes: #1041847).
+
+ -- Colin Watson <cjwatson@debian.org>  Mon, 24 Jul 2023 12:46:49 +0100
+
+man-db (2.11.2-2) unstable; urgency=medium
+
+  * Add debconf translations:
+    - Romanian (thanks, Remus-Gabriel Chelu; closes: #1032685).
+
+ -- Colin Watson <cjwatson@debian.org>  Sun, 12 Mar 2023 22:23:59 +0000
+
+man-db (2.11.2-1) unstable; urgency=medium
+
+  * New upstream release:
+    - Fix crash in mandb when processing stray cats (closes: #1027487).
+  * Set upstream metadata fields: Repository.
+
+ -- Colin Watson <cjwatson@debian.org>  Sun, 08 Jan 2023 22:52:39 +0000
+
+man-db (2.11.1-1) unstable; urgency=medium
+
+  * debian/upstream/metadata: Update upstream Git URL.
+  * debian/control: Update Homepage URL.
+  * debian/copyright: Update Source URL.
+  * New upstream release:
+    - SECURITY: Replace "$" characters in page names with "?" when
+      constructing "less" prompts (closes: #1021951).
+    - Silence error message when processing an empty manual page hierarchy
+      with a nonexistent cache directory (closes: #762335).
+    - man(1) now sorts whatis references below real pages, even if the
+      whatis references are from a section with higher priority (closes:
+      #780235).
+    - Add section "3type" to the default section list just after "2".  This
+      is used by the Linux man-pages package.
+
+ -- Colin Watson <cjwatson@debian.org>  Tue, 15 Nov 2022 15:14:06 +0000
+
+man-db (2.11.0-1) unstable; urgency=medium
+
+  * New upstream release:
+    - Allow the reproduction of bitwise-identical databases regardless of
+      scan order (closes: #1010957).
+    - Run preprocessors in the correct order (closes: #1012078).
+
+ -- Colin Watson <cjwatson@debian.org>  Sat, 15 Oct 2022 15:48:48 +0100
+
+man-db (2.10.2-3) unstable; urgency=medium
+
+  * Fix/override shellcheck warnings in maintainer scripts and cron jobs.
+  * Fall back to runuser if setpriv isn't available (closes: #1017769).
+
+ -- Colin Watson <cjwatson@debian.org>  Sun, 04 Sep 2022 18:18:40 +0100
+
+man-db (2.10.2-2) unstable; urgency=medium
+
+  [ Gioele Barabucci ]
+  * d/postinst: Run mandb with setpriv instead of perl.
+
+ -- Colin Watson <cjwatson@debian.org>  Fri, 19 Aug 2022 10:13:31 +0100
+
+man-db (2.10.2-1) unstable; urgency=medium
+
+  * New upstream release:
+    - Fix showing HTML, as firefox runs into background too fast (closes:
+      #335411).
+
+ -- Colin Watson <cjwatson@debian.org>  Thu, 17 Mar 2022 19:03:00 +0000
+
+man-db (2.10.1-1) unstable; urgency=medium
+
+  * Ensure that PATH in cron jobs includes sbin directories, since there are
+    long-standing bugs that it doesn't always do so (closes: #209185).
+  * New upstream release:
+    - Update Simplified Chinese manual page translation (closes: #1005139).
+
+ -- Colin Watson <cjwatson@debian.org>  Thu, 10 Feb 2022 12:36:03 +0000
+
+man-db (2.10.0-2) unstable; urgency=medium
+
+  * Fix occasional mandb-symlink-target-timestamp test failure.
+
+ -- Colin Watson <cjwatson@debian.org>  Fri, 04 Feb 2022 19:21:06 +0000
+
+man-db (2.10.0-1) unstable; urgency=medium
+
+  * Simplify some debhelper overrides slightly.
+  * debian/upstream/metadata: Update for upstream move to GitLab.
+  * Add section 0 to default search list (closes: #1004248).
+  * New upstream release:
+    - Document MAN_DISABLE_SECCOMP and PIPELINE_DEBUG environment variables
+      in man(1) (closes: #941622).
+    - Add man-pages(7) reference to man(1) (closes: #974174).
+    - lexgrog now produces output in the user's locale (closes: #970482).
+    - Downgrade "malformed .lf request" warning to a debug message and
+      rephrase it somewhat, since .lf requests can use *roff arithmetic
+      expressions and we can't reasonably parse those (closes: #998426).
+    - Significantly improve mandb(8) and "man -K" performance in the common
+      case where pages are of moderate size and compressed using zlib
+      (closes: #630799, #1003089; LP: #1858777).
+    - Avoid modifying the database without changing its mtime, which had
+      been possible since 2.7.0 if mandb's purge phase found work to do but
+      the main phase didn't, and which confused some backup systems into
+      reporting possible filesystem corruption (closes: #1004355,
+      LP: #1411633).
+    - mandb now stores the mtime of link targets as the mtime of their
+      corresponding database entries, rather than sometimes storing the
+      mtime of the link instead (closes: #691643).
+
+ -- Colin Watson <cjwatson@debian.org>  Fri, 04 Feb 2022 15:30:35 +0000
+
+man-db (2.9.4-4) unstable; urgency=medium
+
+  * debian/watch: Upgrade to version 4.
+  * Upgrade to debhelper v13.
+  * Move globbing, manconv, and zsoelim to /usr/libexec/man-db, in line with
+    FHS 3.0.
+
+ -- Colin Watson <cjwatson@debian.org>  Sun, 26 Dec 2021 14:55:45 +0000
+
+man-db (2.9.4-3) unstable; urgency=medium
+
+  [ Colin Watson ]
+  * Remove maintainer script code for upgrades from extremely old versions.
+  * Convert several debconf translations to UTF-8.
+  * Remove now-unnecessary hardening-no-fortify-functions Lintian override.
+
+  [ Debian Janitor ]
+  * Remove constraints unnecessary since buster:
+    + Build-Depends: Drop versioned constraint on dpkg and libpipeline-dev.
+    + man-db: Drop versioned constraint on debconf and groff-base in Depends.
+    + man-db: Drop versioned constraint on dpkg in Pre-Depends.
+    + man-db: Drop versioned constraint on manpages-de, manpages-tr and
+      manpages-zh in Replaces.
+    + man-db: Drop versioned constraint on manpages-tr and manpages-zh in
+      Breaks.
+
+ -- Colin Watson <cjwatson@debian.org>  Sun, 26 Dec 2021 02:09:49 +0000
+
 man-db (2.9.4-2) unstable; urgency=medium
 
   [ Marriott NZ ]

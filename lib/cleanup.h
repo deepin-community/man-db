@@ -14,7 +14,7 @@
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
- * License along with this library; see the file COPYING.LIB.  If not,
+ * License along with this library; see the file docs/COPYING.LIB.  If not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth
  * Floor, Boston, MA  02110-1301  USA.
  */
@@ -22,9 +22,11 @@
 #ifndef _CLEANUP_H
 #define _CLEANUP_H
 
+#include <stdbool.h>
+
 typedef void (*cleanup_fun) (void *);
 
-extern void do_cleanups_sigsafe (int);
+extern void do_cleanups_sigsafe (bool);
 extern void do_cleanups (void);
 extern int push_cleanup (cleanup_fun, void *, int);
 extern void pop_cleanup (cleanup_fun, void *);
